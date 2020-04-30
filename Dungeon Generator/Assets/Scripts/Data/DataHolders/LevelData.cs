@@ -248,7 +248,7 @@ public class LevelData : MonoBehaviour
 
     public float GetTreasureRoomPercentage()
     {
-        return m_treasureRoomProbability/GetFullRoomProbabilityPercentage();
+        return (int)(m_treasureRoomProbability/GetFullRoomProbabilityPercentage() * 100);
     }
     public int GetTreasureRoomProbability()
     {
@@ -256,7 +256,7 @@ public class LevelData : MonoBehaviour
     }
     public float GetAmbushRoomPercentage()
     {
-        return m_ambushRoomProbability / GetFullRoomProbabilityPercentage();
+        return (int)(m_ambushRoomProbability / GetFullRoomProbabilityPercentage() * 100);
     }
     public int GetAmbushRoomProbability()
     {
@@ -264,7 +264,7 @@ public class LevelData : MonoBehaviour
     }
     public float GetNormalRoomPercentage()
     {
-        return m_normalRoomProbability / GetFullRoomProbabilityPercentage();
+        return (int)(m_normalRoomProbability / GetFullRoomProbabilityPercentage() * 100);
     }
     public int GetNormalRoomProbability()
     {
@@ -272,7 +272,7 @@ public class LevelData : MonoBehaviour
     }
     public float GetSafeRoomPercentage()
     {
-        return m_safeRoomProbability / GetFullRoomProbabilityPercentage();
+        return (int)(m_safeRoomProbability / GetFullRoomProbabilityPercentage() * 100);
     }
     public int GetSafeRoomProbability()
     {
