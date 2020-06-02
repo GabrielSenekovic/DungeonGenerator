@@ -12,12 +12,8 @@ public enum Flora
     Rose = 5, //Used for rose water, can become rosehips which is used for soups. Both are used for jam. Can be made into tea. Can be used to make Diarrhodon, which gives you better buffs for a while.
     Cinnamon = 6, //Can be made to use a spice
     Ginger = 7, //Is an ingredient, makes wine, tea and different pastries
-    Oak = 8, //Good for house building, boat building and furniture, also for wine barrels and such
-    Maple = 9, //Good for making maple syrup, violins to cellos, and their leaves can be fried
     Aspen = 10, //Good for making paper and matches
     Larch = 11, //Good for making small boats, houses
-    Spruce = 12, //Good for building houses, its fresh shoots can be eaten and used as ingredient, can be used for violins to cellos, guitars, pianos and harps
-    Apple = 13, //Drops apples, of which can be made juice, pies, sauces, apple butter, salads
     Pineapple = 14, 
     Banana = 15, //Banana fiber can be used in textiles, for example, kimonos, but also paper
     Plantain = 16,

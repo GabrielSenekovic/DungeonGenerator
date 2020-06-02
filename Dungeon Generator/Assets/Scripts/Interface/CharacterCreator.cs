@@ -6,7 +6,7 @@ public class CharacterCreator : MonoBehaviour
 {
     // Update is called once per frame
 
-    [SerializeField] CharacterCreatorSubject player;
+    [SerializeField] Body player;
 
     [SerializeField] List<Sprite> headSprites; int headSpriteIndex = 0;
 
