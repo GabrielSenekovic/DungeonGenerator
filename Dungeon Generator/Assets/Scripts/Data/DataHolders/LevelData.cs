@@ -37,7 +37,7 @@ public enum LevelLocation
     Dungeon = 2
 }
 
-public class LevelData : MonoBehaviour
+public class LevelData
 {
     List<AudioClip> m_melody = new List<AudioClip>();
     List<AudioClip> m_baseLine = new List<AudioClip>();
@@ -65,9 +65,9 @@ public class LevelData : MonoBehaviour
     //List<Enemy> m_enemies = new List<Enemy>{}
     //List<Entity> m_fauna = new List<Entity>{}
 
-    public void Initialize()
+    public void Initialize(int LevelDataSeed)
     {
-        Random.InitState(GameData.GetDataSeed());
+        Random.InitState(LevelDataSeed);
         ChooseLocation();
         ChooseTemp();
         ChooseWaterLevel();

@@ -5,12 +5,13 @@ using UnityEngine;
 public partial class TreeGenerator : MonoBehaviour
 {
     public List<GameObject> Segments; //The first element is the top, and then it gets thicker then higher the index is
+    //0 = 4, 1 = 6tr, 2 = 6, 3 = 8tr, 4 = 8, 5 = 10tr, 6 = 10
     public List<GameObject> Bases; //Same as above, but it contains only bases
     public List<GameObject> Branches; //Also increases in size with index
 
     public class TreePart
     {
-        public List<GameObject> Segments;
+        public List<GameObject> Segments = new List<GameObject>(){};
     }
     public struct TreeData
     {
@@ -49,25 +50,31 @@ public partial class TreeGenerator : MonoBehaviour
     }
     void GenerateTree(TreeData.TreeType type)
     {
+        GameObject Tree = new GameObject(type + " tree");
         TreeData tree = data[(int)type];
-        TreePart trunk = CreateTrunk((int)Random.Range(tree.minmaxTrunkHeight.x, tree.minmaxTrunkHeight.y), (int)Random.Range(tree.minmaxWidth.x, tree.minmaxWidth.y));
+        TreePart trunk = CreateTrunk((int)Random.Range(tree.minmaxTrunkHeight.x, tree.minmaxTrunkHeight.y), (int)Random.Range(tree.minmaxWidth.x, tree.minmaxWidth.y), 10, Tree.transform);
         Branch(trunk.Segments[Random.Range(tree.branchThreshold, trunk.Segments.Count)]); //Obviously not going to be the final code
         //Because this implies the branches could start at the base of the trunk
         //There should be some kind of loop that uses the branchtendency... but im not sure what yet
-        CreateLeaves(type);
+        //CreateLeaves(type);
     }
-    TreePart CreateTrunk(int heigth, int width)
+    TreePart CreateTrunk(int trunkHeigth, int width, int totalHeight, Transform treeTrans)
     {
-        for(int i = 1; i <= heigth; i++)
+        //width corresponds to index[width - 3]
+        float trunkDivision = (float)width/(float)totalHeight;
+        float currentTrunkIndex = trunkDivision;
+        TreePart trunk = new TreePart();
+        trunk.Segments.Add(Instantiate(Bases[0], Vector3.zero, Quaternion.identity, treeTrans));
+        for(int i = 1; i <= trunkHeigth; i++)
         {
-           // Debug.Log(Mathf.Floor(width / i)); 8 4 2
-           Debug.Log(Mathf.Floor(i / width));
+            Debug.Log(currentTrunkIndex);
+            currentTrunkIndex+=trunkDivision;
+            Debug.Log(width-3-(int)Mathf.Floor(currentTrunkIndex));
+            trunk.Segments.Add(Instantiate(Segments[width-3-(int)Mathf.Floor(currentTrunkIndex)], 
+            new Vector3(trunk.Segments[0].transform.position.x, trunk.Segments[0].transform.position.y+(trunk.Segments.Count*1.6f), trunk.Segments[0].transform.position.z),
+            Quaternion.identity, treeTrans));
         }
-        //Use this to figure out where to put each segment
-        //Put the base with the calculated measurement and then iterate through the segments list using floor or roof to find the index
-        //Put each segment in the list
-        //Return the entire trunk
-        return null;
+        return trunk;
     }
     TreePart Branch(GameObject origin)
     {

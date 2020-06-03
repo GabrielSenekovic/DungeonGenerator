@@ -5,6 +5,7 @@ using System.Collections;
 
 public class BulletinBoard : InteractableBase
 {
+    [SerializeField]CanvasGroup questScreen;
     int[] seeds = new int[5];
     bool m_active = true;
 
@@ -21,11 +22,15 @@ public class BulletinBoard : InteractableBase
     {
         //Open bulletin board screen
         //For now, just load a randomass level
+        int[] seeds = GenerateNewSeeds();
+        UIManager.OpenOrClose(questScreen);
+        /*
         if(m_active)
         {
             LoadLevel(0);
             m_active = false;
         }
+        */
     }
 
     public void LoadLevel(int index)
