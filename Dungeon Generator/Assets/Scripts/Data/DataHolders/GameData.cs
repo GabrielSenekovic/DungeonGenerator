@@ -24,10 +24,12 @@ public class GameData : MonoBehaviour
         Player = GetComponentInChildren<PlayerController>();
     }
 
-    public static void SetSeed(int seed)
+    public static void SetSeed(int constructionSeed, int levelDataSeed)
     {
-        Debug.Log("Seed is: " + seed);
-        m_LevelConstructionSeed = seed;
+        Debug.Log("The construction seed is: " + constructionSeed);
+        Debug.Log("The data seed is: " + levelDataSeed);
+        m_LevelConstructionSeed = constructionSeed;
+        m_LevelDataSeed = levelDataSeed;
     }
     public static int GetConstructionSeed()
     {

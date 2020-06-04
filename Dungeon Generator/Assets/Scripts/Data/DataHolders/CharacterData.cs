@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterData : MonoBehaviour
+public class CharacterData : Data
 {
     [SerializeField]Body myBody;
 }

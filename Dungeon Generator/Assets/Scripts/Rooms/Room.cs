@@ -175,7 +175,7 @@ public partial class Room: MonoBehaviour
     }
     public void ChooseRoomLayout(LevelData data)
     {
-        if(data.GetLocation() == LevelLocation.Dungeon)
+        if(data.m_location == LevelLocation.Dungeon)
         {
             m_Indoors = CheckIfRoomIsIndoors(data);
             List<RoomLayout> layouts = new List < RoomLayout >{ };

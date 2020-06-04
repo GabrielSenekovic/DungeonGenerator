@@ -25,7 +25,6 @@ public partial class LevelGenerator : MonoBehaviour
             GameData.SetPlayerPosition(new Vector2(GameData.GetPlayerPosition().x - 10, GameData.GetPlayerPosition().y - 10));
         }
         m_data = GetComponent<LevelData>();
-        m_data.Initialize(1);
         m_builder = GetComponent<RoomBuilder>();
 
         Random.InitState(GameData.GetConstructionSeed());
@@ -41,7 +40,7 @@ public partial class LevelGenerator : MonoBehaviour
     void Initiate(Room originRoom)
     {
         originRoom.OpenAllEntrances(); originRoom.Initialize(originRoom.transform.position);
-        SpawnRooms(Random.Range((int)m_data.GetRoomAmountCap().x + m_rooms.Count, (int)m_data.GetRoomAmountCap().y + m_rooms.Count));
+        SpawnRooms(Random.Range((int)m_data.m_amountOfRoomsCap.x + m_rooms.Count, (int)m_data.m_amountOfRoomsCap.y + m_rooms.Count));
         FuseRooms();
         AdjustRoomTypes();
         AdjustEntrances();
