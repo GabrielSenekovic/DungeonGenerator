@@ -80,34 +80,57 @@ public class LevelDataGenerator : MonoBehaviour
         data.m_biome = (Biome)Random.Range(0, 11);
         switch(data.m_biome)
         {
-            case Biome.Alpine: break;
+            case Biome.Alpine: 
+                data.roomOpenness = new Vector2(10, 20);
+                data.openDoorProbability = 2;
+                break;
             case Biome.Boreal:
                 data.m_temperatureLevel--;
+                data.roomOpenness = new Vector2(2, 5);
+                data.openDoorProbability = 2;
                 break;
             case Biome.Desert:
                 data.m_waterLevel -= 1;
+                data.roomOpenness = new Vector2(10, 20);
+                data.openDoorProbability = 5;
                 break;
             case Biome.Xeric:
                 data.m_waterLevel = 0;
+                data.roomOpenness = new Vector2(10, 20);
+                data.openDoorProbability = 5;
                 break;
             case Biome.IceCap:
                 data.m_temperatureLevel -= 3;
-                Debug.Log(data.m_temperatureLevel);
+                data.roomOpenness = new Vector2(10, 20);
+                data.openDoorProbability = 3;
                 break;
             case Biome.Mediterranean:
                 data.m_temperatureLevel++;
+                data.roomOpenness = new Vector2(2, 10);
+                data.openDoorProbability = 3;
                 break;
-            case Biome.Ocean: break;
+            case Biome.Ocean: 
+                data.openDoorProbability = 5;
+                break;
             case Biome.Rainforest:
                 data.m_temperatureLevel += 2;
+                data.roomOpenness = new Vector2(0, 10);
+                data.openDoorProbability = 1;
                 break;
             case Biome.Savannah:
                 data.m_temperatureLevel++;
+                data.roomOpenness = new Vector2(5, 20);
+                data.openDoorProbability = 2;
                 break;
             case Biome.Tundra:
                 data.m_temperatureLevel-=2;
+                data.roomOpenness = new Vector2(5, 15);
+                data.openDoorProbability = 2;
                 break;
-            case Biome.Continental: break;
+            case Biome.Continental: 
+                data.roomOpenness = new Vector2(0, 20);
+                data.openDoorProbability = 4;
+                break;
         }
     }
     public void ChooseRoomProbabilities(LevelData data)

@@ -35,20 +35,6 @@ public class QuestSelect : MonoBehaviour
     [SerializeField]Transform buttonParent;
     [SerializeField]Text detailText;
 
-    Tuple<int[], int[], int[]> GenerateNewSeeds() //here temporarily
-    {
-        return new Tuple<int[], int[], int[]>
-        (
-            new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)}, 
-            new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)},
-            new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)}
-        );
-    }
-
-    private void Awake() 
-    {
-        Initialize(GenerateNewSeeds());
-    }
     public void Initialize(Tuple<int[], int[], int[]> seeds_in)
     {
         for(int i = 0; i < seeds_in.Item1.Length; i++)
@@ -61,8 +47,9 @@ public class QuestSelect : MonoBehaviour
             quests.Add(GetComponent<QuestDataGenerator>().Initialize(seeds[i].questSeed));
         }
     }
-    public void LoadLevel(int index)
+    public void OnLoadLevel()
     {
+        Time.timeScale = 1;
         GameData.SetSeed(seeds[index].constructionSeed, seeds[index].dataSeed);
         SceneManager.LoadSceneAsync("Level");
     }
@@ -115,8 +102,9 @@ public class QuestSelect : MonoBehaviour
     public void RevealDetails(int index_in)
     {
         detailText.text = "Information about the quest: \n";
-        detailText.text += "Questgiver: \nObjective: " + "\nDifficulty level: \nReward: \n";
-        detailText.text += "Information about the destination: \n";
+        detailText.text += quests[index_in].GetQuestDescription();
+        detailText.text += "\nQuestgiver: \nObjective: " + "\nDifficulty level: \nReward: \n";
+        detailText.text += "\nInformation about the destination: \n";
         detailText.text += "\nThis place is a: " + levels[index_in].m_biome + " " + levels[index_in].m_location + ". \n";
         if(levels[index_in].m_mood[0] != levels[index_in].m_mood[1])
         {

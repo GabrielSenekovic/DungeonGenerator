@@ -16,23 +16,14 @@ public class WallPosition : MonoBehaviour
     WallVariant m_variant = WallVariant.None;
 
     bool m_IsOccupied = false;
-    [SerializeField]Vector2 m_Position;
 
-    public void PlaceDown(Vector2 position)
+    public void PlaceDown()
     {
         m_IsOccupied = true;
     }
     public void UnPlace()
     {
         m_IsOccupied = false;
-    }
-    public void SetPosition(Vector2 position)
-    {
-        m_Position = position;
-    }
-    public Vector2 GetPosition()
-    {
-        return m_Position;
     }
     public bool GetIsOccupied()
     {

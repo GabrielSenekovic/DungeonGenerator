@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class RoomBuilder : MonoBehaviour
 {
-    [SerializeField] WallBlueprints m_WallBlockPrefab; //This is a placeholder for what will be later
-    [SerializeField] GameObject m_FloorTilePrefab;
+    [SerializeField] WallBlueprints wallBlueprints; //This is a placeholder for what will be later
+    [SerializeField] GameObject floorPrefab;
 
     public void Build(List<Room> rooms)
     {
@@ -17,11 +17,11 @@ public class RoomBuilder : MonoBehaviour
     {
         foreach (Room room in rooms)
         {
-            if (!room.IsBuilt)
+            if (!room.roomData.IsBuilt)
             {
-                room.PlaceDownWalls();
-                room.InstantiateWalls(m_WallBlockPrefab);
-                room.InstantiateFloor(m_FloorTilePrefab);
+                room.PlaceDownWalls(wallBlueprints);
+                //room.InstantiateWalls(wallBlueprints);
+                room.InstantiateFloor(floorPrefab);
                 room.DisplayDistance();
 
                 foreach (Transform child in room.transform)
@@ -31,7 +31,7 @@ public class RoomBuilder : MonoBehaviour
                         Destroy(child.gameObject);
                     }
                 }
-                room.IsBuilt = true;
+                room.roomData.IsBuilt = true;
             }
         }
     }
@@ -44,20 +44,20 @@ public class RoomBuilder : MonoBehaviour
             {
                 continue;
             }
-            for (int j = 0; j < rooms[i].GetDirections().m_directions.Count; j++)
+            for (int j = 0; j < rooms[i].GetDirections().directions.Count; j++)
             {
                 if(rooms[i].GetRoomType() == RoomType.BossRoom)
                 {
                     continue;
                 }
-                if(rooms[i].GetDirections().m_directions[j] == null)
+                if(rooms[i].GetDirections().directions[j] == null)
                 {
                     continue;
                 }
-                if (!rooms[i].GetDirections().m_directions[j].Spawned || (!rooms[i].GetDirections().m_directions[j].Open && rooms[i].GetDirections().m_directions[j].Spawned))
+                if (!rooms[i].GetDirections().directions[j].Spawned || (!rooms[i].GetDirections().directions[j].Open && rooms[i].GetDirections().directions[j].Spawned))
                 {
-                   Destroy(rooms[i].GetDirections().m_directions[j].gameObject);
-                   rooms[i].GetDirections().m_directions[j] = null;
+                   Destroy(rooms[i].GetDirections().directions[j].gameObject);
+                   rooms[i].GetDirections().directions[j] = null;
                 }
             }
         }

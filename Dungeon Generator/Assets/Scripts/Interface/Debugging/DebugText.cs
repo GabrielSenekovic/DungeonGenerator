@@ -5,26 +5,25 @@ using UnityEngine.UI;
 
 public class DebugText : MonoBehaviour
 {
-    [SerializeField] LevelData m_LevelData;
     Text m_DebugText;
 
-    public void Awake()
+    public void Display(LevelData levelData)
     {
         m_DebugText = GetComponentInChildren<Text>();
-        m_DebugText.text += "Level Construction Seed: " + GameData.GetConstructionSeed() + "\n";
-        m_DebugText.text += "Level Data Seed: " + GameData.GetDataSeed() + "\n";
-        m_DebugText.text += "Level Type: " + m_LevelData.m_location + "\n";
-        m_DebugText.text += "Biome: " + m_LevelData.m_biome + "\n";
-        m_DebugText.text += "Mood 1: " + m_LevelData.GetMood(0) + "\n";
-        m_DebugText.text += "Mood 2: " + m_LevelData.GetMood(1) + "\n";
-        m_DebugText.text += "Danger Levels: " + m_LevelData.m_dangerLevel + "\n";
-        m_DebugText.text += "Temperature: " + m_LevelData.m_temperatureLevel + "\n";
-        m_DebugText.text += "Water Level: " + m_LevelData.m_waterLevel + "\n";
-        m_DebugText.text += "Magic Level: " + m_LevelData.m_magicLevel + "\n";
-        m_DebugText.text += "Altitude: " + m_LevelData.m_altitude + "\n";
-        m_DebugText.text += "Probability for Normal Room: " + m_LevelData.GetNormalRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Treasure Room: " + m_LevelData.GetTreasureRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Ambush Room: " + m_LevelData.GetAmbushRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Safe Room: " + m_LevelData.GetSafeRoomPercentage() + "%" + "\n";
+        m_DebugText.text += "Level Construction Seed: " + GameData.m_LevelConstructionSeed + "\n";
+        m_DebugText.text += "Level Data Seed: " + GameData.m_LevelDataSeed + "\n";
+        m_DebugText.text += "Level Type: " + levelData.m_location + "\n";
+        m_DebugText.text += "Biome: " + levelData.m_biome + "\n";
+        m_DebugText.text += "Mood 1: " + levelData.GetMood(0) + "\n";
+        m_DebugText.text += "Mood 2: " + levelData.GetMood(1) + "\n";
+        m_DebugText.text += "Danger Levels: " + levelData.m_dangerLevel + "\n";
+        m_DebugText.text += "Temperature: " + levelData.m_temperatureLevel + "\n";
+        m_DebugText.text += "Water Level: " + levelData.m_waterLevel + "\n";
+        m_DebugText.text += "Magic Level: " + levelData.m_magicLevel + "\n";
+        m_DebugText.text += "Altitude: " + levelData.m_altitude + "\n";
+        m_DebugText.text += "Probability for Normal Room: " + levelData.GetNormalRoomPercentage() + "%" + "\n";
+        m_DebugText.text += "Probability for Treasure Room: " + levelData.GetTreasureRoomPercentage() + "%" + "\n";
+        m_DebugText.text += "Probability for Ambush Room: " + levelData.GetAmbushRoomPercentage() + "%" + "\n";
+        m_DebugText.text += "Probability for Safe Room: " + levelData.GetSafeRoomPercentage() + "%" + "\n";
     }
 }

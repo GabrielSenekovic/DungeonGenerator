@@ -12,8 +12,4 @@ public class QuestButton : MonoBehaviour
         select.index = index;
         select.RevealDetails(index);
     }
-    public void LoadLevel()
-    {
-        select.LoadLevel(index);
-    }
 }

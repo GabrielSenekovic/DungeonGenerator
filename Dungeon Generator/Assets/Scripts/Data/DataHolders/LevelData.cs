@@ -59,6 +59,9 @@ public class LevelData
     public int m_ambushRoomProbability = 1;
     public int m_safeRoomProbability = 1;
 
+    public int openDoorProbability = 0;
+    public Vector2 roomOpenness = Vector2.zero;
+
     public int m_foragingSpawnProbability;
 
     //List<Flora> m_flora = new List<Flora>{}

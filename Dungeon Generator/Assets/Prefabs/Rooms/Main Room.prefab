@@ -50,10 +50,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c038d55069271df4cb2332bbe060afee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_wallPosition: {fileID: 4819780058787305975, guid: 33ca0555e6cbd6642ad75ab2afb3b827,
+  wallPosition: {fileID: 4819780058787305975, guid: 33ca0555e6cbd6642ad75ab2afb3b827,
     type: 3}
-  m_type: 0
-  m_cameraBoundaries: {x: 0, y: 0}
+  CameraBoundaries: {x: 0, y: 0}
   IsBuilt: 0
 --- !u!114 &4372054170216011763
 MonoBehaviour:
@@ -69,7 +68,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_entrance: {fileID: 2532644794381932144, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
     type: 3}
-  m_directions: []
+  directions: []
 --- !u!1001 &580324093850981416
 PrefabInstance:
   m_ObjectHideFlags: 0

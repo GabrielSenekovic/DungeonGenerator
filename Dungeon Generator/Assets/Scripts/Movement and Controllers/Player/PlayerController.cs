@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
                 Move(KeyCode.D);
             }
         }
-        if(Input.GetKey(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             Interact();
         }

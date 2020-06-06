@@ -1,18 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum EntranceType
-{
-    NormalDoor = 0,
-    PuzzleDoor = 1,
-    BombableWall = 2,
-    LockedDoor = 3,
-    MultiLockedDoor = 4, //Uses more than one key
-    AmbushDoor = 5 //Locks behind you, defeat all enemies to make them open
-}
-
 public class RoomEntrance : MonoBehaviour
 {
+    public enum EntranceType
+    {
+        NormalDoor = 0,
+        PuzzleDoor = 1,
+        BombableWall = 2,
+        LockedDoor = 3,
+        MultiLockedDoor = 4, //Uses more than one key
+        AmbushDoor = 5 //Locks behind you, defeat all enemies to make them open
+    }
     public bool Open;
     public bool Spawned;
     public Vector2 DirectionModifier;

@@ -7,8 +7,8 @@ public class GameData : MonoBehaviour
     public static GameData Instance;
     static PlayerController Player;
 
-    [SerializeField] static int m_LevelConstructionSeed = 134523; //Used by the room generator to generate the room
-    [SerializeField] static int m_LevelDataSeed = 9562;
+    public static int m_LevelConstructionSeed = 134523; //Used by the room generator to generate the room
+    public static int m_LevelDataSeed = 9562;
     //134523 heart
     private void Awake()
     {
@@ -30,14 +30,6 @@ public class GameData : MonoBehaviour
         Debug.Log("The data seed is: " + levelDataSeed);
         m_LevelConstructionSeed = constructionSeed;
         m_LevelDataSeed = levelDataSeed;
-    }
-    public static int GetConstructionSeed()
-    {
-        return m_LevelConstructionSeed;
-    }
-    public static int GetDataSeed()
-    {
-        return m_LevelDataSeed;
     }
     public static Vector2 GetPlayerPosition()
     {

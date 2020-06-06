@@ -21,4 +21,14 @@ public class QuestData
     //escort to backup mission - they are part of the backup
     //escort to investigation mission - theyre probably an archeologist
     //escort to hunting mission - its personal
+
+    public virtual void Initialize()
+    {
+        
+    }
+
+    public virtual string GetQuestDescription()
+    {
+        return "";
+    }
 }

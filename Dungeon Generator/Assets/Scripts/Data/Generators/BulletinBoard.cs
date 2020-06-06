@@ -9,11 +9,12 @@ public class BulletinBoard : InteractableBase
     int[] seeds = new int[5];
     bool m_active = true;
 
-    Tuple<int[], int[]> GenerateNewSeeds()
+    Tuple<int[], int[], int[]> GenerateNewSeeds() //here temporarily
     {
-        return new Tuple<int[], int[]>
+        return new Tuple<int[], int[], int[]>
         (
             new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)}, 
+            new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)},
             new int[5]{UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue),UnityEngine.Random.Range(0, int.MaxValue)}
         );
     }
