@@ -22,6 +22,8 @@ public partial class LevelGenerator : MonoBehaviour
 
     [SerializeField]DebugText debug;
 
+    public bool levelGenerated = false;
+
     public void GenerateLevel(LevelManager level, Vector2 RoomSize)
     {
         System.DateTime before = System.DateTime.Now;
@@ -39,14 +41,30 @@ public partial class LevelGenerator : MonoBehaviour
         AdjustRoomTypes(level.data);
         AdjustEntrances();
 
-        GetComponent<RoomBuilder>().Build(rooms);
-
         System.DateTime after = System.DateTime.Now; 
         System.TimeSpan duration = after.Subtract(before);
         Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
         Debug.Log("Amount of random open entrances: " + m_amountOfRandomOpenEntrances);
         debug.Display(level.data);
     }
+    public void BuildLevel()
+    {
+        if(levelGenerated)
+        {
+            return;
+        }
+        foreach(Room room in fusedRooms)
+        {
+            if(!room.hasFusedWalls)
+            {
+                return;
+            }
+        }
+        Debug.LogWarning("Time to build rooms!");
+        GetComponent<RoomBuilder>().Build(rooms);
+        levelGenerated = true;
+    }
+
 
     Room ChooseLayout(LevelData data)
     {
@@ -292,6 +310,7 @@ public partial class LevelGenerator : MonoBehaviour
 
             List<Room> roomsRight = new List<Room> { };
             List<Room> roomsNorth = new List<Room> { }; //going down, the code must check ALL doors in rooms to the right and if they go down
+            List<Room> diagonalRooms = new List<Room>{};
 
             int amountOfStepsToRight = UnityEngine.Random.Range(3, 4);
             int amountOfStepsToNorth = UnityEngine.Random.Range(3, 4);
@@ -335,61 +354,59 @@ public partial class LevelGenerator : MonoBehaviour
             }
             else
             {
-                List<Room> newRooms = new List<Room> { };
                 for (int j = 0; j < amountOfStepsToNorth; j++)
                 {
                     Room newRoom = FindAdjacentRoom(roomToFuse, new Vector2(0, 1));
                     //If theres both rooms to the north and to the right
-                    if(newRooms.Count > 0)
+                    if(roomsNorth.Count > 0)
                     {
-                        try
-                        {
-                            newRoom = FindAdjacentRoom(newRooms[newRooms.Count-1], new Vector2(0, 1));
-                        }
-                        catch
-                        {
-                            newRooms.Clear();
-                            goto Exit;
-                        }
+                        newRoom = FindAdjacentRoom(roomsNorth[roomsNorth.Count-1], new Vector2(0, 1));
+                    }
+                    if(newRoom == null)
+                    {
+                        goto Exit;
                     }
                     //adds a room that is up to check that it isnt null
                     if(newRoom.GetCameraBoundaries() == RoomSize)
                     {
+                        Debug.Log(roomToFuse + " Adding rows " + (j+1) + " steps to the north"); 
                         List<Room> newRooms2 = new List<Room>{};
                         //when it has checked that this room is valid, it must also check every room to the right of this room
-                        for(int k = 0; k < amountOfStepsToRight - 1; k++)
+                        for(int k = 0; k < amountOfStepsToRight; k++)
                         {
+                            Debug.Log(roomToFuse + " Checking if room " + (k+1) + " in row " + (j+1) + " is valid");
                             Room newRoom2 = FindAdjacentRoom(newRoom, new Vector2(1,0));
                             if(newRooms2.Count > 0)
                             {
                                 newRoom2 = FindAdjacentRoom(newRooms2[newRooms2.Count-1], new Vector2(1,0));
                             }
-                            if(newRoom2 != null || newRoom.GetCameraBoundaries() == RoomSize)
+                            if(newRoom2 == null || fusedRooms.Contains(newRoom2))
                             {
-                                newRooms2.Add(newRoom2);
-                            }
-                            else
-                            {
-                                //if one of the rooms fail, then the whole line fails and must exit
+                                Debug.Log(roomToFuse + "There was no diagonal room here. This row will be destroyed: Row " + (j+1));
                                 newRooms2.Clear();
                                 goto Exit;
                             }
+                            if(newRoom2.GetCameraBoundaries() == RoomSize)
+                            {
+                                newRooms2.Add(newRoom2);
+                            }
                         }
-                        newRooms.Add(newRoom);
-                        newRooms.AddRange(newRooms2);
+                        roomsNorth.Add(newRoom);
+                        diagonalRooms.AddRange(newRooms2);
                     }
                     else
                     {
-                        newRooms.Clear();
                         goto Exit;
                     }
-                    //Add all new rooms here
-                    roomsNorth.AddRange(newRooms);
                 }
             }
             Exit:
 
             Vector2 steps = new Vector2(roomsRight.Count, roomsNorth.Count);
+            if(steps == Vector2.zero)
+            {
+                roomToFuse.hasFusedWalls = true;
+            }
 
             if (roomsRight.Count > 0)
             {
@@ -400,7 +417,7 @@ public partial class LevelGenerator : MonoBehaviour
 
                     roomToFuse.ExpandCameraBoundaries(roomsRight[j].GetCameraBoundaries(), roomsRight[j].transform.position);
                     roomsRight[j].EmptyCameraBoundaries();
-                    roomToFuse.FuseWallPositions(roomsRight[j].GetWallPositions(), roomsRight[j].transform.position, RoomSize);
+                    StartCoroutine(roomToFuse.FuseWallPositions(roomsRight[j].GetWallPositions(), roomsRight[j].transform.position, RoomSize));
                     roomToFuse.FuseDirections(roomsRight[j].GetDirections(), roomsRight[j].transform.position);
                 }
             }
@@ -412,8 +429,19 @@ public partial class LevelGenerator : MonoBehaviour
 
                     roomToFuse.ExpandCameraBoundaries(roomsNorth[j].GetCameraBoundaries(), roomsNorth[j].transform.position);
                     roomsNorth[j].EmptyCameraBoundaries();
-                    roomToFuse.FuseWallPositions(roomsNorth[j].GetWallPositions(), roomsNorth[j].transform.position, RoomSize);
+                    StartCoroutine(roomToFuse.FuseWallPositions(roomsNorth[j].GetWallPositions(), roomsNorth[j].transform.position, RoomSize));
                     roomToFuse.FuseDirections(roomsNorth[j].GetDirections(), roomsNorth[j].transform.position);
+                }
+            }
+            if(diagonalRooms.Count > 0)
+            {
+                Debug.Log("Amount of Diagonal Rooms: " + diagonalRooms.Count);
+                for(int j = 0; j < diagonalRooms.Count; j++)
+                {
+                    Debug.Log("Diagonal Room to fuse with: " + diagonalRooms[j] + " Location: " + diagonalRooms[j].transform.position + " Camera: " + diagonalRooms[j].CameraBoundaries);
+                    diagonalRooms[j].EmptyCameraBoundaries();
+                    StartCoroutine(roomToFuse.FuseWallPositions(diagonalRooms[j].GetWallPositions(), diagonalRooms[j].transform.position, RoomSize));
+                    roomToFuse.FuseDirections(diagonalRooms[j].GetDirections(), diagonalRooms[j].transform.position);
                 }
             }
         }

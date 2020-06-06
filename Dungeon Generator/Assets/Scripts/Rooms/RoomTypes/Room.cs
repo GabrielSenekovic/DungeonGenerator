@@ -44,6 +44,8 @@ public partial class Room: MonoBehaviour
 
     public RoomData roomData = new RoomData();
 
+    public bool hasFusedWalls = false;
+
     void BuildWallArray()
     {
         for(int i = 0; i < CameraBoundaries.x; i++)
@@ -235,7 +237,7 @@ public partial class Room: MonoBehaviour
     {
         CameraBoundaries = Vector2.zero;
     }
-    public void FuseWallPositions(List<List<WallPosition>> positionsToAdd, Vector2 position, Vector2 RoomSize)
+    public IEnumerator FuseWallPositions(List<List<WallPosition>> positionsToAdd, Vector2 position, Vector2 RoomSize)
     {
         // Debug.Log("X Reach of this room: " + (transform.position.x + m_wallPositions.Count) + " X Position of other room: " + position.x);
         if (transform.position.x + m_wallPositions.Count == position.x)
@@ -252,23 +254,30 @@ public partial class Room: MonoBehaviour
         {
             //This room is below the room with the new positions
             //the index of positionsToAdd must begin at the right x
-            Debug.Log("Positions to add [0] size: " + positionsToAdd[0].Count);
+            Debug.Log(this + " Positions to add [0] size: " + positionsToAdd[0].Count);
             int startIndex = (int)position.x - (int)transform.position.x;
-            Debug.Log("Start Index is: " + startIndex);
+            Debug.Log(this + " Start Index is: " + startIndex);
             for (int i = startIndex; i < startIndex + RoomSize.y; i++)
             {
+                Debug.Log(this + " i: " + i);
                 //i represents the x value of this rooms walls
                 for (int j = 0; j < positionsToAdd[0].Count; j++)
                 {
                     //j represents the y value of this rooms walls, which we are adding to
                     //the x index of the wall array were copying from still has to start at 0
                     {
+                        //i-startIndex just ensures that x always starts at 0
                         m_wallPositions[i].Add(positionsToAdd[i - startIndex][j]);
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
-            Debug.Log("Index 0 is now: " + m_wallPositions[0].Count);
         }
+        for(int i = 0; i < m_wallPositions.Count; i++)
+        {
+            Debug.Log(this + " has this many in " + i + ": " + m_wallPositions[i].Count);
+        }
+        hasFusedWalls = true;
     }
     public void FuseDirections(RoomDirections newDirections, Vector2 destination)
     {

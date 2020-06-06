@@ -26,4 +26,8 @@ public class LevelManager : MonoBehaviour
         }
         GetComponent<LevelGenerator>().GenerateLevel(this, RoomSize);
     }
+    private void Update()
+    {
+        GetComponent<LevelGenerator>().BuildLevel();
+    }
 }
