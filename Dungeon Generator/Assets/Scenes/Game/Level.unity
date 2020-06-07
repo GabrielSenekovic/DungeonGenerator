@@ -459,7 +459,6 @@ GameObject:
   - component: {fileID: 2019126351}
   - component: {fileID: 2019126349}
   - component: {fileID: 2019126352}
-  - component: {fileID: 2019126353}
   m_Layer: 0
   m_Name: LevelGenerator
   m_TagString: Untagged
@@ -482,9 +481,8 @@ MonoBehaviour:
   rooms: []
   RoomPrefab: {fileID: 1389067660403157798, guid: 67ecedab0af7b354ea79078f7254ccaa,
     type: 3}
-  CorridorRoomPrefab: {fileID: 7788587105948925984, guid: 8cdca10e1e23dc44db1dc6adb8ff49ac,
-    type: 3}
   debug: {fileID: 2030964055}
+  levelGenerated: 0
 --- !u!4 &2019126348
 Transform:
   m_ObjectHideFlags: 0
@@ -559,19 +557,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firstRoom: {fileID: 0}
   lastRoom: {fileID: 0}
---- !u!114 &2019126353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019126346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ef4e238441c6784881a04478d281722, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  location: 2
 --- !u!1 &2030964053
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,8 @@ public class RoomEntrance : MonoBehaviour
     public bool Open;
     public bool Spawned;
     public Vector2 DirectionModifier;
+
+    public Vector2 Index = new Vector2(9, 10); //this is the default
     SpriteRenderer m_renderer;
     EntranceType m_type = EntranceType.NormalDoor;
 

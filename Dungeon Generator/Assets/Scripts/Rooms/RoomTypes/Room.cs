@@ -28,6 +28,22 @@ public enum RoomLayout
 //Core code
 public partial class Room: MonoBehaviour
 {
+    public class Fusion
+    {
+        public List<bool> hasFusedWalls;
+        public bool IsDone()
+        {
+            foreach(bool value in hasFusedWalls)
+            {
+                if(!value)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    public Fusion fusionBools = new Fusion();
     public List<List<WallPosition>> m_wallPositions = new List<List<WallPosition>> { };
     /*
      * 0 = top wall
@@ -231,13 +247,16 @@ public partial class Room: MonoBehaviour
         {
             CameraBoundaries.y += boundariesToExpandWith.y;
         }
-        Debug.Log("Camera boundaries are now: " + CameraBoundaries);
+        if(DebuggingTools.displayFuseRoomDebugLogs)
+        {
+            Debug.Log("Camera boundaries are now: " + CameraBoundaries);
+        }
     }
     public void EmptyCameraBoundaries()
     {
         CameraBoundaries = Vector2.zero;
     }
-    public IEnumerator FuseWallPositions(List<List<WallPosition>> positionsToAdd, Vector2 position, Vector2 RoomSize)
+    public IEnumerator FuseWallPositions(List<List<WallPosition>> positionsToAdd, Vector2 position, Vector2 RoomSize, int index)
     {
         // Debug.Log("X Reach of this room: " + (transform.position.x + m_wallPositions.Count) + " X Position of other room: " + position.x);
         if (transform.position.x + m_wallPositions.Count == position.x)
@@ -254,107 +273,123 @@ public partial class Room: MonoBehaviour
         {
             //This room is below the room with the new positions
             //the index of positionsToAdd must begin at the right x
-            Debug.Log(this + " Positions to add [0] size: " + positionsToAdd[0].Count);
+            if(DebuggingTools.displayFuseRoomDebugLogs)
+            {
+                Debug.Log(this + " Positions to add [0] size: " + positionsToAdd[0].Count);
+            }
             int startIndex = (int)position.x - (int)transform.position.x;
-            Debug.Log(this + " Start Index is: " + startIndex);
+            if(DebuggingTools.displayFuseRoomDebugLogs)
+            { 
+                Debug.Log(this + " Start Index is: " + startIndex);
+            }
             for (int i = startIndex; i < startIndex + RoomSize.y; i++)
             {
-                Debug.Log(this + " i: " + i);
+                if(DebuggingTools.displayFuseRoomDebugLogs)
+                {
+                    Debug.Log(this + " i: " + i);
+                }
                 //i represents the x value of this rooms walls
                 for (int j = 0; j < positionsToAdd[0].Count; j++)
                 {
                     //j represents the y value of this rooms walls, which we are adding to
                     //the x index of the wall array were copying from still has to start at 0
+                    if(DebuggingTools.displayFuseRoomDebugLogs)
                     {
-                        //i-startIndex just ensures that x always starts at 0
-                        m_wallPositions[i].Add(positionsToAdd[i - startIndex][j]);
-                        yield return new WaitForSeconds(0.01f);
+                        Debug.Log(this + " j: " + i);
+                    }
+                    //i-startIndex just ensures that x always starts at 0
+                    m_wallPositions[i].Add(positionsToAdd[i - startIndex][j]);
+                    yield return new WaitForSeconds(0.01f);
+                    
+                }
+            }
+        }
+        if(DebuggingTools.displayFuseRoomDebugLogs)
+        { 
+            for(int i = 0; i < m_wallPositions.Count; i++)
+            {
+                Debug.Log(this + " has this many in " + i + ": " + m_wallPositions[i].Count);
+            }
+            Debug.Log("<color=magenta> Setting </color>" + this + " to having fused walls");
+        }
+        fusionBools.hasFusedWalls[index] = true;
+    }
+    public void FuseEntrances(RoomDirections newDirections, Vector2 destination, Vector2 RoomSize)
+    {
+        if (destination.y > transform.position.y && destination.x == transform.position.x)
+        {
+            //If the new room is to the north
+            OnFuseEntrances(new Vector4(0,1,2,3), newDirections, (int)RoomSize.y);
+        }
+        if (destination.x > transform.position.x && destination.y == transform.position.y)
+        {
+            //If the new room is to the right
+            OnFuseEntrances(new Vector4(1,0,3,2), newDirections, (int)RoomSize.x);
+        }
+        if (destination.y > transform.position.y && destination.x > transform.position.x)
+        {
+            //if the new room is northeast
+            //delete left and south entrances
+            if(newDirections.directions[2])
+            {
+                Destroy(newDirections.directions[2]);
+            }
+            if(newDirections.directions[3])
+            {
+                Destroy(newDirections.directions[3]);
+            }
+            for(int i = 0; i < directions.directions.Count; i++)
+            {
+                if(directions.directions[i]!=null)
+                {
+                    if(directions.directions[i].Index == new Vector2(9 + (transform.position.x - destination.x), 10 + (transform.position.x - destination.x)))
+                    {
+                        //entrance found that must be replaced
+                        if(directions.directions[i].DirectionModifier == new Vector2(1,0))
+                        {
+                            newDirections.directions[i].Index = directions.directions[i].Index;
+                            Destroy(directions.directions[i].gameObject);
+                            directions.directions[i] = newDirections.directions[1];
+                            //is it a right entrance
+                        }
+                    }
+                    if(directions.directions[i].Index == new Vector2(9 + (transform.position.y - destination.y), 10 + (transform.position.y - destination.y)))
+                    {
+                        //entrance found that must be replaced
+                        if(directions.directions[i].DirectionModifier == new Vector2(0,1))
+                        {
+                            newDirections.directions[i].Index = directions.directions[i].Index;
+                            Destroy(directions.directions[i].gameObject);
+                            directions.directions[i] = newDirections.directions[0];
+                            //is it a north entrance
+                        }
                     }
                 }
             }
         }
-        for(int i = 0; i < m_wallPositions.Count; i++)
-        {
-            Debug.Log(this + " has this many in " + i + ": " + m_wallPositions[i].Count);
-        }
-        hasFusedWalls = true;
     }
-    public void FuseDirections(RoomDirections newDirections, Vector2 destination)
+    void OnFuseEntrances(Vector4 indexes, RoomDirections newDirections, int offset)
     {
-        if (destination.y > transform.position.y && destination.x == transform.position.x)
+        if (directions.directions[(int)indexes.x])
         {
-            if (directions.directions[0])
-            {
-                Destroy(directions.directions[0].gameObject);
-                directions.directions[0] = newDirections.directions[0];
-            }
-            if (newDirections.directions[1])
-            {
-                directions.directions.Add(newDirections.directions[1]);
-                newDirections.directions[1].transform.parent = transform;
-            }
-            if (newDirections.directions[2])
-            {
-                directions.directions.Add(newDirections.directions[2]);
-                newDirections.directions[2].transform.parent = transform;
-            }
-            if (newDirections.directions[3])
-            {
-                Destroy(newDirections.directions[3].gameObject);
-            }
+            Destroy(directions.directions[(int)indexes.x].gameObject);
+            directions.directions[(int)indexes.x] = newDirections.directions[1];
         }
-        if (destination.x > transform.position.x && destination.y == transform.position.y)
+        if (newDirections.directions[(int)indexes.y])
         {
-            if (directions.directions[1])
-            {
-                Destroy(directions.directions[1].gameObject);
-                directions.directions[1] = newDirections.directions[1];
-            }
-            if (newDirections.directions[0])
-            {
-                directions.directions.Add(newDirections.directions[0]);
-                newDirections.directions[0].transform.parent = transform;
-            }
-            directions.directions.Add(newDirections.directions[3]);
-            if (newDirections.directions[3])
-            {
-                newDirections.directions[3].transform.parent = transform;
-            }
-
-            if (newDirections.directions[2])
-            {
-                Destroy(newDirections.directions[2].gameObject);
-            }
+            newDirections.directions[(int)indexes.y].Index = new Vector2(newDirections.directions[(int)indexes.y].Index.x + offset, newDirections.directions[(int)indexes.y].Index.y + offset);
+            directions.directions.Add(newDirections.directions[(int)indexes.y]);
+            newDirections.directions[(int)indexes.y].transform.parent = transform;
         }
-        if (destination.y > transform.position.y && destination.x > transform.position.x)
+        if (newDirections.directions[(int)indexes.z])
         {
-            if (directions.directions[4])
-            {
-                Destroy(directions.directions[4].gameObject);
-            }
-            if (directions.directions[6])
-            {
-                Destroy(directions.directions[6].gameObject);
-            }
-            if (newDirections.directions[0])
-            {
-                directions.directions[4] = newDirections.directions[0];
-                newDirections.directions[0].transform.parent = transform;
-            }
-            if (newDirections.directions[1])
-            {
-                directions.directions[6] = newDirections.directions[1];
-                newDirections.directions[1].transform.parent = transform;
-            }
-
-            if (newDirections.directions[2])
-            {
-                Destroy(newDirections.directions[2].gameObject);
-            }
-            if (newDirections.directions[3])
-            {
-                Destroy(newDirections.directions[3].gameObject);
-            }
+            newDirections.directions[(int)indexes.z].Index = new Vector2(newDirections.directions[(int)indexes.z].Index.x + offset, newDirections.directions[(int)indexes.z].Index.y + offset);
+            directions.directions.Add(newDirections.directions[(int)indexes.z]);
+            newDirections.directions[(int)indexes.z].transform.parent = transform;
+        }
+        if (newDirections.directions[(int)indexes.w])
+        {
+            Destroy(newDirections.directions[(int)indexes.w].gameObject);
         }
     }
 }
@@ -392,32 +427,38 @@ public partial class Room: MonoBehaviour
     int x_modifier, int y_modifier, int x_offset, int y_offset, Transform parent, WallBlueprints blueprints)
     {
         //The x and y offsets determine how far into the room the walls are
-        RoomEntrance temp = null;
+        List<RoomEntrance> temp = new List<RoomEntrance>(){};
         foreach (RoomEntrance entrance in directions.directions)
         {
             if (entrance.DirectionModifier == entranceDirection)
             {
-                temp = entrance;
+                temp.Add(entrance);
             }
         }
-        if(temp == null){return;}
         for (int i = startValue; i < limit; i++)
         {
-            if (i == 9 || i == 10) 
+            for(int j = 0; j < temp.Count; j++)
             {
-                if (temp.Open == true)
+                if (i == temp[j].Index.x || i == temp[j].Index.y) 
                 {
-                    if (temp.Spawned == true)
+                    if (temp[j].Open == true)
                     {
-                        continue;
+                        if (temp[j].Spawned == true)
+                        {
+                            goto End;
+                        }
                     }
                 }
             }
             GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i * x_modifier + x_offset,transform.position.y + i * y_modifier + y_offset), Quaternion.identity, parent);
             newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
-            Debug.Log("i: " + i + " X_Offset: " + x_offset + " Y_Offset: " + y_offset);
-            Debug.Log("X: " + (i*x_modifier+x_offset) + " Y: " + (i*y_modifier+y_offset) + " Room: " + this + " Camera: " + CameraBoundaries);
+            if(DebuggingTools.displayRoomConstructionDebugLogs)
+            {
+                Debug.Log("i: " + i + " X_Offset: " + x_offset + " Y_Offset: " + y_offset);
+                Debug.Log("X: " + (i*x_modifier+x_offset) + " Y: " + (i*y_modifier+y_offset) + " Room: " + this + " Camera: " + CameraBoundaries);
+            }
             m_wallPositions[i*x_modifier+x_offset][i*y_modifier+y_offset].PlaceDown();
+            End:;
         }
     }
     public virtual void PlaceDownInnerWalls(WallBlueprints blueprints, Transform parent)
@@ -668,13 +709,15 @@ public partial class Room: MonoBehaviour
     }
     public void InstantiateFloor(GameObject floorTile)
     {
+        GameObject floorParent = new GameObject("Floor");
+        floorParent.transform.SetParent(transform);
         for (int i = 0; i < CameraBoundaries.x; i++)
         {
             for (int j = 0; j < CameraBoundaries.y; j++)
             {
                 if (!m_wallPositions[i][j].GetIsOccupied())
                 {
-                    GameObject newWall = Instantiate(floorTile, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                    GameObject newWall = Instantiate(floorTile, m_wallPositions[i][j].transform.position, Quaternion.identity, floorParent.transform);
                     newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor() * 0.6f;
                 }
             }

@@ -105,7 +105,7 @@ public class QuestSelect : MonoBehaviour
         detailText.text += quests[index_in].GetQuestDescription();
         detailText.text += "\nQuestgiver: \nObjective: " + "\nDifficulty level: \nReward: \n";
         detailText.text += "\nInformation about the destination: \n";
-        detailText.text += "\nThis place is a: " + levels[index_in].m_biome + " " + levels[index_in].m_location + ". \n";
+        detailText.text += "\nThis place is a: " + levels[index_in].m_biome + ". \n";
         if(levels[index_in].m_mood[0] != levels[index_in].m_mood[1])
         {
             detailText.text += GetBiomeDescription(levels[index_in].m_mood[0], false) + " ";

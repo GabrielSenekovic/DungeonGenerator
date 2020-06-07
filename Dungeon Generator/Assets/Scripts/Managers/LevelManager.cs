@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    public LevelData data;
-    Vector2 RoomSize = new Vector2(20,20);
+    public Vector2 RoomSize = new Vector2(20,20);
 
+    public LevelData data;
     public Room firstRoom;
     public Room lastRoom;
 
@@ -19,15 +19,42 @@ public class LevelManager : MonoBehaviour
     }
     private void Start() 
     {
-        data = GetComponent<LevelDataGenerator>().Initialize(Random.Range(0, int.MaxValue));
-        if(GetComponent<DebuggingTools>())
+        data = GetComponent<LevelDataGenerator>().Initialize(GameData.m_LevelDataSeed);
+        data.dungeon = DebuggingTools.isDungeon;
+        if(DebuggingTools.checkForBrokenSeeds)
         {
-            data.m_location = GetComponent<DebuggingTools>().location;
+            try
+            {
+                GetComponent<LevelGenerator>().GenerateLevel(this, RoomSize);
+            }
+            catch
+            {
+                Debug.LogError("<color=red>Error: Found broken seed when generating!:</color> " + GameData.m_LevelConstructionSeed + " and: " + GameData.m_LevelDataSeed);
+                Debug.Break();
+            }
         }
-        GetComponent<LevelGenerator>().GenerateLevel(this, RoomSize);
+        else
+        {
+            GetComponent<LevelGenerator>().GenerateLevel(this, RoomSize);
+        }
     }
     private void Update()
     {
-        GetComponent<LevelGenerator>().BuildLevel();
+        if(DebuggingTools.checkForBrokenSeeds)
+        {
+            try
+            {
+                GetComponent<LevelGenerator>().BuildLevel();
+            }
+            catch
+            {
+                Debug.LogError("<color=red>Error: Found broken seed when building!:</color> " + GameData.m_LevelConstructionSeed + " and: " + GameData.m_LevelDataSeed);
+                Debug.Break();
+            }
+        }
+        else
+        {
+            GetComponent<LevelGenerator>().BuildLevel();
+        }
     }
 }

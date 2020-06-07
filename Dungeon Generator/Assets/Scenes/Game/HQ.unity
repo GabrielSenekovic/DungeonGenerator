@@ -625,6 +625,7 @@ GameObject:
   m_Component:
   - component: {fileID: 693930194}
   - component: {fileID: 693930193}
+  - component: {fileID: 693930195}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -659,6 +660,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &693930195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693930192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ef4e238441c6784881a04478d281722, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkForBrokenSeeds_in: 1
+  isDungeon_in: 0
+  displayFuseRoomDebugLogs_in: 0
+  displayRoomConstructionDebugLogs_in: 0
 --- !u!1 &731359378
 GameObject:
   m_ObjectHideFlags: 0
