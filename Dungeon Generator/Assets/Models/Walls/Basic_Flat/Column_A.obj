@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib Wall_Column_A.mtl
+mtllib Column_A.mtl
 usemtl palette
 
 # normals

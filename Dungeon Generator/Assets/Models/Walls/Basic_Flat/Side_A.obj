@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib Wall_Side_A.mtl
+mtllib Side_A.mtl
 usemtl palette
 
 # normals
