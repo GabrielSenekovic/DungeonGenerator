@@ -12,9 +12,11 @@ public class LevelManager : MonoBehaviour
 
     private void Awake() 
     {
+        GameData.m_LevelConstructionSeed = Random.Range(0, int.MaxValue);
+        GameData.m_LevelDataSeed = Random.Range(0, int.MaxValue);
         if(GameData.Instance != null)
         {
-            GameData.SetPlayerPosition(new Vector2(GameData.GetPlayerPosition().x - RoomSize.x/2, GameData.GetPlayerPosition().y - RoomSize.y/2));
+            GameData.SetPlayerPosition(new Vector2(GameData.GetPlayerPosition().x + RoomSize.x/2, GameData.GetPlayerPosition().y + RoomSize.y/2));
         }
     }
     private void Start() 
@@ -44,7 +46,7 @@ public class LevelManager : MonoBehaviour
         {
             try
             {
-                GetComponent<LevelGenerator>().BuildLevel();
+                GetComponent<LevelGenerator>().BuildLevel(data);
             }
             catch
             {
@@ -54,7 +56,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            GetComponent<LevelGenerator>().BuildLevel();
+            GetComponent<LevelGenerator>().BuildLevel(data);
         }
     }
 }

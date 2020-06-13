@@ -5,12 +5,8 @@ using UnityEngine;
 public class WallBlueprints : MonoBehaviour
 {
     //This script will hold all walls of one variant
-    [SerializeField] List<Wall> walls;
+    public List<GameObject> walls;
 
     public GameObject wallBlock;
 
-    public Wall GetWall(WallVariant variant)
-    {
-        return walls[(int)variant - 1];
-    }
 }

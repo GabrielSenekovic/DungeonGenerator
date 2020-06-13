@@ -117,4 +117,15 @@ public class EntityMovementModel : MovementModel
         yield return new WaitForSeconds(reloadTime);
         canAttack = true;
     }
+    public void FlipWhenWalkingSideways(Vector2 movementDirection)
+    {
+        if(movementDirection == new Vector2(-1, 0))
+        {
+                transform.localScale = new Vector2(1, 1);
+        }
+        else if(movementDirection == new Vector2(1, 0))
+        {
+                transform.localScale = new Vector2(-1, 1);
+        }
+    }
 }

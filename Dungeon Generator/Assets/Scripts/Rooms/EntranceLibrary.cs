@@ -4,23 +4,35 @@ using System.Collections.Generic;
 
 public class EntranceLibrary : MonoBehaviour
 {
-    [SerializeField]List<Sprite> m_sprites;
+    [SerializeField]List<Sprite> entranceSprites;
+
+    public List<Sprite> floorSprites;
 
     public Sprite GetSprite(RoomEntrance.EntranceType type)
     {
         switch (type)
         {
             case RoomEntrance.EntranceType.AmbushDoor:
-                return m_sprites[0];
+                return entranceSprites[0];
             case RoomEntrance.EntranceType.BombableWall:
-                return m_sprites[1];
+                return entranceSprites[1];
             case RoomEntrance.EntranceType.LockedDoor:
-                return m_sprites[2];
+                return entranceSprites[2];
             case RoomEntrance.EntranceType.MultiLockedDoor:
-                return m_sprites[3];
+                return entranceSprites[3];
             case RoomEntrance.EntranceType.PuzzleDoor:
-                return m_sprites[4];
+                return entranceSprites[4];
             default: return null;
+        }
+    }
+    public Sprite GetFloorSprite(Biome biome)
+    {
+        switch(biome)
+        {
+            case Biome.Desert:
+                return floorSprites[1];
+            default:
+                return floorSprites[0];
         }
     }
 }

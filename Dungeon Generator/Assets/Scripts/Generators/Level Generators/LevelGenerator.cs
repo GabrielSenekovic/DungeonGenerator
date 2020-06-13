@@ -15,12 +15,12 @@ public partial class LevelGenerator : MonoBehaviour
 
     int numberOfRooms = 1;
 
-    bool m_BossSpawned = false;
-    Room m_BossRoom;
+    bool bossSpawned = false;
+    Room bossRoom;
 
-    int m_furthestDistanceFromSpawn = 0;
+    int furthestDistanceFromSpawn = 0;
 
-    int m_amountOfRandomOpenEntrances = 0;
+    int amountOfRandomOpenEntrances = 0;
 
     [SerializeField]DebugText debug;
 
@@ -48,10 +48,10 @@ public partial class LevelGenerator : MonoBehaviour
         System.DateTime after = System.DateTime.Now; 
         System.TimeSpan duration = after.Subtract(before);
         Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
-        Debug.Log("Amount of random open entrances: " + m_amountOfRandomOpenEntrances);
+        Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
         debug.Display(level.data);
     }
-    public void BuildLevel()
+    public void BuildLevel(LevelData data)
     {
         if(levelGenerated)
         {
@@ -66,7 +66,7 @@ public partial class LevelGenerator : MonoBehaviour
         }
         Debug.LogWarning("<color=blue>Time to build rooms!</color>");
         levelGenerated = true;
-        GetComponent<RoomBuilder>().Build(rooms);
+        GetComponent<RoomBuilder>().Build(rooms, data);
     }
 
 
@@ -95,9 +95,9 @@ public partial class LevelGenerator : MonoBehaviour
             
             rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize);
             rooms[i].roomData.stepsAwayFromMainRoom = originRoom.Item1.roomData.stepsAwayFromMainRoom + 1;
-            if(rooms[i].roomData.stepsAwayFromMainRoom > m_furthestDistanceFromSpawn)
+            if(rooms[i].roomData.stepsAwayFromMainRoom > furthestDistanceFromSpawn)
             {
-                m_furthestDistanceFromSpawn = rooms[i].roomData.stepsAwayFromMainRoom;
+                furthestDistanceFromSpawn = rooms[i].roomData.stepsAwayFromMainRoom;
             }
             SetEntrances(originRoom.Item1.transform.position, rooms[i].transform.position, originRoom.Item1.GetDirections().directions, rooms[i].GetDirections().directions);
             LinkRoom(rooms[i], RoomSize);
@@ -264,7 +264,7 @@ public partial class LevelGenerator : MonoBehaviour
         {
             for (int i = UnityEngine.Random.Range(0, possibleEntrancesToOpen.Count - 1); i < UnityEngine.Random.Range(i+1, openDoorProbability); i++)
             {
-                m_amountOfRandomOpenEntrances++;
+                amountOfRandomOpenEntrances++;
                 possibleEntrancesToOpen[UnityEngine.Random.Range(0, possibleEntrancesToOpen.Count)].Open = true;
             }
         }
@@ -477,13 +477,13 @@ public partial class LevelGenerator : MonoBehaviour
             room.ChooseRoomType(data);
             if (room.GetRoomPositionType() == RoomPosition.DeadEnd)
             {
-                if(room.roomData.stepsAwayFromMainRoom == m_furthestDistanceFromSpawn && !m_BossSpawned)
+                if(room.roomData.stepsAwayFromMainRoom == furthestDistanceFromSpawn && !bossSpawned)
                 {
                     //Set the room furthest from spawn to be the bossroom
                     room.SetRoomType(RoomType.BossRoom);
-                    m_BossRoom = room;
-                    m_BossSpawned = true;
-                    Debug.Log("Boss spawned in: " + m_BossRoom);
+                    bossRoom = room;
+                    bossSpawned = true;
+                    Debug.Log("Boss spawned in: " + bossRoom);
                 }
                 if(room.GetRoomType() == RoomType.TreasureRoom)
                 {
@@ -523,12 +523,12 @@ public partial class LevelGenerator : MonoBehaviour
             }
             else
             {
-                if (room.roomData.stepsAwayFromMainRoom == m_furthestDistanceFromSpawn && !m_BossSpawned)
+                if (room.roomData.stepsAwayFromMainRoom == furthestDistanceFromSpawn && !bossSpawned)
                 {
                     room.SetRoomType(RoomType.BossRoom);
-                    m_BossRoom = room;
-                    m_BossSpawned = true;
-                    Debug.Log("Boss spawned in: " + m_BossRoom);
+                    bossRoom = room;
+                    bossSpawned = true;
+                    Debug.Log("Boss spawned in: " + bossRoom);
                 }
             }
         }

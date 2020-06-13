@@ -405,7 +405,6 @@ public partial class Room: MonoBehaviour
         {
             return;
         }
-
         OnPlaceDownWall(new Vector2(0, -1), (int)CameraBoundaries.x, 0, 1, 0, 0, 0, wallParent.transform, blueprints);
         OnPlaceDownWall(new Vector2(-1, 0), (int)CameraBoundaries.y, 1, 0, 1, 0, 0, wallParent.transform, blueprints);
         OnPlaceDownWall(new Vector2(1, 0), (int)CameraBoundaries.y, 1, 0, 1, (int)CameraBoundaries.x - 1 ,0, wallParent.transform, blueprints);
@@ -421,7 +420,8 @@ public partial class Room: MonoBehaviour
                 }
             }
         }
-        //DetermineWallVariant();
+        DetermineWallVariant();
+        InstantiateWalls(blueprints);
     }
     public void OnPlaceDownWall(Vector2 entranceDirection, int limit, int startValue, 
     int x_modifier, int y_modifier, int x_offset, int y_offset, Transform parent, WallBlueprints blueprints)
@@ -450,8 +450,8 @@ public partial class Room: MonoBehaviour
                     }
                 }
             }
-            GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i * x_modifier + x_offset,transform.position.y + i * y_modifier + y_offset), Quaternion.identity, parent);
-            newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
+            //GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i * x_modifier + x_offset,transform.position.y + i * y_modifier + y_offset), Quaternion.identity, parent);
+            //newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
             if(DebuggingTools.displayRoomConstructionDebugLogs)
             {
                 Debug.Log("i: " + i + " X_Offset: " + x_offset + " Y_Offset: " + y_offset);
@@ -518,6 +518,7 @@ public partial class Room: MonoBehaviour
             {
                 GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i,transform.position.y + j), Quaternion.identity, parent);
                 newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
+               // m_wallPositions[i][j].PlaceDown();
             }
         }
     }
@@ -641,43 +642,64 @@ public partial class Room: MonoBehaviour
                 switch (temp)
                 {
                     case "AAAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.TopCorner);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Cross);
                         break; //inner wall
                     case "AAAB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Side);
+                        m_wallPositions[i][j].SetVariant(WallVariant.T);
                         break;
                     case "AABA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Bottom);
+                        m_wallPositions[i][j].SetVariant(WallVariant.T);
                         break;
                     case "AABB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.BottomLeft);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
                         break; 
                     case "ABAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Side);
+                        m_wallPositions[i][j].SetVariant(WallVariant.T);
                         break;
                     case "ABAB":
                         m_wallPositions[i][j].SetVariant(WallVariant.Side);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-180, -90, 90);
+                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x,  m_wallPositions[i][j].transform.position.y - 1);
                         break;
                     case "ABBA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.BottomRight);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(0, -90, 90);
+                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x - 1,  m_wallPositions[i][j].transform.position.y);
                         break; 
-                    case "ABBB": break;
+                    case "ABBB": 
+                        m_wallPositions[i][j].SetVariant(WallVariant.End);
+                        break;
                     case "BAAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.TopCorner); //this is the top room
+                        m_wallPositions[i][j].SetVariant(WallVariant.T); //this is the top room
                         break;
                     case "BAAB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.TopCorner);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-180, -90, 90);
+                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x,  m_wallPositions[i][j].transform.position.y - 1);
                         break;
                     case "BABA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Bottom);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Side);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
                         break;
-                    case "BABB": break;
+                    case "BABB": 
+                        m_wallPositions[i][j].SetVariant(WallVariant.End);
+                        break;
                     case "BBAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.TopCorner);
+                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(90, 90, -90);
+                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x - 1,  m_wallPositions[i][j].transform.position.y - 1);
                         break;
-                    case "BBAB": break;
-                    case "BBBA": break;
-                    case "BBBB": break; //pillar
+                    case "BBAB": 
+                        m_wallPositions[i][j].SetVariant(WallVariant.End);
+                        break;
+                    case "BBBA": 
+                        m_wallPositions[i][j].SetVariant(WallVariant.End);
+                        break;
+                    case "BBBB": 
+                        m_wallPositions[i][j].SetVariant(WallVariant.Column);
+                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
+                        break;
                 }
             }
         }
@@ -692,16 +714,23 @@ public partial class Room: MonoBehaviour
             {
                 if (m_wallPositions[i][j].GetIsOccupied())
                 {
-                    GameObject newWall = Instantiate(blueprints.wallBlock, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
-                    newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
-                    if (m_wallPositions[i][j].GetVariant() != WallVariant.None)
+                    if (m_wallPositions[i][j].GetVariant() == WallVariant.None)
                     {
-                        //Wall newWall = Instantiate(blueprints.GetWall(m_wallPositions[i][j].GetVariant()), new Vector2(transform.position.x, transform.position.y) + m_wallPositions[i][j].GetPosition(), Quaternion.identity, transform);
-
-                        //for(int k = 0; k < newWall.GetAmountOfRenderers(); k++)
-                        //{
-                        //   newWall.ChangeColor(GetWallColor(), k);
-                        //}
+                        GameObject newWall = Instantiate(blueprints.wallBlock, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                        newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            GameObject newWall = Instantiate(blueprints.walls[(int)m_wallPositions[i][j].GetVariant() - 1], new Vector3(m_wallPositions[i][j].transform.position.x + 0.5f, m_wallPositions[i][j].transform.position.y + 0.5f, m_wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, transform);
+                            newWall.transform.rotation = m_wallPositions[i][j].transform.rotation;
+                        }
+                        catch
+                        {
+                            GameObject newWall = Instantiate(blueprints.wallBlock, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                            newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
+                        }
                     }
                 }
             }
@@ -718,7 +747,11 @@ public partial class Room: MonoBehaviour
                 if (!m_wallPositions[i][j].GetIsOccupied())
                 {
                     GameObject newWall = Instantiate(floorTile, m_wallPositions[i][j].transform.position, Quaternion.identity, floorParent.transform);
-                    newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor() * 0.6f;
+                    
+                    if(DebuggingTools.spawnOnlyBasicRooms)
+                    {
+                        newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor() * 0.6f;
+                    }
                 }
             }
         }

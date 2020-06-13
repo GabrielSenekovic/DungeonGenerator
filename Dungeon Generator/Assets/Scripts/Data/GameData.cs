@@ -7,8 +7,8 @@ public class GameData : MonoBehaviour
     public static GameData Instance;
     static PlayerController Player;
 
-    public static int m_LevelConstructionSeed = 134523; //Used by the room generator to generate the room
-    public static int m_LevelDataSeed = 9562;
+    public static int m_LevelConstructionSeed; //Used by the room generator to generate the room
+    public static int m_LevelDataSeed;
     //134523 heart
     private void Awake()
     {

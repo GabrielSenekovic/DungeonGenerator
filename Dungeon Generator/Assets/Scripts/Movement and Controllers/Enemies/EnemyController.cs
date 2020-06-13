@@ -10,4 +10,7 @@ public class EnemyController : MonoBehaviour
         ESCAPING = 1,
         IDLE = 2
     }
+    EnemyMovementState movementState = EnemyMovementState.IDLE;
+
+    protected Vector2 movementDirection = Vector2.zero;
 }

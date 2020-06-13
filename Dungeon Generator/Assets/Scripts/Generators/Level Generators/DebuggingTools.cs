@@ -6,6 +6,10 @@ public class DebuggingTools : MonoBehaviour
 {
     public bool checkForBrokenSeeds_in;
     public static bool checkForBrokenSeeds;
+
+    public bool spawnOnlyBasicRooms_in;
+    public static bool spawnOnlyBasicRooms;
+
     public bool isDungeon_in;
     public static bool isDungeon;
 
@@ -21,5 +25,6 @@ public class DebuggingTools : MonoBehaviour
         isDungeon = isDungeon_in;
         displayFuseRoomDebugLogs = displayFuseRoomDebugLogs_in;
         displayRoomConstructionDebugLogs = displayRoomConstructionDebugLogs_in;
+        spawnOnlyBasicRooms = spawnOnlyBasicRooms_in;
     }
 }

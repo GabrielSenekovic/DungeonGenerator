@@ -12,6 +12,9 @@ GameObject:
   - component: {fileID: 7718803507432236311}
   - component: {fileID: 7275153806096256017}
   - component: {fileID: 5207322000986146122}
+  - component: {fileID: 1620609150}
+  - component: {fileID: 1620609151}
+  - component: {fileID: 1620609152}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -60,9 +63,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 596f67d77d1e0844cb32024df3d93808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
   resilience: 0
   facingDirection: {x: 0, y: 0}
+  speed: 5
   canAttack: 0
 --- !u!114 &5207322000986146122
 MonoBehaviour:
@@ -76,6 +79,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd48421fed22ba842b9e95954719cb6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &1620609150
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761299564158947221}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &1620609151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761299564158947221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ae69f3a1754e2b4aa7ef2d77dd59342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_layer: -10
+  m_isEntity: 1
+--- !u!114 &1620609152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761299564158947221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a6fac2e09b14840b710a94d59d11f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_collider: {fileID: 2363936980690547614}
 --- !u!1 &3759285823618072936
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +195,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: e9356b3f463d9fd4dab03594c469958a, type: 3}
   m_Color: {r: 0.5446786, g: 0.764151, b: 0.40730688, a: 1}
   m_FlipX: 0

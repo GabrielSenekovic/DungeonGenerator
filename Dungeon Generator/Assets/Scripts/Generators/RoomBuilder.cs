@@ -7,8 +7,12 @@ public class RoomBuilder : MonoBehaviour
     [SerializeField] WallBlueprints wallBlueprints; //This is a placeholder for what will be later
     [SerializeField] GameObject floorPrefab;
 
-    public void Build(List<Room> rooms)
+    public void Build(List<Room> rooms, LevelData data)
     {
+        if(!DebuggingTools.spawnOnlyBasicRooms)
+        {
+            floorPrefab.GetComponentInChildren<SpriteRenderer>().sprite = GetComponent<EntranceLibrary>().GetFloorSprite(data.m_biome);
+        }
         BuildRooms(rooms);
         CloseOpenDoors(rooms);
     }

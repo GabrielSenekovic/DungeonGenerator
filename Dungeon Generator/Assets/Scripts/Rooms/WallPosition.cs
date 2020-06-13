@@ -4,11 +4,12 @@ using System.Collections;
 public enum WallVariant
 {
     None = 0,
-    Bottom = 1,
-    BottomLeft = 2,
-    BottomRight = 3,
-    Side = 4,
-    TopCorner = 5
+    Side = 1,
+    Corner = 2,
+    Column = 3,
+    T = 4,
+    Cross = 5,
+    End = 6
 }
 
 public class WallPosition : MonoBehaviour
