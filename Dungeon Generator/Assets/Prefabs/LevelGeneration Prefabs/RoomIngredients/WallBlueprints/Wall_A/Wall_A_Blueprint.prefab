@@ -47,5 +47,8 @@ MonoBehaviour:
   - {fileID: -927199367670048503, guid: 180ad60141cbe674d8c75f00d413d975, type: 3}
   - {fileID: -927199367670048503, guid: 2f0195123b6b11b4f9ecd6a377f3bd8e, type: 3}
   - {fileID: -927199367670048503, guid: 3125cd4e2f178e1469eb37c2c4033ce0, type: 3}
+  - {fileID: -927199367670048503, guid: c79bc4068758cbc4d86e9eb47de182d2, type: 3}
+  - {fileID: -927199367670048503, guid: 67215c26ecc08dc45b430649448637c6, type: 3}
+  - {fileID: -927199367670048503, guid: 7ab584dda91903340a52525afd14c81f, type: 3}
   wallBlock: {fileID: 117464241916702282, guid: 8de51835f2bf17f4abc40abc0305dadc,
     type: 3}

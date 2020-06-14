@@ -23,11 +23,13 @@ public class CameraMovement : MonoBehaviour
         if(Input.GetKey(KeyCode.LeftArrow))
         {
             transform.RotateAround(new Vector3(party.GetPartyLeader().transform.position.x, party.GetPartyLeader().transform.position.y, 0), Vector3.forward, 1);
+            party.GetPartyLeader().GetComponentInChildren<SpriteRenderer>().transform.RotateAround(party.GetPartyLeader().transform.position, Vector3.forward, 1);
             rotationSideways++;
         }
         else if(Input.GetKey(KeyCode.RightArrow))
         {
             transform.RotateAround(new Vector3(party.GetPartyLeader().transform.position.x, party.GetPartyLeader().transform.position.y, 0), Vector3.forward, -1);
+            party.GetPartyLeader().GetComponentInChildren<SpriteRenderer>().transform.RotateAround(party.GetPartyLeader().transform.position, Vector3.forward, -1);
             rotationSideways--;
         }
         if(Input.GetKeyDown(KeyCode.M))

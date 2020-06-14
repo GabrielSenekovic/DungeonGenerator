@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 public enum RoomType
 {
@@ -44,7 +45,7 @@ public partial class Room: MonoBehaviour
         }
     }
     public Fusion fusionBools = new Fusion();
-    public List<List<WallPosition>> m_wallPositions = new List<List<WallPosition>> { };
+    public List<List<WallPosition>> wallPositions = new List<List<WallPosition>> { };
     /*
      * 0 = top wall
      * 1 = left wall
@@ -66,11 +67,11 @@ public partial class Room: MonoBehaviour
     {
         for(int i = 0; i < CameraBoundaries.x; i++)
         {
-            m_wallPositions.Add(new List<WallPosition> { });
+            wallPositions.Add(new List<WallPosition> { });
             for(int j = 0; j < CameraBoundaries.y; j++)
             {
                 WallPosition newWall = Instantiate(wallPosition, new Vector2(transform.position.x + i, transform.position.y + j), Quaternion.identity, transform);
-                m_wallPositions[i].Add(newWall);
+                wallPositions[i].Add(newWall);
                 //m_wallPositions[i][j].SetPosition(new Vector2(transform.position.x + i, transform.position.y + j));
             }
         }
@@ -110,7 +111,7 @@ public partial class Room: MonoBehaviour
 
     public List<List<WallPosition>> GetWallPositions()
     {
-        return m_wallPositions;
+        return wallPositions;
     }
 
     public RoomPosition GetRoomPositionType()
@@ -190,7 +191,7 @@ public partial class Room: MonoBehaviour
                 probabilityList.Add(RoomType.AmbushRoom);
             }
         }
-        roomData.m_type = probabilityList[Random.Range(0, probabilityList.Count)];
+        roomData.m_type = probabilityList[UnityEngine.Random.Range(0, probabilityList.Count)];
     }
     public bool CheckIfRoomIsIndoors(LevelData data)
     {
@@ -259,13 +260,13 @@ public partial class Room: MonoBehaviour
     public IEnumerator FuseWallPositions(List<List<WallPosition>> positionsToAdd, Vector2 position, Vector2 RoomSize, int index)
     {
         // Debug.Log("X Reach of this room: " + (transform.position.x + m_wallPositions.Count) + " X Position of other room: " + position.x);
-        if (transform.position.x + m_wallPositions.Count == position.x)
+        if (transform.position.x + wallPositions.Count == position.x)
         {
             //this room is to the left of the room with the new positions
 
             for (int i = 0; i < positionsToAdd.Count; i++)
             {
-                m_wallPositions.Add(positionsToAdd[i]);
+                wallPositions.Add(positionsToAdd[i]);
             }
         }
 
@@ -298,7 +299,7 @@ public partial class Room: MonoBehaviour
                         Debug.Log(this + " j: " + i);
                     }
                     //i-startIndex just ensures that x always starts at 0
-                    m_wallPositions[i].Add(positionsToAdd[i - startIndex][j]);
+                    wallPositions[i].Add(positionsToAdd[i - startIndex][j]);
                     yield return new WaitForSeconds(0.01f);
                     
                 }
@@ -306,9 +307,9 @@ public partial class Room: MonoBehaviour
         }
         if(DebuggingTools.displayFuseRoomDebugLogs)
         { 
-            for(int i = 0; i < m_wallPositions.Count; i++)
+            for(int i = 0; i < wallPositions.Count; i++)
             {
-                Debug.Log(this + " has this many in " + i + ": " + m_wallPositions[i].Count);
+                Debug.Log(this + " has this many in " + i + ": " + wallPositions[i].Count);
             }
             Debug.Log("<color=magenta> Setting </color>" + this + " to having fused walls");
         }
@@ -420,6 +421,7 @@ public partial class Room: MonoBehaviour
                 }
             }
         }
+        WeedOutUnseeableWalls();
         DetermineWallVariant();
         InstantiateWalls(blueprints);
     }
@@ -457,7 +459,7 @@ public partial class Room: MonoBehaviour
                 Debug.Log("i: " + i + " X_Offset: " + x_offset + " Y_Offset: " + y_offset);
                 Debug.Log("X: " + (i*x_modifier+x_offset) + " Y: " + (i*y_modifier+y_offset) + " Room: " + this + " Camera: " + CameraBoundaries);
             }
-            m_wallPositions[i*x_modifier+x_offset][i*y_modifier+y_offset].PlaceDown();
+            wallPositions[i*x_modifier+x_offset][i*y_modifier+y_offset].PlaceDown();
             End:;
         }
     }
@@ -466,7 +468,7 @@ public partial class Room: MonoBehaviour
         //i should count up to the width of the room, j should count to the height
         //Should check to make sure that theres at least a tile to the x or the y, unless its spawning in the middle of the room
         Vector2 roomCenter = new Vector2(CameraBoundaries.x / 2, CameraBoundaries.y / 2);
-        Vector2 wallThickness = new Vector2(Random.Range(CameraBoundaries.x/2 - 2, CameraBoundaries.x/2 + 1), Random.Range(CameraBoundaries.y/2 - 2, CameraBoundaries.y/2 + 1));
+        Vector2 wallThickness = new Vector2(UnityEngine.Random.Range(CameraBoundaries.x/2 - 2, CameraBoundaries.x/2 + 1), UnityEngine.Random.Range(CameraBoundaries.y/2 - 2, CameraBoundaries.y/2 + 1));
         for (int i = 1; i < CameraBoundaries.x - 1; i++)
         {
             if(i == 1|| i == CameraBoundaries.x - 1)
@@ -475,11 +477,11 @@ public partial class Room: MonoBehaviour
                     {
                         for (int l = 1; l < 1; l++)
                         {
-                            m_wallPositions[k][l].PlaceDown();
+                            wallPositions[k][l].PlaceDown();
                         }
                         for (int l = (int)CameraBoundaries.y - 1; l < CameraBoundaries.y - 1; l++)
                         {
-                            m_wallPositions[k][l].PlaceDown();
+                            wallPositions[k][l].PlaceDown();
                         }
                     }
         
@@ -492,11 +494,11 @@ public partial class Room: MonoBehaviour
                     {
                         for (int l = 1; l < 1; l++)
                         {
-                            m_wallPositions[k][l].PlaceDown();
+                            wallPositions[k][l].PlaceDown();
                         }
                         for (int l = (int)CameraBoundaries.x - 1; l < CameraBoundaries.x - 1; l++)
                         {
-                            m_wallPositions[k][l].PlaceDown();
+                            wallPositions[k][l].PlaceDown();
                         }
                     }
                 }
@@ -513,12 +515,12 @@ public partial class Room: MonoBehaviour
         float distanceToCenter = new Vector2(i - center.x, j - center.y).magnitude;
         if (distanceToCenter > wallThickness.x && distanceToCenter > wallThickness.y)
         {
-            int temp = Random.Range(0, 2);
+            int temp = UnityEngine.Random.Range(0, 2);
             if (temp == 1)
             {
                 GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i,transform.position.y + j), Quaternion.identity, parent);
                 newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
-               // m_wallPositions[i][j].PlaceDown();
+                wallPositions[i][j].PlaceDown();
             }
         }
     }
@@ -531,39 +533,52 @@ public partial class Room: MonoBehaviour
                 int amountOfAdjacentWalls = 0;
                 if (i + 1 < CameraBoundaries.x)
                 {
-                    if (m_wallPositions[i + 1][j].GetIsOccupied())
+                    if (wallPositions[i + 1][j].GetIsOccupied())
                     {
                         amountOfAdjacentWalls++;
                     }
                 }
                 if (i - 1 >= 0)
                 {
-                    if (m_wallPositions[i - 1][j].GetIsOccupied())
+                    if (wallPositions[i - 1][j].GetIsOccupied())
                     {
                         amountOfAdjacentWalls++;
                     }
                 }
                 if (j + 1 < CameraBoundaries.y)
                 {
-                    if (m_wallPositions[i][j + 1].GetIsOccupied())
+                    if (wallPositions[i][j + 1].GetIsOccupied())
                     {
                         amountOfAdjacentWalls++;
                     }
                 }
                 if (j - 1 >= 0)
                 {
-                    if (m_wallPositions[i][j - 1].GetIsOccupied())
+                    if (wallPositions[i][j - 1].GetIsOccupied())
                     {
                         amountOfAdjacentWalls++;
                     }
                 }
                 if (amountOfAdjacentWalls == 0)
                 {
-                    m_wallPositions[i][j].UnPlace();
+                    wallPositions[i][j].UnPlace();
                 }
                 if (amountOfAdjacentWalls >= 3)
                 {
-                    m_wallPositions[i][j].PlaceDown();
+                    wallPositions[i][j].PlaceDown();
+                }
+            }
+        }
+    }
+    public void WeedOutUnseeableWalls()
+    {
+        for(int i = 0; i < wallPositions.Count; i++)
+        {
+            for(int j = 0; j < wallPositions[i].Count; j++)
+            {
+                if(GetArrayDiagonalPositioningString(i, j) == "AAAA")
+                {
+                    wallPositions[i][j].UnPlace();
                 }
             }
         }
@@ -571,164 +586,248 @@ public partial class Room: MonoBehaviour
 
     public void DetermineWallVariant()
     {
-        for(int i = 0; i < m_wallPositions.Count; i++)
+        for(int i = 0; i < wallPositions.Count; i++)
         {
-            for(int j = 0; j < m_wallPositions[i].Count; j++)
+            for(int j = 0; j < wallPositions[i].Count; j++)
             {
-                string temp = "";
-                if (m_wallPositions[i][j].GetIsOccupied())
+                if (wallPositions[i][j].GetIsOccupied())
                 {
-                    if(j+1 < CameraBoundaries.y)
-                    {
-                        if (m_wallPositions[i][j + 1].GetIsOccupied())
-                        {
-                            temp+='A';
-                        }
-                        else
-                        {
-                            temp+='B';
-                        }
-                    }
-                    else
-                    {
-                        temp+='B';
-                    }
-                    if (i + 1 < CameraBoundaries.x)
-                    {
-                        if (m_wallPositions[i+1][j].GetIsOccupied())
-                        {
-                            temp+='A';
-                        }
-                        else
-                        {
-                            temp+='B';
-                        }
-                    }
-                    else
-                    {
-                        temp+='B';
-                    }
-                    if (j - 1 >= 0)
-                    {
-                        if (m_wallPositions[i][j - 1].GetIsOccupied())
-                        {
-                            temp+='A';
-                        }
-                        else
-                        {
-                            temp+='B';
-                        }
-                    }
-                    else
-                    {
-                        temp+='B';
-                    }
-                    if (i - 1 >= 0)
-                    {
-                        if (m_wallPositions[i-1][j].GetIsOccupied())
-                        {
-                            temp+='A';
-                        }
-                        else
-                        {
-                            temp+='B';
-                        }
-                    }
-                    else
-                    {
-                        temp+='B';
-                    }
-                }
-                switch (temp)
-                {
-                    case "AAAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Cross);
-                        break; //inner wall
-                    case "AAAB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.T);
-                        break;
-                    case "AABA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.T);
-                        break;
-                    case "AABB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
-                        break; 
-                    case "ABAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.T);
-                        break;
-                    case "ABAB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Side);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-180, -90, 90);
-                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x,  m_wallPositions[i][j].transform.position.y - 1);
-                        break;
-                    case "ABBA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(0, -90, 90);
-                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x - 1,  m_wallPositions[i][j].transform.position.y);
-                        break; 
-                    case "ABBB": 
-                        m_wallPositions[i][j].SetVariant(WallVariant.End);
-                        break;
-                    case "BAAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.T); //this is the top room
-                        break;
-                    case "BAAB":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-180, -90, 90);
-                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x,  m_wallPositions[i][j].transform.position.y - 1);
-                        break;
-                    case "BABA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Side);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
-                        break;
-                    case "BABB": 
-                        m_wallPositions[i][j].SetVariant(WallVariant.End);
-                        break;
-                    case "BBAA":
-                        m_wallPositions[i][j].SetVariant(WallVariant.Corner);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(90, 90, -90);
-                        m_wallPositions[i][j].transform.position = new Vector2( m_wallPositions[i][j].transform.position.x - 1,  m_wallPositions[i][j].transform.position.y - 1);
-                        break;
-                    case "BBAB": 
-                        m_wallPositions[i][j].SetVariant(WallVariant.End);
-                        break;
-                    case "BBBA": 
-                        m_wallPositions[i][j].SetVariant(WallVariant.End);
-                        break;
-                    case "BBBB": 
-                        m_wallPositions[i][j].SetVariant(WallVariant.Column);
-                        m_wallPositions[i][j].transform.eulerAngles = new Vector3(-90, -90, 90);
-                        break;
+                    SetWallVariantsFromString(GetArrayPositioningString(i, j), wallPositions[i][j]);
                 }
             }
         }
 
     }
-
+    string GetArrayDiagonalPositioningString(int i, int j)
+    {
+        string temp = "";
+        if(j+1 < CameraBoundaries.y && i+1 < CameraBoundaries.x)
+        {
+            if (wallPositions[i + 1][j + 1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (i + 1 < CameraBoundaries.x && j - 1 >= 0)
+        {
+            if (wallPositions[i+1][j -1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (j - 1 >= 0 && i - 1 >= 0)
+        {
+            if (wallPositions[i - 1][j - 1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (i - 1 >= 0 && j+1 < CameraBoundaries.y)
+        {
+            if (wallPositions[i-1][j+1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        return temp;
+    }
+    string GetArrayPositioningString(int i, int j)
+    {
+        string temp = "";
+        if(j+1 < CameraBoundaries.y)
+        {
+            if (wallPositions[i][j + 1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (i + 1 < CameraBoundaries.x)
+        {
+            if (wallPositions[i+1][j].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (j - 1 >= 0)
+        {
+            if (wallPositions[i][j - 1].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        if (i - 1 >= 0)
+        {
+            if (wallPositions[i-1][j].GetIsOccupied())
+            {
+                temp+='A';
+            }
+            else
+            {
+                temp+='B';
+            }
+        }
+        else
+        {
+            temp+='B';
+        }
+        return temp;
+    }
+    void SetWallVariantsFromString(string text, WallPosition wall)
+    {
+        switch (text)
+        {
+            case "AAAA":
+                wall.SetVariant(WallVariant.Cross);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break; //inner wall
+            case "AAAB":
+                wall.SetVariant(WallVariant.T);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "AABA":
+                wall.SetVariant(WallVariant.T);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "AABB":
+                wall.SetVariant(WallVariant.Corner);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break; 
+            case "ABAA":
+                wall.SetVariant(WallVariant.T);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "ABAB":
+                wall.SetVariant(WallVariant.Side);
+                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
+                break;
+            case "ABBA":
+                wall.SetVariant(WallVariant.Corner);
+                wall.transform.eulerAngles = new Vector3(0, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
+                break; 
+            case "ABBB": 
+                wall.SetVariant(WallVariant.End);
+                wall.transform.eulerAngles = new Vector3(0, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
+                break;
+            case "BAAA":
+                wall.SetVariant(WallVariant.T);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "BAAB":
+                wall.SetVariant(WallVariant.Corner);
+                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
+                break;
+            case "BABA":
+                wall.SetVariant(WallVariant.Side);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "BABB": 
+                wall.SetVariant(WallVariant.End);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+            case "BBAA":
+                wall.SetVariant(WallVariant.Corner);
+                wall.transform.eulerAngles = new Vector3(90, 90, -90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
+                break;
+            case "BBAB": 
+                wall.SetVariant(WallVariant.End);
+                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
+                break;
+            case "BBBA": 
+                wall.SetVariant(WallVariant.End);
+                wall.transform.eulerAngles = new Vector3(90, 90, -90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
+                break;
+            case "BBBB": 
+                wall.SetVariant(WallVariant.Column);
+                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                break;
+        }
+    }
     public void InstantiateWalls(WallBlueprints blueprints)
     {
         for (int i = 0; i < CameraBoundaries.x; i++)
         {
             for (int j = 0; j < CameraBoundaries.y; j++)
             {
-                if (m_wallPositions[i][j].GetIsOccupied())
+                if (wallPositions[i][j].GetIsOccupied())
                 {
-                    if (m_wallPositions[i][j].GetVariant() == WallVariant.None)
+                    if (wallPositions[i][j].GetVariant() == WallVariant.None)
                     {
-                        GameObject newWall = Instantiate(blueprints.wallBlock, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                        GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, transform);
                         newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                     }
                     else
                     {
                         try
                         {
-                            GameObject newWall = Instantiate(blueprints.walls[(int)m_wallPositions[i][j].GetVariant() - 1], new Vector3(m_wallPositions[i][j].transform.position.x + 0.5f, m_wallPositions[i][j].transform.position.y + 0.5f, m_wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, transform);
-                            newWall.transform.rotation = m_wallPositions[i][j].transform.rotation;
+                            GameObject newWall = Instantiate(blueprints.walls[(int)wallPositions[i][j].GetVariant() - 1], new Vector3(wallPositions[i][j].transform.position.x + 0.5f, wallPositions[i][j].transform.position.y + 0.5f, wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, transform);
+                            newWall.transform.rotation = wallPositions[i][j].transform.rotation;
                         }
                         catch
                         {
-                            GameObject newWall = Instantiate(blueprints.wallBlock, m_wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                            GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, transform);
                             newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                         }
                     }
@@ -744,9 +843,9 @@ public partial class Room: MonoBehaviour
         {
             for (int j = 0; j < CameraBoundaries.y; j++)
             {
-                if (!m_wallPositions[i][j].GetIsOccupied())
+                if (!wallPositions[i][j].GetIsOccupied())
                 {
-                    GameObject newWall = Instantiate(floorTile, m_wallPositions[i][j].transform.position, Quaternion.identity, floorParent.transform);
+                    GameObject newWall = Instantiate(floorTile, wallPositions[i][j].transform.position, Quaternion.identity, floorParent.transform);
                     
                     if(DebuggingTools.spawnOnlyBasicRooms)
                     {

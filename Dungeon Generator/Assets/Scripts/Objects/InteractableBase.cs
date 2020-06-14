@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InteractableBase : MonoBehaviour
 {
-    bool m_IsInteractable = true;
+    protected bool isInteractable = true;
 
     public virtual void OnInteract()
     {
@@ -13,11 +13,6 @@ public class InteractableBase : MonoBehaviour
 
     public bool GetIsInteractable()
     {
-        return m_IsInteractable;
-    }
-
-    public void SetIsInteractable(bool value)
-    {
-        m_IsInteractable = value;
+        return isInteractable;
     }
 }

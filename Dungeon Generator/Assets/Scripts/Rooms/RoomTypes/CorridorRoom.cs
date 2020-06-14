@@ -65,13 +65,13 @@ public class CorridorRoom : Room
             {
                 for (int l = 1; l < 1 + frameCorridorOffset; l++)
                 {
-                    m_wallPositions[k][l].PlaceDown();
+                    wallPositions[k][l].PlaceDown();
                     GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + k,transform.position.y + l), Quaternion.identity, parent);
                     newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                 }
                 for (int l = (int)CameraBoundaries.y - 1 - frameCorridorOffset; l < CameraBoundaries.y - 1; l++)
                 {
-                    m_wallPositions[k][l].PlaceDown();
+                    wallPositions[k][l].PlaceDown();
                     GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + k,transform.position.y + l), Quaternion.identity, parent);
                     newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                 }
@@ -83,13 +83,13 @@ public class CorridorRoom : Room
             {
                 for (int l = 1; l < 1 + frameCorridorOffset; l++)
                 {
-                    m_wallPositions[l][k].PlaceDown();
+                    wallPositions[l][k].PlaceDown();
                     GameObject newWall2 = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + l,transform.position.y + k), Quaternion.identity, parent);
                     newWall2.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                 }
                 for (int l = (int)CameraBoundaries.x - 1 - frameCorridorOffset; l < CameraBoundaries.x - 1; l++)
                 {
-                    m_wallPositions[l][k].PlaceDown();
+                    wallPositions[l][k].PlaceDown();
                     GameObject newWall2 = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + l,transform.position.y + k), Quaternion.identity, parent);
                     newWall2.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                 }
@@ -105,7 +105,7 @@ public class CorridorRoom : Room
             if (i > CameraBoundaries.x / 2 - 2 - corridorThickness)
             {
                 //Controls right corridor of room
-                if (!m_wallPositions[(int)CameraBoundaries.x - 1][j].GetIsOccupied())
+                if (!wallPositions[(int)CameraBoundaries.x - 1][j].GetIsOccupied())
                 {
                     return true;
                 }
@@ -117,11 +117,11 @@ public class CorridorRoom : Room
                         bool toContinue = false;
                         for(int k = 0; k <= corridorThickness; k++) //Im not sure it makes sense to do this for every single j, but for now it works, but Id rather do this more methodically down the road
                         {
-                            if (!m_wallPositions[(int)CameraBoundaries.x - 1][j + k].GetIsOccupied())
+                            if (!wallPositions[(int)CameraBoundaries.x - 1][j + k].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
-                            else if (!m_wallPositions[(int)CameraBoundaries.x - 1][j - k].GetIsOccupied())
+                            else if (!wallPositions[(int)CameraBoundaries.x - 1][j - k].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
@@ -136,7 +136,7 @@ public class CorridorRoom : Room
             if (i < CameraBoundaries.x / 2 +1 + corridorThickness)
             {
                 //Controls left corridor of room
-                if (!m_wallPositions[0][j].GetIsOccupied())
+                if (!wallPositions[0][j].GetIsOccupied())
                 {
                     return true;
                 }
@@ -147,11 +147,11 @@ public class CorridorRoom : Room
                         bool toContinue = false;
                         for (int k = 0; k <= corridorThickness; k++) //Im not sure it makes sense to do this for every single j, but for now it works, but Id rather do this more methodically down the road
                         {
-                            if (!m_wallPositions[0][j + k].GetIsOccupied())
+                            if (!wallPositions[0][j + k].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
-                            else if (!m_wallPositions[0][j - k].GetIsOccupied())
+                            else if (!wallPositions[0][j - k].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
@@ -168,7 +168,7 @@ public class CorridorRoom : Room
         {
             if (j > CameraBoundaries.y / 2 -2) //-2
             {
-                if (!m_wallPositions[i][(int)CameraBoundaries.y - 1].GetIsOccupied())
+                if (!wallPositions[i][(int)CameraBoundaries.y - 1].GetIsOccupied())
                 {
                     return true;
                 }
@@ -180,11 +180,11 @@ public class CorridorRoom : Room
                         bool toContinue = false;
                         for (int k = 0; k <= corridorThickness; k++) //Im not sure it makes sense to do this for every single j, but for now it works, but Id rather do this more methodically down the road
                         {
-                            if (!m_wallPositions[i + k][(int)CameraBoundaries.y - 1].GetIsOccupied())
+                            if (!wallPositions[i + k][(int)CameraBoundaries.y - 1].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
-                            else if (!m_wallPositions[i - k][(int)CameraBoundaries.y - 1].GetIsOccupied())
+                            else if (!wallPositions[i - k][(int)CameraBoundaries.y - 1].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
@@ -198,7 +198,7 @@ public class CorridorRoom : Room
             }
             if (j < CameraBoundaries.y / 2+1 ) //+2
             {
-                if (!m_wallPositions[i][0].GetIsOccupied())
+                if (!wallPositions[i][0].GetIsOccupied())
                 {
                     return true;
                 }
@@ -210,11 +210,11 @@ public class CorridorRoom : Room
                         bool toContinue = false;
                         for (int k = 0; k <= corridorThickness; k++) //Im not sure it makes sense to do this for every single j, but for now it works, but Id rather do this more methodically down the road
                         {
-                            if (!m_wallPositions[i + k][0].GetIsOccupied())
+                            if (!wallPositions[i + k][0].GetIsOccupied())
                             {
                                 toContinue = true;
                             }
-                            else if (!m_wallPositions[i - k][0].GetIsOccupied())
+                            else if (!wallPositions[i - k][0].GetIsOccupied())
                             {
                                 toContinue = true;
                             }

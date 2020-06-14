@@ -12,8 +12,8 @@ public class LevelManager : MonoBehaviour
 
     private void Awake() 
     {
-        GameData.m_LevelConstructionSeed = Random.Range(0, int.MaxValue);
-        GameData.m_LevelDataSeed = Random.Range(0, int.MaxValue);
+        //GameData.m_LevelConstructionSeed = Random.Range(0, int.MaxValue);
+        //GameData.m_LevelDataSeed = Random.Range(0, int.MaxValue);
         if(GameData.Instance != null)
         {
             GameData.SetPlayerPosition(new Vector2(GameData.GetPlayerPosition().x + RoomSize.x/2, GameData.GetPlayerPosition().y + RoomSize.y/2));

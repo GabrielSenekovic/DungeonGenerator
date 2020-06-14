@@ -35,8 +35,11 @@ public class QuestSelect : MonoBehaviour
     [SerializeField]Transform buttonParent;
     [SerializeField]Text detailText;
 
-    public void Initialize(Tuple<int[], int[], int[]> seeds_in)
+    BulletinBoard board = null;
+
+    public void Initialize(Tuple<int[], int[], int[]> seeds_in, BulletinBoard board_in)
     {
+        board = board_in;
         for(int i = 0; i < seeds_in.Item1.Length; i++)
         {
             seeds.Add(new SeedBox(seeds_in.Item1[i], seeds_in.Item2[i], seeds_in.Item3[i]));
@@ -47,6 +50,19 @@ public class QuestSelect : MonoBehaviour
             quests.Add(GetComponent<QuestDataGenerator>().Initialize(seeds[i].questSeed));
         }
     }
+
+    public void OnClose()
+    {
+        for(int i = buttons.Count-1; i >= 0; i--)
+        {
+            Button temp = buttons[i];
+            buttons.RemoveAt(i);
+            Destroy(temp.gameObject);
+        }
+        board.OnClose();
+        board = null;
+        EventSystem.current.SetSelectedGameObject(null);
+    }
     public void OnLoadLevel()
     {
         Time.timeScale = 1;
@@ -56,6 +72,10 @@ public class QuestSelect : MonoBehaviour
 
     private void Update() 
     {
+        if(GetComponent<CanvasGroup>().alpha == 0)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if(index ==0)
@@ -88,7 +108,6 @@ public class QuestSelect : MonoBehaviour
         {
             if(EventSystem.current.currentSelectedGameObject == buttons[index].gameObject && selectedByButton)
             {
-                Debug.Log("Hello");
                 EventSystem.current.SetSelectedGameObject(null);
                 selectedByButton = false;
                 HideDetails();
