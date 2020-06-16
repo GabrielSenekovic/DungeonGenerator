@@ -19,14 +19,14 @@ public class PlayerInteractionModel : MonoBehaviour
         }
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
+    public void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.GetComponent<InteractableBase>() && collision.collider.GetComponent<InteractableBase>().GetIsInteractable() == true)
         {
             m_Interactable = collision.collider.GetComponent<InteractableBase>();
         }     
     }
-    public void OnCollisionExit2D(Collision2D collision)
+    public void OnCollisionExit(Collision collision)
     {
         if (collision.collider.GetComponent<InteractableBase>())
         {

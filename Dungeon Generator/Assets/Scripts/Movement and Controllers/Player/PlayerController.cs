@@ -4,55 +4,85 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     //This controller will control whoever is the party leader
-    Party m_Party;
+    Party party;
 
     public void Awake()
     {
-        m_Party = GetComponent<Party>();
+        party = GetComponent<Party>();
     }
 
+    void Start() 
+    {
+        VisualsRotator.renderers.Add(GetComponentInChildren<SpriteRenderer>().gameObject);
+    }
     public void Update()
     {
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
-        {
-            if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
-            {
-                Move(KeyCode.W);
-            }
-            if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
-            {
-                Move(KeyCode.S);
-            }
-            if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-            {
-                Move(KeyCode.A);
-            }
-            if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
-            {
-                Move(KeyCode.D);
-            }
-        }
+        Move();
         if(Input.GetKeyDown(KeyCode.Space))
         {
             Interact();
         }
     }
 
-    public void Move(KeyCode key)
+    void Move()
+    {
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+        {
+            if(party.GetPartyLeader().GetComponent<StatusConditionModel>().rigid)
+            {
+                if (Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+                {
+                    OnMove(KeyCode.W);
+                }
+                if (Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))
+                {
+                    OnMove(KeyCode.S);
+                }
+                if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+                {
+                    OnMove(KeyCode.A);
+                }
+                if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A))
+                {
+                    OnMove(KeyCode.D);
+                }
+            }
+            else
+            {
+                Vector2 temp = Vector2.zero;
+                if(Input.GetKey(KeyCode.A)) { temp.x =-1;}
+                if(Input.GetKey(KeyCode.D)) { temp.x = 1;}
+                if(Input.GetKey(KeyCode.W)) { temp.y = 1;}
+                if(Input.GetKey(KeyCode.S)) { temp.y =-1;}
+                party.GetPartyLeader().GetPMM().Dir = temp;
+                party.GetPartyLeader().GetPMM().facingDirection = temp;
+            }
+            party.GetPartyLeader().GetPMM().currentSpeed = party.GetPartyLeader().GetPMM().speed;
+        }
+        else
+        {
+            party.GetPartyLeader().GetPMM().Vel = Vector2.zero;
+        }
+    }
+    public void OnMove(KeyCode key)
     {
         switch (key)
         {
             case KeyCode.W:
-                m_Party.GetPartyLeader().GetPMM().SetDirection(new Vector2(0, 1));
+                party.GetPartyLeader().GetPMM().Dir = new Vector2(0, 1);
+                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(0, 1);
                 break;
             case KeyCode.A:
-                m_Party.GetPartyLeader().GetPMM().SetDirection(new Vector2(-1, 0));
+                party.GetPartyLeader().GetPMM().Dir = new Vector2(-1, 0);
+                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(-1, 0);
                 break;
             case KeyCode.S:
-                m_Party.GetPartyLeader().GetPMM().SetDirection(new Vector2(0, -1));
+                party.GetPartyLeader().GetPMM().Dir = new Vector2(0, -1);
+                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(0, -1);
                 break;
             case KeyCode.D:
-                m_Party.GetPartyLeader().GetPMM().SetDirection(new Vector2(1, 0));
+                party.GetPartyLeader().GetPMM().Dir = new Vector2(1, 0);
+                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(1, 0);
                 break;
             default:
                 break;
@@ -60,6 +90,6 @@ public class PlayerController : MonoBehaviour
     }
     public void Interact()
     {
-        m_Party.GetPartyLeader().GetPIM().OnInteract();
+        party.GetPartyLeader().GetPIM().OnInteract();
     }
 }

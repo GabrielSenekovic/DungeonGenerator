@@ -34,7 +34,9 @@ public class BipusController : EnemyController
             GetComponentInChildren<Animator>().SetFloat("DirectionY", movementDirection.y);
             GetComponent<EnemyMovementModel>().FlipWhenWalkingSideways(movementDirection);
         }
-        GetComponent<EnemyMovementModel>().SetDirection(movementDirection);
+        GetComponent<EnemyMovementModel>().Dir = movementDirection;
+        GetComponent<EnemyMovementModel>().facingDirection = movementDirection;
+        GetComponent<EnemyMovementModel>().currentSpeed = GetComponent<EnemyMovementModel>().speed;
     }
     void Shoot()
     {
@@ -44,8 +46,8 @@ public class BipusController : EnemyController
         {
             GameObject newLaser = Instantiate(laser, new Vector2(transform.position.x, transform.position.y + distanceFromBody), Quaternion.identity);
             GameObject newLaser2 = Instantiate(laser, new Vector2(transform.position.x, transform.position.y - distanceFromBody), Quaternion.identity);
-            newLaser.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
-            newLaser2.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
+            newLaser.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
+            newLaser2.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
             newLaser.transform.rotation = Quaternion.Euler(0, 0, 90);
             newLaser2.transform.rotation = Quaternion.Euler(0, 0, 90);
         }
@@ -53,8 +55,8 @@ public class BipusController : EnemyController
         {
             GameObject newLaser = Instantiate(laser, new Vector2(transform.position.x, transform.position.y + distanceFromBody), Quaternion.identity);
             GameObject newLaser2 = Instantiate(laser, new Vector2(transform.position.x, transform.position.y - distanceFromBody), Quaternion.identity);
-            newLaser.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
-            newLaser2.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
+            newLaser.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
+            newLaser2.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
             newLaser.transform.rotation = Quaternion.Euler(0, 0, 90);
             newLaser2.transform.rotation = Quaternion.Euler(0, 0, 90);
         }
@@ -62,15 +64,15 @@ public class BipusController : EnemyController
         {
             GameObject newLaser = Instantiate(laser, new Vector2(transform.position.x + distanceFromBody, transform.position.y), Quaternion.identity);
             GameObject newLaser2 = Instantiate(laser, new Vector2(transform.position.x - distanceFromBody, transform.position.y), Quaternion.identity);
-            newLaser.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
-            newLaser2.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
+            newLaser.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
+            newLaser2.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
         }
         else if(direction == new Vector2(0, -1))
         {
             GameObject newLaser = Instantiate(laser, new Vector2(transform.position.x + distanceFromBody, transform.position.y), Quaternion.identity);
             GameObject newLaser2 = Instantiate(laser, new Vector2(transform.position.x - distanceFromBody, transform.position.y), Quaternion.identity);
-            newLaser.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
-            newLaser2.GetComponent<EntityMovementModel>().SetConstantDirection(GetComponent<EnemyMovementModel>().GetFacingDirection());
+            newLaser.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
+            newLaser2.GetComponent<EntityMovementModel>().Dir = GetComponent<EnemyMovementModel>().GetFacingDirection();
         }
     }
 }

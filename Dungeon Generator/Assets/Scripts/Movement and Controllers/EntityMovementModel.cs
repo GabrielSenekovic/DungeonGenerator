@@ -4,128 +4,106 @@ using UnityEngine;
 
 public class EntityMovementModel : MovementModel
 {
-    protected Vector2 directionToMove;
-
-    protected Vector2 directionToPush;
-    protected float pushStrength = 0;
-    [SerializeField] protected float resilience; //How fast the player recovers from being pushed. It functions negatively, the higher the number, the further you fly
-
-    [SerializeField]protected Vector2 facingDirection;
-
-    protected Vector2 constantDirection;
-    [SerializeField]protected float speed;
-    protected Vector2 lastDirectionMoved;
-    [SerializeField] protected bool canAttack;
+    public Rigidbody rig() {return this.GetComponent<Rigidbody>();}
+    [System.NonSerialized]public List<Vector2> push = new List<Vector2>();
+    [System.NonSerialized]public Vector2 directionToMove;
+    [System.NonSerialized]public Vector2 facingDirection;
+    [System.NonSerialized]public float currentSpeed;
+    public float speed;
     protected bool canMove = true;
+    Vector2 dir;
+
+    public Vector2 Dir
+    {
+        get
+        {
+            dir = dir.normalized;
+            return dir;
+        }
+        set
+        {
+            dir = value.normalized;
+        }
+    }
+    Vector2 vel;
+    
+    public Vector2 Vel
+    {
+        get
+        {
+            vel = currentSpeed * Dir;
+            return vel; 
+        }
+        set 
+        {
+            vel = value;
+            currentSpeed = vel.magnitude;
+            Dir = vel.normalized; 
+        }
+    }
+    [System.NonSerialized]public Vector2 Acc;
+    protected float Fric;
+
+    public void AddVelocity(Vector2 vin)
+    {
+        Vel += vin;
+    }
+
+    public int AddPushVector(Vector2 vin)
+    {
+        push.Add(vin);
+        return push.Count - 1;
+    }
+
+    public void RemovePushVector(int index)
+    {
+        push.RemoveAt(index);
+    }
     void Awake()
     {
-        myBody = GetComponent<Rigidbody2D>();
-        directionToMove = Vector2.zero; facingDirection = new Vector2(0, -1); constantDirection = new Vector2(0, 0);
-        lastDirectionMoved = Vector2.zero;
+        directionToMove = Vector2.zero; facingDirection = new Vector2(0, -1);
     }
     public void FixedUpdate()
     {
         Move();
-        directionToMove = Vector2.zero;
     }
 
     public void Move()
     {
-        if (canMove)
+        Vector2 buffer = Vector2.zero;
+        foreach( Vector2 v in push)
         {
-            myBody.velocity = directionToMove * speed
-            + directionToPush * pushStrength
-            + constantDirection * speed
-            ;
+            buffer += v;
+        }
+        if(canMove)
+        { 
+            rig().velocity = Vel + buffer;
+            Vel *= Acc;
+            Vel *= (1.0f/(1.0f + Fric));
         }
         else
         {
-            myBody.velocity = directionToPush * pushStrength
-            + constantDirection * speed
-            ;
+            rig().velocity = buffer;
         }
-        if (pushStrength > 1)
-        {
-            RecoverFromPush();
-        }
-        else if (pushStrength != 0)
-        {
-            NeutralizePush();
-        }
-    }
-    public void FreezeMovement()
-    {
-        myBody.velocity = new Vector2(0, 0);
-    }
-    public void Push(Vector2 direction, float strength)
-    {
-        directionToPush = direction;
-        pushStrength = strength;
-    }
-    public void RecoverFromPush()
-    {
-        pushStrength = Mathf.Lerp(0, pushStrength, resilience);
-    }
-    public void NeutralizePush()
-    {
-        pushStrength = 0;
-        directionToPush = new Vector2(0, 0);
-    }
-    public void SetDirection(Vector2 direction)
-    {
-        directionToMove += direction;
-        directionToMove.Normalize();
+    }//Courtesy of Casper Gustavsson
 
-        facingDirection = directionToMove.normalized;
-        facingDirection = new Vector2(Mathf.Round(facingDirection.x), Mathf.Round(facingDirection.y));
-    }
-      public Vector2 GetDirection()
-    {
-        return directionToMove.normalized;
-    }
-    public void SetConstantDirection(Vector2 direction)
-    {
-        constantDirection = direction;
-    }
     public Vector2 GetFacingDirection()
     {
         return facingDirection;
-    }
-    public void SetSpeed(float newSpeed)
-    {
-        speed = newSpeed;
-    }
-    public void SetCanAttack(bool value)
-    {
-        canAttack = value;
-    }
-    public bool CanAttack()
-    {
-        return canAttack;
-    }
-    public void SetCanMove(bool value)
-    {
-        canMove = value;
     }
     public void OnDeath()
     {
         Destroy(gameObject);
     }
-    public IEnumerator WaitUntilCanAttack(float reloadTime)
-    {
-        canAttack = false;
-        yield return new WaitForSeconds(reloadTime);
-        canAttack = true;
-    }
     public void FlipWhenWalkingSideways(Vector2 movementDirection)
     {
         if(movementDirection == new Vector2(-1, 0))
         {
-                transform.localScale = new Vector2(1, 1);
+            transform.localScale = new Vector2(1, 1);
         }
         else if(movementDirection == new Vector2(1, 0))
         {
-                transform.localScale = new Vector2(-1, 1);
+            transform.localScale = new Vector2(-1, 1);
         }
     }
 }

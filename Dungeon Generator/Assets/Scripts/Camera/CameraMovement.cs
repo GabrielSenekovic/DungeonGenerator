@@ -13,6 +13,9 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]Party party;
     public CameraMode mode = CameraMode.Side;
 
+    Vector3 rotatedPosition = Vector3.zero;
+    static Vector2 cameraConstraints;
+
     void Awake()
     {
         transform.eulerAngles = new Vector3(-45, transform.rotation.y, transform.rotation.z);
@@ -22,8 +25,10 @@ public class CameraMovement : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftArrow))
         {
+            Vector3 temp = transform.position;
             transform.RotateAround(new Vector3(party.GetPartyLeader().transform.position.x, party.GetPartyLeader().transform.position.y, 0), Vector3.forward, 1);
             party.GetPartyLeader().GetComponentInChildren<SpriteRenderer>().transform.RotateAround(party.GetPartyLeader().transform.position, Vector3.forward, 1);
+            //rotatedPosition = new Vector3(temp.x - transform.position.x, temp.y - transform.position.y, temp.z - transform.position.z);
             rotationSideways++;
         }
         else if(Input.GetKey(KeyCode.RightArrow))
@@ -48,9 +53,10 @@ public class CameraMovement : MonoBehaviour
                 mode = CameraMode.TopDown;
             }
         }
+        //transform.position = new Vector3(party.GetPartyLeader().transform.position.x + rotatedPosition.x, party.GetPartyLeader().transform.position.y + rotatedPosition.y,party.GetPartyLeader().transform.position.z + rotatedPosition.z);
     }
     void ZoomInOut(float value)
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + value);
+        //transform.position = new Vector3(transform.position.x + rotatedPosition.x, transform.position.y + rotatedPosition.y, transform.position.z + value);
     }
 }
