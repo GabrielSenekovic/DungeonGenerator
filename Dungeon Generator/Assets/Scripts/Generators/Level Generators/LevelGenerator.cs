@@ -51,12 +51,8 @@ public partial class LevelGenerator : MonoBehaviour
         Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
         debug.Display(level.data);
     }
-    public void BuildLevel(LevelData data)
+    public void BuildLevel(LevelData data, Room currentRoom)
     {
-        if(levelGenerated)
-        {
-            return;
-        }
         foreach(Room.Fusion fusion in fusedRoomBools)
         {
             if(!fusion.IsDone())
@@ -67,6 +63,13 @@ public partial class LevelGenerator : MonoBehaviour
         Debug.LogWarning("<color=blue>Time to build rooms!</color>");
         levelGenerated = true;
         GetComponent<RoomBuilder>().Build(rooms, data);
+        foreach(Room room in rooms)
+        {
+            if(room != currentRoom)
+            {
+                room.gameObject.SetActive(false);
+            }
+        }
     }
 
 
@@ -664,7 +667,7 @@ public partial class LevelGenerator : MonoBehaviour
         }
         return null;
     }
-    Room FindAdjacentRoom(Room origin, Vector2 direction)
+    public Room FindAdjacentRoom(Room origin, Vector2 direction)
     {
         return FindRoomOfPosition((Vector2)origin.transform.position + direction * 20);
     }

@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
     //This controller will control whoever is the party leader
     Party party;
 
+    [SerializeField] GameObject camera;
+
     public void Awake()
     {
         party = GetComponent<Party>();
@@ -54,8 +56,9 @@ public class PlayerController : MonoBehaviour
                 if(Input.GetKey(KeyCode.D)) { temp.x = 1;}
                 if(Input.GetKey(KeyCode.W)) { temp.y = 1;}
                 if(Input.GetKey(KeyCode.S)) { temp.y =-1;}
-                party.GetPartyLeader().GetPMM().Dir = temp;
-                party.GetPartyLeader().GetPMM().facingDirection = temp;
+
+                party.GetPartyLeader().GetPMM().Dir = Quaternion.Euler(0, 0, camera.transform.rotation.eulerAngles.z) * temp;
+                party.GetPartyLeader().GetPMM().facingDirection = party.GetPartyLeader().GetPMM().Dir;
             }
             party.GetPartyLeader().GetPMM().currentSpeed = party.GetPartyLeader().GetPMM().speed;
         }
@@ -70,23 +73,20 @@ public class PlayerController : MonoBehaviour
         {
             case KeyCode.W:
                 party.GetPartyLeader().GetPMM().Dir = new Vector2(0, 1);
-                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(0, 1);
                 break;
             case KeyCode.A:
                 party.GetPartyLeader().GetPMM().Dir = new Vector2(-1, 0);
-                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(-1, 0);
                 break;
             case KeyCode.S:
                 party.GetPartyLeader().GetPMM().Dir = new Vector2(0, -1);
-                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(0, -1);
                 break;
             case KeyCode.D:
                 party.GetPartyLeader().GetPMM().Dir = new Vector2(1, 0);
-                party.GetPartyLeader().GetPMM().facingDirection = new Vector2(1, 0);
                 break;
             default:
                 break;
         }
+        party.GetPartyLeader().GetPMM().facingDirection = party.GetPartyLeader().GetPMM().Dir;
     }
     public void Interact()
     {

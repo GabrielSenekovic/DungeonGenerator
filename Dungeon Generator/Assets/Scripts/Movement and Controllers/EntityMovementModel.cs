@@ -10,7 +10,7 @@ public class EntityMovementModel : MovementModel
     [System.NonSerialized]public Vector2 facingDirection;
     [System.NonSerialized]public float currentSpeed;
     public float speed;
-    protected bool canMove = true;
+    public bool canMove = true;
     Vector2 dir;
 
     public Vector2 Dir
