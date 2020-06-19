@@ -14,10 +14,11 @@ public class DebuggingTools : MonoBehaviour
     public static bool isDungeon;
 
     public bool displayFuseRoomDebugLogs_in;
-    
     public static bool displayFuseRoomDebugLogs;
     public bool displayRoomConstructionDebugLogs_in;
     public static bool displayRoomConstructionDebugLogs;
+    public bool displayRoomEntranceSprites_in;
+    public static bool displayRoomEntranceSprites;
 
     private void Awake() 
     {
@@ -26,5 +27,6 @@ public class DebuggingTools : MonoBehaviour
         displayFuseRoomDebugLogs = displayFuseRoomDebugLogs_in;
         displayRoomConstructionDebugLogs = displayRoomConstructionDebugLogs_in;
         spawnOnlyBasicRooms = spawnOnlyBasicRooms_in;
+        displayRoomEntranceSprites = displayRoomEntranceSprites_in;
     }
 }

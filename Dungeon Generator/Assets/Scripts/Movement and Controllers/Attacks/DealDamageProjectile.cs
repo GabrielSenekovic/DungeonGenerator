@@ -9,7 +9,10 @@ public class DealDamageProjectile : DealDamage
         foreach(Damage damage in damageToDeal)
         {
             target.GetComponent<HealthModel>().TakeDamage(damage);
-            Destroy(this.gameObject);
         }
+    }
+    protected override void OnImpact()
+    {
+        GetComponent<ProjectileController>().OnDestroy();
     }
 }

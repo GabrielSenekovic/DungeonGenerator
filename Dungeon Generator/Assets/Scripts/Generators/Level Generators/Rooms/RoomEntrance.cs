@@ -37,6 +37,9 @@ public class RoomEntrance : MonoBehaviour
     public void SetEntranceType(EntranceType type, EntranceLibrary lib)
     {
         m_type = type;
-        m_renderer.sprite = lib.GetSprite(type);
+        if(DebuggingTools.displayRoomEntranceSprites)
+        {
+            m_renderer.sprite = lib.GetSprite(type);
+        }
     }
 }

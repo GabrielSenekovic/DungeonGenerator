@@ -49,7 +49,7 @@ public partial class LevelGenerator : MonoBehaviour
         System.TimeSpan duration = after.Subtract(before);
         Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
         Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
-        debug.Display(level.data);
+        //debug.Display(level.data);
     }
     public void BuildLevel(LevelData data, Room currentRoom)
     {

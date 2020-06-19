@@ -38,6 +38,10 @@ public class DealDamage : MonoBehaviour
         {
             Hit(other.gameObject);
         }
+        else
+        {
+            OnImpact();
+        }
     }
     protected virtual void Hit(GameObject target)
     {
@@ -45,5 +49,8 @@ public class DealDamage : MonoBehaviour
         {
             target.GetComponent<HealthModel>().TakeDamage(damage);
         }
+    }
+    protected virtual void OnImpact()
+    {
     }
 }

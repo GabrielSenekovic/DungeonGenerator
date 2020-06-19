@@ -738,11 +738,13 @@ public partial class Room: MonoBehaviour
                 break; //inner wall
             case "AAAB":
                 wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                wall.transform.eulerAngles = new Vector3(0, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
                 break;
             case "AABA":
                 wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                wall.transform.eulerAngles = new Vector3(90, 90, -90);
+                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
                 break;
             case "AABB":
                 wall.SetVariant(WallVariant.Corner);
@@ -750,7 +752,8 @@ public partial class Room: MonoBehaviour
                 break; 
             case "ABAA":
                 wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
+                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
+                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
                 break;
             case "ABAB":
                 wall.SetVariant(WallVariant.Side);

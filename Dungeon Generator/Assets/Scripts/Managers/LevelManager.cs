@@ -27,7 +27,7 @@ public class LevelManager : MonoBehaviour
     }
     private void Start() 
     {
-        data = GetComponent<LevelDataGenerator>().Initialize(GameData.m_LevelDataSeed);
+        data = GameData.currentLevel;
         data.dungeon = DebuggingTools.isDungeon;
         if(DebuggingTools.checkForBrokenSeeds)
         {
@@ -77,7 +77,7 @@ public class LevelManager : MonoBehaviour
         }
         if(party.movingRoom)
         {
-            if(party.LerpCamera(new Vector3(currentRoom.transform.position.x + RoomSize.x/2 - 0.5f, currentRoom.transform.position.y + RoomSize.y/2 - 0.5f,0)))
+            if(party.LerpCamera(new Vector3(currentRoom.transform.position.x + RoomSize.x/2 - 0.5f, currentRoom.transform.position.y + RoomSize.y/2 - 0.5f,party.cameraRotationObject.transform.position.z)))
             {
                 CameraMovement.cameraConstraints = new Vector2(currentRoom.transform.position.x + RoomSize.x/2, currentRoom.transform.position.y + RoomSize.y/2);
                 previousRoom.gameObject.SetActive(false);

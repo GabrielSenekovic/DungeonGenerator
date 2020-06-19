@@ -106,4 +106,8 @@ public class ProjectileController : EntityMovementModel
                 break;
         }
     }
+    public virtual void OnDestroy()
+    {
+        Destroy(this.gameObject);
+    }
 }

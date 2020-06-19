@@ -11,7 +11,7 @@ public class RoomBuilder : MonoBehaviour
     {
         if(!DebuggingTools.spawnOnlyBasicRooms)
         {
-            floorPrefab.GetComponentInChildren<SpriteRenderer>().sprite = GetComponent<EntranceLibrary>().GetFloorSprite(data.m_biome);
+           // floorPrefab.GetComponentInChildren<SpriteRenderer>().sprite = GetComponent<EntranceLibrary>().GetFloorSprite(data.m_biome);
         }
         BuildRooms(rooms);
         CloseOpenDoors(rooms);
