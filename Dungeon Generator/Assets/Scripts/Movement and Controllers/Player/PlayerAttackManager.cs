@@ -28,7 +28,7 @@ public class PlayerAttackManager : AttackManager
                 if(Input.GetKeyDown(attacks[i].key))
                 {
                     currentAttack = attacks[i].attack;
-                    currentAttack.Attack(GetComponent<PlayerMovementModel>().facingDirection, transform.position);
+                    currentAttack.Attack(GetComponent<PlayerMovementModel>().facingDirection, transform.position, GetComponent<Collider>());
                 }
             }
         }

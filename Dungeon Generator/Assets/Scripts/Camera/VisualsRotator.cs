@@ -20,4 +20,19 @@ public class VisualsRotator : MonoBehaviour
             }
         }
     }
+    public static void RotateAll(float speed)
+    {
+        for(int i = 0; i < renderers.Count; i++)
+        {
+            try
+            {
+                renderers[i].transform.RotateAround(renderers[i].transform.position, Vector3.forward, speed);
+            }
+            catch
+            {
+                renderers.RemoveAt(i);
+                i--;
+            }
+        }
+    }
 }

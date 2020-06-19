@@ -32,9 +32,9 @@ public class DealDamage : MonoBehaviour
     }
     public List<Damage> damageToDeal;
 
-    void OnCollisionEnter(Collision other) 
+    void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.GetComponent<PlayerHealthModel>())
+        if(other.GetComponent<HealthModel>())
         {
             Hit(other.gameObject);
         }
@@ -43,7 +43,7 @@ public class DealDamage : MonoBehaviour
     {
         foreach(Damage damage in damageToDeal)
         {
-            target.GetComponent<PlayerHealthModel>().TakeDamage(damage);
+            target.GetComponent<HealthModel>().TakeDamage(damage);
         }
     }
 }

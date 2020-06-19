@@ -8,7 +8,7 @@ public class DealDamageProjectile : DealDamage
     {
         foreach(Damage damage in damageToDeal)
         {
-            target.GetComponent<PlayerHealthModel>().TakeDamage(damage);
+            target.GetComponent<HealthModel>().TakeDamage(damage);
             Destroy(this.gameObject);
         }
     }

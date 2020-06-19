@@ -13,4 +13,11 @@ public class EnemyController : MonoBehaviour
     EnemyMovementState movementState = EnemyMovementState.IDLE;
 
     protected Vector2 movementDirection = Vector2.zero;
+
+    public List<GameObject> visuals;
+
+    private void Awake()
+    {
+        VisualsRotator.renderers.AddRange(visuals);
+    }
 }

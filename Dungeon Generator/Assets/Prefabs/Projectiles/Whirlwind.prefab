@@ -107,6 +107,7 @@ GameObject:
   - component: {fileID: 2271420887450530890}
   - component: {fileID: 1677620575943587630}
   - component: {fileID: 6395197712804450639}
+  - component: {fileID: 970519220002359718}
   m_Layer: 0
   m_Name: Whirlwind
   m_TagString: Untagged
@@ -142,6 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
+  canMove: 1
   attractionSpeed: 0
   interactionRadius: 0
   currentTarget: {fileID: 0}
@@ -183,3 +185,16 @@ MonoBehaviour:
   - type: 4
     element: 4
     damage: 2
+--- !u!65 &970519220002359718
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4708683216068231392}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0}

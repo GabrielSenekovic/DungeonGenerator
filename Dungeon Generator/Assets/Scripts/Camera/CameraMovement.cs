@@ -50,7 +50,7 @@ public class CameraMovement : MonoBehaviour
     void Rotate(float speed)
     {
         transform.RotateAround(new Vector3(party.cameraRotationObject.transform.position.x, party.cameraRotationObject.transform.position.y, 0), Vector3.forward, speed);
-        party.GetPartyLeader().GetComponentInChildren<SpriteRenderer>().transform.RotateAround(party.GetPartyLeader().transform.position, Vector3.forward, speed);
+        VisualsRotator.RotateAll(speed);
     }
     void ToggleCameraMode()
     {
