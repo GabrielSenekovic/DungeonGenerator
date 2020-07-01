@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 public class MusicGenerator : MonoBehaviour
 {
     public enum Key
@@ -18,7 +19,7 @@ public class MusicGenerator : MonoBehaviour
         SUSPENDED_2 = 5,
         MAJOR_7 = 6,
         MINOR_7 = 7,
-        MAJORMINOR_7 = 8,
+        MAJORMINOR_7 = 8, //The typical dominant 7th chord
         MINORMAJOR_7 = 9,
         DOM_7_FLAT_5 = 10,
         DIMINISHED_7 = 11,
@@ -30,16 +31,19 @@ public class MusicGenerator : MonoBehaviour
     }
     [System.Serializable]public struct Chord
     {
-        public Chord(ChordType type_in, List<Note> notes_in, int index_in, bool sort_in)
+        public Chord(ChordType type_in, List<Note> notes_in, int index_in, bool sort_in, int root_in)
         {
             type = type_in;
             notes = notes_in;
             index = index_in;
             sort = sort_in;
+            root = root_in;
         }
         public ChordType type;
         public List<Note> notes;
         public int index;
+
+        public int root; //always in key
         public bool sort;
     }
     [System.Serializable]public struct Section 
@@ -68,14 +72,16 @@ public class MusicGenerator : MonoBehaviour
     public List<Note> keyNotes; //the notes that are in the key
 
     public List<AudioSource> baseChord;
+    public AudioSource melody;
     public bool playing = false;
+    public Section.PlayType playType;
 
     public Mood mood;
 
     private void Start()
     {
         FillKey();
-        song.Add(new Section(MakeCadence(4, false), Section.PlayType.UpwardsWave, 2));
+        song.Add(new Section(MakeCadence(4, false), playType, 2));
     }
     private void Update() 
     {
@@ -102,88 +108,117 @@ public class MusicGenerator : MonoBehaviour
     List<Chord> MakeCadence(int length, bool sort)
     {
         List<Chord> temp = new List<Chord>(){};
-        temp.Add(MakeChord(0, ChordType.MAJOR));
+        temp.Add(MakeChord(0, ChordType.MAJOR, 1));
+        bool last = false;
         for(int i = 1; i < length; i++)
         {
-            int temp2 = GetNewChord(temp[i-1].index, false);
-            temp.Add(MakeChord(temp2, GetChordType(temp2)));
+            if(i == length -1){last = true;}
+            Tuple<int, int, ChordType> temp2 = GetNewChord(new Tuple<int,ChordType>(temp[i-1].root, temp[i-1].type), last);
+            temp.Add(MakeChord(temp2.Item1, temp2.Item3, temp2.Item2));
         }
         return temp;
     }
 
-    int GetNewChord(int previousIndex, bool last)
+    Tuple<int,int, ChordType> GetNewChord(Tuple<int,ChordType> previousChord, bool last)
     {
-        List<int> possibleNotes = new List<int>(){};
-        switch(previousIndex)
+        List<Tuple<int,int, ChordType>> possibleNotes = new List<Tuple<int,int, ChordType>>(){};
+        switch(previousChord.Item1)
         {
-            case 0: //if its the tonic
-            if(mood != Mood.Calm)
-            {
-                possibleNotes.Add(2);
-                possibleNotes.Add(4);
-                possibleNotes.Add(9);
-            }
-            possibleNotes.Add(5);
-            possibleNotes.Add(7);
+            case 1: //if its the tonic
+                if(previousChord.Item2 == ChordType.AUGMENTED)
+                {
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(5,4,ChordType.MAJOR));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(9,6,ChordType.MINOR));
+                    break;
+                }
+                else if(mood != Mood.Calm)
+                {
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.MAJOR_7));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.AUGMENTED));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(2,2, ChordType.MINOR));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(4,3, ChordType.MINOR));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(9,6, ChordType.MINOR));
+                }
+                possibleNotes.Add(new Tuple<int,int, ChordType>(5,4, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(7,5, ChordType.MAJOR));
             //possibleNotes.Add(11); 
-            break;
+                break;
             case 2: //if its the parallell subdominant
-            possibleNotes.Add(0);
-            possibleNotes.Add(4);
-            possibleNotes.Add(7);
-            break;
-            case 4: //if its the parallell dominant
-            possibleNotes.Add(0);
-            possibleNotes.Add(9);
-            break;
-            case 5: //if its the subdominant
-            possibleNotes.Add(0);
-            possibleNotes.Add(7);
-            if(mood!= Mood.Calm)
-            {
-                possibleNotes.Add(2);
-            }
-            break;
-            case 7: //if its the dominant
-            possibleNotes.Add(0);
-            if(mood != Mood.Calm)
-            {
-                possibleNotes.Add(4);
-                possibleNotes.Add(9);
-            }
-            break;
-            case 9: //if its the parallell tonic
-            possibleNotes.Add(0);
-            possibleNotes.Add(2);
-            possibleNotes.Add(4);
-            possibleNotes.Add(5);
-            possibleNotes.Add(7);
-            break;
-            case 11: //if its the diminished dominant
-            possibleNotes.Add(0);
-            possibleNotes.Add(9);
-            break;
+                possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(2,2,ChordType.MINOR_7));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(4,3,ChordType.MINOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(7,5,ChordType.MAJOR));
+                break;
+            case 3: //if its the parallell dominant
+                possibleNotes.Add(new Tuple<int,int,ChordType>(0,1, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(4,3,ChordType.MINOR_7));
+                possibleNotes.Add(new Tuple<int,int,ChordType>(9,6, ChordType.MINOR));
+                break;
+            case 4: //if its the subdominant
+                if(previousChord.Item2 == ChordType.AUGMENTED)
+                {
+                    return new Tuple<int, int, ChordType>(2,2, ChordType.MINOR);
+                }
+                possibleNotes.Add(new Tuple<int,int,ChordType>(0,1, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int,ChordType>(7,5, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int,ChordType>(7,5, ChordType.MAJORMINOR_7));
+                if(mood!= Mood.Calm)
+                {
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(2,2, ChordType.MINOR));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(5,4, ChordType.AUGMENTED));
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(5,4, ChordType.MAJOR_7));
+                }
+                break;
+            case 5: //if its the dominant
+                if(previousChord.Item2 == ChordType.AUGMENTED)
+                {
+                    return new Tuple<int, int, ChordType>(4,3, ChordType.MINOR);
+                }
+                possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.MAJOR));
+                if(mood != Mood.Calm)
+                {
+                    possibleNotes.Add(new Tuple<int,int, ChordType>(4,3, ChordType.MINOR));
+                    if(previousChord.Item2 != ChordType.MAJORMINOR_7)
+                    {
+                        possibleNotes.Add(new Tuple<int,int, ChordType>(7,5, ChordType.AUGMENTED));
+                        possibleNotes.Add(new Tuple<int,int, ChordType>(9,6, ChordType.MINOR));
+                    }
+                }
+                break;
+            case 6: //if its the parallell tonic
+                possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(2,2, ChordType.MINOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(4,3, ChordType.MINOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(5,4, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(7,5, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(7,5, ChordType.MAJORMINOR_7));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(9,6,ChordType.MINOR_7));
+                break;
+            case 7: //if its the diminished dominant
+                possibleNotes.Add(new Tuple<int,int, ChordType>(0,1, ChordType.MAJOR));
+                possibleNotes.Add(new Tuple<int,int, ChordType>(9,6,ChordType.MINOR));
+                break;
         }
-        return possibleNotes[Random.Range(0, possibleNotes.Count)];
+        return possibleNotes[UnityEngine.Random.Range(0, possibleNotes.Count)];
     }
 
-    ChordType GetChordType(int chord)
+    ChordType GetChordType(int chord, int previousChord)
     {
         switch(chord)
         {
-            case 0: return ChordType.MAJOR;
+            case 1: return ChordType.MAJOR;
             case 2: return ChordType.MINOR;
-            case 4: return ChordType.MINOR;
+            case 3: return ChordType.MINOR;
+            case 4: return ChordType.MAJOR;
             case 5: return ChordType.MAJOR;
-            case 7: return ChordType.MAJOR;
-            case 9: return ChordType.MINOR;
-            case 11: return ChordType.DIMINISHED;
+            case 6: return ChordType.MINOR;
+            case 7: return ChordType.DIMINISHED;
             default: return ChordType.MAJOR;
         }
     }
-    Chord MakeChord(int noteIndex, ChordType type)
+    Chord MakeChord(int noteIndex, ChordType type, int root)
     {
-        Chord temp = new Chord(type, new List<Note>(){keyNotes[0], keyNotes[0+4], keyNotes[0+7]}, noteIndex, true);
+        Chord temp = new Chord(type, new List<Note>(){keyNotes[0], keyNotes[0+4], keyNotes[0+7]}, noteIndex, true, root);
         List<int> temp2 = new List<int>(){};
         switch(type)
         {
@@ -193,13 +228,37 @@ public class MusicGenerator : MonoBehaviour
             case ChordType.MINOR: 
             temp2 = new List<int>(){noteIndex, (noteIndex+3)%12, (noteIndex+7)%12};
             break;
+            case ChordType.AUGMENTED:
+            temp2 = new List<int>(){noteIndex, (noteIndex+4)%12, (noteIndex+8)%12};
+            break;
+            case ChordType.DIMINISHED:
+            temp2 = new List<int>(){noteIndex, (noteIndex+3)%12, (noteIndex+6)%12};
+            break;
+            case ChordType.SUSPENDED_4:
+            temp2 = new List<int>(){noteIndex, (noteIndex+5)%12, (noteIndex+7)%12};
+            break;
+            case ChordType.SUSPENDED_2:
+            temp2 = new List<int>(){noteIndex, (noteIndex+2)%12, (noteIndex+7)%12};
+            break;
+            case ChordType.MAJOR_7:
+            temp2 = new List<int>(){noteIndex, (noteIndex+4)%12, (noteIndex+11)%12};
+            break;
+            case ChordType.MINOR_7:
+            temp2 = new List<int>(){noteIndex, (noteIndex+3)%12, (noteIndex+10)%12};
+            break;
+            case ChordType.MAJORMINOR_7:
+            temp2 = new List<int>(){noteIndex, (noteIndex+4)%12, (noteIndex+10)%12};
+            break;
+            case ChordType.MINORMAJOR_7:
+            case ChordType.DOM_7_FLAT_5:
+            case ChordType.DIMINISHED_7:
             default: break;
         }
         if(temp.sort)
         {
             temp2.Sort();
         }
-        temp = new Chord(type, new List<Note>(){keyNotes[temp2[0]], keyNotes[temp2[1]], keyNotes[temp2[2]]}, noteIndex, temp.sort);
+        temp = new Chord(type, new List<Note>(){keyNotes[temp2[0]], keyNotes[temp2[1]], keyNotes[temp2[2]]}, noteIndex, temp.sort, root);
         return temp;
     }
     public IEnumerator Play()
@@ -207,7 +266,6 @@ public class MusicGenerator : MonoBehaviour
         playing = true;
         for(int i = 0; i < song[0].chords.Count; i++)
         {
-            Debug.Log(i);
             //what chord of the song it is
             switch(song[0].playType)
             {
