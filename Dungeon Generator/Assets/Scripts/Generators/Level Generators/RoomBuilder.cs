@@ -19,23 +19,23 @@ public class RoomBuilder : MonoBehaviour
 
     void BuildRooms(List<Room> rooms)
     {
-        foreach (Room room in rooms)
+        for(int i = 0; i < rooms.Count; i++)
         {
-            if (!room.roomData.IsBuilt)
+            if (!rooms[i].roomData.IsBuilt)
             {
-                room.PlaceDownWalls(wallBlueprints);
+                rooms[i].PlaceDownWalls(wallBlueprints);
                 //room.InstantiateWalls(wallBlueprints);
-                room.InstantiateFloor(floorPrefab);
-                room.DisplayDistance();
+                rooms[i].InstantiateFloor(floorPrefab);
+                rooms[i].DisplayDistance();
 
-                foreach (Transform child in room.transform)
+                foreach (Transform child in rooms[i].transform)
                 {
                     if (child.GetComponent<WallPosition>())
                     {
                         Destroy(child.gameObject);
                     }
                 }
-                room.roomData.IsBuilt = true;
+                rooms[i].roomData.IsBuilt = true;
             }
         }
     }

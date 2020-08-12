@@ -22,8 +22,6 @@ public partial class LevelGenerator : MonoBehaviour
 
     int amountOfRandomOpenEntrances = 0;
 
-    [SerializeField]DebugText debug;
-
     public bool levelGenerated = false;
 
     public void GenerateLevel(LevelManager level, Vector2 RoomSize)
@@ -49,7 +47,7 @@ public partial class LevelGenerator : MonoBehaviour
         System.TimeSpan duration = after.Subtract(before);
         Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
         Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
-        //debug.Display(level.data);
+        if(DebuggingTools.spawnOnlyBasicRooms){FindObjectOfType<DebugText>().Display(level.data);}
     }
     public void BuildLevel(LevelData data, Room currentRoom)
     {
@@ -65,7 +63,7 @@ public partial class LevelGenerator : MonoBehaviour
         GetComponent<RoomBuilder>().Build(rooms, data);
         foreach(Room room in rooms)
         {
-            if(room != currentRoom)
+            if(room != currentRoom && !DebuggingTools.spawnOnlyBasicRooms)
             {
                 room.gameObject.SetActive(false);
             }

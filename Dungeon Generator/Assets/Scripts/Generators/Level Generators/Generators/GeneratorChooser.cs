@@ -9,6 +9,7 @@ public class GeneratorChooser : MonoBehaviour
     private void Start() 
     {
         GameData.currentLevel = GetComponent<LevelDataGenerator>().Initialize(GameData.m_LevelDataSeed);
+        GameData.currentLevel.dungeon = DebuggingTools.isDungeon;
         if(GameData.currentLevel.dungeon)
         {
             Instantiate(generators[1], transform.position, Quaternion.identity);

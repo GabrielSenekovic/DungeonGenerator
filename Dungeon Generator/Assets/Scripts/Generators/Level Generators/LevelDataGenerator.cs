@@ -51,18 +51,18 @@ public class LevelDataGenerator : MonoBehaviour
                     data.dangerLevel++;
                     break;
                 case Mood.Calm:
-                    data.safeRoomProbability += 2;
+                    data.restingRoomProbability += 2;
                     break;
                 case Mood.Creepy:
-                    data.safeRoomProbability--;
+                    data.restingRoomProbability--;
                     break;
                 case Mood.Cursed:
-                    data.safeRoomProbability -= 2;
+                    data.restingRoomProbability -= 2;
                     break;
                 case Mood.Dangerous:
                     data.dangerLevel += 2;
                     data.ambushRoomProbability += 2;
-                    data.safeRoomProbability--;
+                    data.restingRoomProbability--;
                     break;
                 case Mood.Decrepit:
                     data.treasureRoomProbability += 2;
@@ -140,9 +140,9 @@ public class LevelDataGenerator : MonoBehaviour
     }
     public void ChooseRoomProbabilities(LevelData data)
     {
-        if (data.safeRoomProbability < 0)
+        if (data.restingRoomProbability < 0)
         {
-            data.safeRoomProbability = 0;
+            data.restingRoomProbability = 0;
         }
         if(data.normalRoomProbability < 0)
         {

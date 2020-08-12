@@ -138,17 +138,13 @@ public partial class Room: MonoBehaviour
 
     bool GetIsEndRoom()
     {
+        //This gets if the room is an endroom. However, this could be set by having the rooms be endrooms when they spawn, unless they get linked
+        //And then set rooms being spawned from as no longer being endrooms
         List<RoomEntrance> entrances = new List<RoomEntrance> { };
-        if(!directions)
-        {
-            return false;
-        }
+        if(!directions){return false;}
         foreach(RoomEntrance entrance in directions.directions)
         {
-            if(entrance == null)
-            {
-                continue;
-            }
+            if(entrance == null){continue;}
             if(entrance.Spawned == true && entrance.Open == true)
             {
                 entrances.Add(entrance);
@@ -159,7 +155,8 @@ public partial class Room: MonoBehaviour
 
     public void ChooseRoomType(LevelData data)
     {
-        List<RoomType> probabilityList = new List<RoomType> { };
+        List<RoomType> probabilityList = new List<RoomType> { }; //A list of roomtypes to choose between
+        List<RoomType> roomsToCheck = new List<RoomType>{RoomType.AmbushRoom, RoomType.TreasureRoom, RoomType.RestingRoom, RoomType.NormalRoom}; //A list of roomtypes to check the probability of
 
         if (GetIsEndRoom())
         {
@@ -169,21 +166,12 @@ public partial class Room: MonoBehaviour
         }
         else
         {
-            for(int i = 0; i < data.GetAmbushRoomProbability(); i++)
+            for(int i = 0; i < roomsToCheck.Count; i++)
             {
-                probabilityList.Add(RoomType.AmbushRoom);
-            }
-            for (int i = 0; i < data.GetTreasureRoomProbability(); i++)
-            {
-                probabilityList.Add(RoomType.TreasureRoom);
-            }
-            for (int i = 0; i < data.GetSafeRoomProbability(); i++)
-            {
-                probabilityList.Add(RoomType.RestingRoom);
-            }
-            for (int i = 0; i < data.GetNormalRoomProbability(); i++)
-            {
-                probabilityList.Add(RoomType.NormalRoom);
+                for(int j = 0; j < data.GetRoomProbability(roomsToCheck[i]); j++)
+                {
+                    probabilityList.Add(roomsToCheck[i]);
+                }
             }
             if (roomData.stepsAwayFromMainRoom > 5)
             {
@@ -401,32 +389,27 @@ public partial class Room: MonoBehaviour
     {
         GameObject wallParent = new GameObject("Walls");
         wallParent.transform.SetParent(transform);
-
         if (!directions)
         {
             return;
         }
-        OnPlaceDownWall(new Vector2(0, -1), (int)CameraBoundaries.x, 0, 1, 0, 0, 0, wallParent.transform, blueprints);
-        OnPlaceDownWall(new Vector2(-1, 0), (int)CameraBoundaries.y, 1, 0, 1, 0, 0, wallParent.transform, blueprints);
-        OnPlaceDownWall(new Vector2(1, 0), (int)CameraBoundaries.y, 1, 0, 1, (int)CameraBoundaries.x - 1 ,0, wallParent.transform, blueprints);
-        OnPlaceDownWall(new Vector2(0, 1), (int)CameraBoundaries.x - 1, 1, 1, 0, 0 ,(int)CameraBoundaries.y - 1, wallParent.transform, blueprints);
-        if(roomData.m_layout == RoomLayout.NormalOutdoors)
+        OnPlaceDownWall(new Vector2(0, -1), (int)CameraBoundaries.x, 0, 1, 0, 0, 0);
+        OnPlaceDownWall(new Vector2(-1, 0), (int)CameraBoundaries.y, 1, 0, 1, 0, 0);
+        OnPlaceDownWall(new Vector2(1, 0), (int)CameraBoundaries.y, 1, 0, 1, (int)CameraBoundaries.x - 1 ,0);
+        OnPlaceDownWall(new Vector2(0, 1), (int)CameraBoundaries.x - 1, 1, 1, 0, 0 ,(int)CameraBoundaries.y - 1);
+
+        PlaceDownInnerWalls(blueprints, wallParent.transform);
+        for (int i = 0; i < 3; i++)
         {
-            PlaceDownInnerWalls(blueprints, wallParent.transform);
-            if (roomData.m_layout == RoomLayout.NormalOutdoors)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    AdjustWalls();
-                }
-            }
-        }
+            UnscatterWalls(); //Make sure there are no free standing wall pieces nor empty holes
+        } 
+
         WeedOutUnseeableWalls();
-        DetermineWallVariant();
-        InstantiateWalls(blueprints);
+        if(!DebuggingTools.spawnOnlyBasicRooms){DetermineWallVariant();}
+        InstantiateWalls(blueprints, wallParent.transform);
     }
     public void OnPlaceDownWall(Vector2 entranceDirection, int limit, int startValue, 
-    int x_modifier, int y_modifier, int x_offset, int y_offset, Transform parent, WallBlueprints blueprints)
+    int x_modifier, int y_modifier, int x_offset, int y_offset)
     {
         //The x and y offsets determine how far into the room the walls are
         List<RoomEntrance> temp = new List<RoomEntrance>(){};
@@ -452,8 +435,6 @@ public partial class Room: MonoBehaviour
                     }
                 }
             }
-            //GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i * x_modifier + x_offset,transform.position.y + i * y_modifier + y_offset), Quaternion.identity, parent);
-            //newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
             if(DebuggingTools.displayRoomConstructionDebugLogs)
             {
                 Debug.Log("i: " + i + " X_Offset: " + x_offset + " Y_Offset: " + y_offset);
@@ -512,19 +493,18 @@ public partial class Room: MonoBehaviour
 
     public virtual void BuildLayout(int i, int j, Vector2 center, Vector2 wallThickness, WallBlueprints blueprints, Transform parent)
     {
-        float distanceToCenter = new Vector2(i - center.x, j - center.y).magnitude;
+        float distanceToCenter = new Vector2(i+0.5f - center.x, j+0.5f - center.y).magnitude;
         if (distanceToCenter > wallThickness.x && distanceToCenter > wallThickness.y)
         {
+            //if the higher limit is 0, then the code just generates a circle, period
             int temp = UnityEngine.Random.Range(0, 2);
-            if (temp == 1)
+            if (temp == 0)
             {
-                GameObject newWall = Instantiate(blueprints.wallBlock, new Vector2(transform.position.x + i,transform.position.y + j), Quaternion.identity, parent);
-                newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                 wallPositions[i][j].PlaceDown();
             }
         }
     }
-    public void AdjustWalls()
+    public void UnscatterWalls()
     {
         for (int i = 0; i < CameraBoundaries.x; i++)
         {
@@ -559,28 +539,28 @@ public partial class Room: MonoBehaviour
                         amountOfAdjacentWalls++;
                     }
                 }
-                if (amountOfAdjacentWalls == 0)
-                {
-                    wallPositions[i][j].UnPlace();
-                }
-                if (amountOfAdjacentWalls >= 3)
-                {
-                    wallPositions[i][j].PlaceDown();
-                }
+                if (amountOfAdjacentWalls == 0){wallPositions[i][j].UnPlace();}
+                if (amountOfAdjacentWalls >= 3){wallPositions[i][j].PlaceDown();}
             }
         }
     }
     public void WeedOutUnseeableWalls()
     {
+        List<WallPosition> positionsToDestroy = new List<WallPosition>(){};
+        //If this wall has walls all around it, it cannot be seen
         for(int i = 0; i < wallPositions.Count; i++)
         {
             for(int j = 0; j < wallPositions[i].Count; j++)
             {
                 if(GetArrayDiagonalPositioningString(i, j) == "AAAA")
                 {
-                    wallPositions[i][j].UnPlace();
+                    positionsToDestroy.Add(wallPositions[i][j]);
                 }
             }
+        }
+        foreach(WallPosition position in positionsToDestroy)
+        {
+            position.UnPlace();
         }
     }
 
@@ -603,14 +583,8 @@ public partial class Room: MonoBehaviour
         string temp = "";
         if(j+1 < CameraBoundaries.y && i+1 < CameraBoundaries.x)
         {
-            if (wallPositions[i + 1][j + 1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
+            if (wallPositions[i + 1][j + 1].GetIsOccupied()){temp+='A';}
+            else{temp+='B';}
         }
         else
         {
@@ -618,14 +592,8 @@ public partial class Room: MonoBehaviour
         }
         if (i + 1 < CameraBoundaries.x && j - 1 >= 0)
         {
-            if (wallPositions[i+1][j -1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
+            if (wallPositions[i+1][j -1].GetIsOccupied()){temp+='A';}
+            else{temp+='B';}
         }
         else
         {
@@ -633,14 +601,8 @@ public partial class Room: MonoBehaviour
         }
         if (j - 1 >= 0 && i - 1 >= 0)
         {
-            if (wallPositions[i - 1][j - 1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
+            if (wallPositions[i - 1][j - 1].GetIsOccupied()){temp+='A';}
+            else{temp+='B';}
         }
         else
         {
@@ -648,14 +610,8 @@ public partial class Room: MonoBehaviour
         }
         if (i - 1 >= 0 && j+1 < CameraBoundaries.y)
         {
-            if (wallPositions[i-1][j+1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
+            if (wallPositions[i-1][j+1].GetIsOccupied()){temp+='A';}
+            else{temp+='B';}
         }
         else
         {
@@ -808,7 +764,7 @@ public partial class Room: MonoBehaviour
                 break;
         }
     }
-    public void InstantiateWalls(WallBlueprints blueprints)
+    public void InstantiateWalls(WallBlueprints blueprints, Transform wallParent)
     {
         for (int i = 0; i < CameraBoundaries.x; i++)
         {
@@ -818,19 +774,19 @@ public partial class Room: MonoBehaviour
                 {
                     if (wallPositions[i][j].GetVariant() == WallVariant.None)
                     {
-                        GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                        GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, wallParent);
                         newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                     }
                     else
                     {
                         try
                         {
-                            GameObject newWall = Instantiate(blueprints.walls[(int)wallPositions[i][j].GetVariant() - 1], new Vector3(wallPositions[i][j].transform.position.x + 0.5f, wallPositions[i][j].transform.position.y + 0.5f, wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, transform);
+                            GameObject newWall = Instantiate(blueprints.walls[(int)wallPositions[i][j].GetVariant() - 1], new Vector3(wallPositions[i][j].transform.position.x + 0.5f, wallPositions[i][j].transform.position.y + 0.5f, wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, wallParent);
                             newWall.transform.rotation = wallPositions[i][j].transform.rotation;
                         }
                         catch
                         {
-                            GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, transform);
+                            GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, wallParent);
                             newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
                         }
                     }

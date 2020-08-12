@@ -21,9 +21,9 @@ public class DebugText : MonoBehaviour
         m_DebugText.text += "Water Level: " + levelData.waterLevel + "\n";
         m_DebugText.text += "Magic Level: " + levelData.magicLevel + "\n";
         m_DebugText.text += "Altitude: " + levelData.altitude + "\n";
-        m_DebugText.text += "Probability for Normal Room: " + levelData.GetNormalRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Treasure Room: " + levelData.GetTreasureRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Ambush Room: " + levelData.GetAmbushRoomPercentage() + "%" + "\n";
-        m_DebugText.text += "Probability for Safe Room: " + levelData.GetSafeRoomPercentage() + "%" + "\n";
+        m_DebugText.text += "Probability for Normal Room: " + levelData.GetRoomPercentage(RoomType.NormalRoom) + "%" + "\n";
+        m_DebugText.text += "Probability for Treasure Room: " + levelData.GetRoomPercentage(RoomType.TreasureRoom) + "%" + "\n";
+        m_DebugText.text += "Probability for Ambush Room: " + levelData.GetRoomPercentage(RoomType.AmbushRoom) + "%" + "\n";
+        m_DebugText.text += "Probability for Safe Room: " + levelData.GetRoomPercentage(RoomType.RestingRoom) + "%" + "\n";
     }
 }

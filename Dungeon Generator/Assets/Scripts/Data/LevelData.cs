@@ -49,7 +49,7 @@ public class LevelData
     public int normalRoomProbability = 20;
     public int treasureRoomProbability = 1;
     public int ambushRoomProbability = 5;
-    public int safeRoomProbability = 5;
+    public int restingRoomProbability = 5;
 
     public int openDoorProbability = 0;
     public Vector2 roomOpenness = Vector2.zero;
@@ -74,39 +74,22 @@ public class LevelData
     public float GetFullRoomProbabilityPercentage()
     {
         //Debug.Log("Full probability: " + (m_treasureRoomProbability + m_normalRoomProbability + m_safeRoomProbability + m_ambushRoomProbability));
-        return treasureRoomProbability + normalRoomProbability + safeRoomProbability + ambushRoomProbability;
+        return treasureRoomProbability + normalRoomProbability + restingRoomProbability + ambushRoomProbability;
     }
 
-    public float GetTreasureRoomPercentage()
+    public float GetRoomProbability(RoomType type)
     {
-        return (int)(treasureRoomProbability/GetFullRoomProbabilityPercentage() * 100);
+        switch(type)
+        {
+            case RoomType.NormalRoom: return normalRoomProbability;
+            case RoomType.AmbushRoom: return ambushRoomProbability;
+            case RoomType.TreasureRoom: return treasureRoomProbability;
+            case RoomType.RestingRoom: return restingRoomProbability;
+            default: return 0;
+        }
     }
-    public int GetTreasureRoomProbability()
+    public float GetRoomPercentage(RoomType type)
     {
-        return treasureRoomProbability;
-    }
-    public float GetAmbushRoomPercentage()
-    {
-        return (int)(ambushRoomProbability / GetFullRoomProbabilityPercentage() * 100);
-    }
-    public int GetAmbushRoomProbability()
-    {
-        return ambushRoomProbability;
-    }
-    public float GetNormalRoomPercentage()
-    {
-        return (int)(normalRoomProbability / GetFullRoomProbabilityPercentage() * 100);
-    }
-    public int GetNormalRoomProbability()
-    {
-        return normalRoomProbability;
-    }
-    public float GetSafeRoomPercentage()
-    {
-        return (int)(safeRoomProbability / GetFullRoomProbabilityPercentage() * 100);
-    }
-    public int GetSafeRoomProbability()
-    {
-        return safeRoomProbability;
+        return (int)(GetRoomProbability(type)/GetFullRoomProbabilityPercentage()*100);
     }
 }

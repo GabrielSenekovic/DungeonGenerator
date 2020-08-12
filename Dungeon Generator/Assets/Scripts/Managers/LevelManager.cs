@@ -17,8 +17,8 @@ public class LevelManager : MonoBehaviour
 
     private void Awake() 
     {
-        //GameData.m_LevelConstructionSeed = Random.Range(0, int.MaxValue);
-        //GameData.m_LevelDataSeed = Random.Range(0, int.MaxValue);
+        GameData.m_LevelConstructionSeed = Random.Range(0, int.MaxValue);
+        GameData.m_LevelDataSeed = Random.Range(0, int.MaxValue);
         if(GameData.Instance != null)
         {
             GameData.SetPlayerPosition(new Vector2(GameData.GetPlayerPosition().x + RoomSize.x/2, GameData.GetPlayerPosition().y + RoomSize.y/2));
@@ -28,7 +28,6 @@ public class LevelManager : MonoBehaviour
     private void Start() 
     {
         data = GameData.currentLevel;
-        data.dungeon = DebuggingTools.isDungeon;
         if(DebuggingTools.checkForBrokenSeeds)
         {
             try
@@ -70,6 +69,7 @@ public class LevelManager : MonoBehaviour
                 GetComponent<LevelGenerator>().BuildLevel(data, currentRoom);
             }
         }
+        if(party == null){return;}
         if(CheckIfChangeRoom())
         {
             party.GetPartyLeader().GetPMM().canMove = false;
