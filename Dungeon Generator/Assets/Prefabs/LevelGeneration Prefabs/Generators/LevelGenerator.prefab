@@ -49,8 +49,9 @@ MonoBehaviour:
   rooms: []
   RoomPrefab: {fileID: 1389067660403157798, guid: 67ecedab0af7b354ea79078f7254ccaa,
     type: 3}
-  debug: {fileID: 0}
   levelGenerated: 0
+  endOfLevel: {fileID: 4801553803627296397, guid: bb552cd3dce0a4d4eae1d9841e843e82,
+    type: 3}
 --- !u!114 &6922992177035552933
 MonoBehaviour:
   m_ObjectHideFlags: 0

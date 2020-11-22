@@ -8,6 +8,7 @@ public class GameData : MonoBehaviour
     static PlayerController Player;
 
     public static LevelData currentLevel;
+    public static QuestData currentQuest;
 
     public static int m_LevelConstructionSeed; //Used by the room generator to generate the room
     public static int m_LevelDataSeed;

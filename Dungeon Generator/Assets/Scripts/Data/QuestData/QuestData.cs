@@ -11,7 +11,6 @@ public class QuestData
         Backup = 2,
         Investigation = 3,
         Hunt = 4
-
     }
     CharacterData questGiver = null;
     public MissionType missionType;
@@ -22,6 +21,10 @@ public class QuestData
     //escort to investigation mission - theyre probably an archeologist
     //escort to hunting mission - its personal
 
+    public QuestData()
+    {
+        missionType = MissionType.Investigation;
+    }
     public virtual void Initialize()
     {
         

@@ -24,6 +24,9 @@ public partial class LevelGenerator : MonoBehaviour
 
     public bool levelGenerated = false;
 
+    public InteractableBase endOfLevel; //Debugging object to end game loop, prefab
+    public InteractableBase spawnedEndOfLevel; // spawned version
+
     public void GenerateLevel(LevelManager level, Vector2 RoomSize)
     {
         System.DateTime before = System.DateTime.Now;
@@ -33,21 +36,23 @@ public partial class LevelGenerator : MonoBehaviour
         rooms.Add(Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity, transform));
         rooms[0].Initialize(RoomSize);
 
-        SpawnRooms(UnityEngine.Random.Range((int)(level.data.m_amountOfRoomsCap.x + rooms.Count),
-                                (int)(level.data.m_amountOfRoomsCap.y + rooms.Count)), RoomSize, level.data);
+        SpawnRooms(UnityEngine.Random.Range((int)(level.l_data.m_amountOfRoomsCap.x + rooms.Count),
+                                (int)(level.l_data.m_amountOfRoomsCap.y + rooms.Count)), RoomSize, level.l_data);
 
         level.firstRoom = rooms[0];
         level.lastRoom = rooms[rooms.Count - 1];
 
         //FuseRooms(RoomSize, level.data);
-        AdjustRoomTypes(level.data);
+        AdjustRoomTypes(level.l_data);
         AdjustEntrances(RoomSize);
+
+        spawnedEndOfLevel = Instantiate(endOfLevel, new Vector2(level.lastRoom.transform.position.x + 10, level.lastRoom.transform.position.y + 10), Quaternion.identity, level.lastRoom.transform);
 
         System.DateTime after = System.DateTime.Now; 
         System.TimeSpan duration = after.Subtract(before);
         Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
         Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
-        if(DebuggingTools.spawnOnlyBasicRooms){FindObjectOfType<DebugText>().Display(level.data);}
+        if(DebuggingTools.spawnOnlyBasicRooms){FindObjectOfType<DebugText>().Display(level.l_data);}
     }
     public void BuildLevel(LevelData data, Room currentRoom)
     {

@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
     public Vector2 RoomSize = new Vector2(20,20);
 
-    public LevelData data;
+    public LevelData l_data;
+    public QuestData q_data;
     public Room firstRoom;
     public Room lastRoom;
 
@@ -27,7 +29,8 @@ public class LevelManager : MonoBehaviour
     }
     private void Start() 
     {
-        data = GameData.currentLevel;
+        l_data = GameData.currentLevel;
+        q_data = new QuestData();
         if(DebuggingTools.checkForBrokenSeeds)
         {
             try
@@ -56,7 +59,7 @@ public class LevelManager : MonoBehaviour
             {
                 try
                 {
-                    GetComponent<LevelGenerator>().BuildLevel(data, currentRoom);
+                    GetComponent<LevelGenerator>().BuildLevel(l_data, currentRoom);
                 }
                 catch
                 {
@@ -66,10 +69,16 @@ public class LevelManager : MonoBehaviour
             }
             else
             {
-                GetComponent<LevelGenerator>().BuildLevel(data, currentRoom);
+                GetComponent<LevelGenerator>().BuildLevel(l_data, currentRoom);
             }
         }
         if(party == null){return;}
+        if(GetComponent<LevelGenerator>().spawnedEndOfLevel.isInteractedWith)
+        {
+            //Level is ended
+            //Load HQ scene
+            SceneManager.LoadSceneAsync("HQ");
+        }
         if(CheckIfChangeRoom())
         {
             party.GetPartyLeader().GetPMM().canMove = false;
@@ -97,6 +106,20 @@ public class LevelManager : MonoBehaviour
         {
             previousRoom = currentRoom;
             currentRoom = GetComponent<LevelGenerator>().FindAdjacentRoom(currentRoom, new Vector2(-1,0));
+            currentRoom.gameObject.SetActive(true);
+            return true;
+        }
+        else if (party.GetPartyLeader().transform.position.y > currentRoom.transform.position.y + currentRoom.CameraBoundaries.y)
+        {
+            previousRoom = currentRoom;
+            currentRoom = GetComponent<LevelGenerator>().FindAdjacentRoom(currentRoom, new Vector2(0, 1));
+            currentRoom.gameObject.SetActive(true);
+            return true;
+        }
+        else if (party.GetPartyLeader().transform.position.y < currentRoom.transform.position.y)
+        {
+            previousRoom = currentRoom;
+            currentRoom = GetComponent<LevelGenerator>().FindAdjacentRoom(currentRoom, new Vector2(0, -1));
             currentRoom.gameObject.SetActive(true);
             return true;
         }

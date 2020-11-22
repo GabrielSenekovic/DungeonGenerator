@@ -24,6 +24,11 @@ public class PlayerController : MonoBehaviour
         {
             Interact();
         }
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            UIManager.OpenOrClose(UIManager.UIScreen.MainMenu);
+            UIManager.ToggleHUD();
+        }
     }
 
     void Move()
