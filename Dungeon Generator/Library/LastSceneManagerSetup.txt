@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Game/HQ.unity
+- path: Assets/Scenes/Debugging/Fruit Generation.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

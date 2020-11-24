@@ -20,6 +20,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] Transform inventoryGrid;
     List<GameObject> inventorySlots = new List<GameObject>();
     List<Item> inventorySlots_Item = new List<Item>();
+    [SerializeField] ItemGenerator itemGenerator;
     //Either show them as a continual list with a weight value, or visually as differently sized boxes
 
     void Start()
@@ -31,7 +32,7 @@ public class Inventory : MonoBehaviour
         }
         if(DebuggingTools.fillInventoryWithRandomItems)
         {
-            Sprite temp = ItemGenerator.GenerateItemSprite();
+            Sprite temp = itemGenerator.GenerateItemSprite();
             if(temp == null) { return; }
             AddItem(GenerateRandomItem(temp));
         }
