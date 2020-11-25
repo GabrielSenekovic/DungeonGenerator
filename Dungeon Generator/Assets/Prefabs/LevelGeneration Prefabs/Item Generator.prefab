@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8589002079279796895}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -50,43 +50,67 @@ MonoBehaviour:
       textures:
       - {fileID: 2800000, guid: 9f34f8c1229ccc64ca8610ab9a17484f, type: 3}
       - {fileID: 2800000, guid: 93a4e6437be152f43aac820e88a52344, type: 3}
-      connector: {x: 0, y: 0}
+      connector: {x: 15, y: 20}
       connectorType: 0
     - name: Pear
-      textures: []
-      connector: {x: 0, y: 0}
+      textures:
+      - {fileID: 2800000, guid: c992c2237d979b2459297456e9e2796b, type: 3}
+      - {fileID: 2800000, guid: 3f0ebfea0cc788c4895771c6a20dde65, type: 3}
+      connector: {x: 20, y: 20}
       connectorType: 0
+    - name: Lemon
+      textures:
+      - {fileID: 2800000, guid: 77d57c06602693d4eb1389433be6e67b, type: 3}
+      - {fileID: 2800000, guid: 974a4e081db505c4891875cb537274d6, type: 3}
+      connector: {x: 12, y: 12}
+      connectorType: 1
     - name: Banana
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: BeautyBerry
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Carrot
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Currant
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Pomegranate
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Radish
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: RowanBerry
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Turnip
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
+      textures:
+      - {fileID: 2800000, guid: 813fb5af979d7e44eb373f2806c944b8, type: 3}
+      - {fileID: 2800000, guid: f270a8bf875a34e4d928b02610615f7e, type: 3}
+      connector: {x: 15, y: 20}
+      connectorType: 2
   - name: Leaves and Twigs
-    groups: []
+    groups:
+    - name: Str Leaf 1
+      textures:
+      - {fileID: 2800000, guid: 66e0cf1ce4e721042a5a0705d7f8b2c3, type: 3}
+      - {fileID: 2800000, guid: 4d6b0656aecbdf34fafce4da72ea8120, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 0
+    - name: Str Leaf 2
+      textures:
+      - {fileID: 2800000, guid: 2fde6df159555794bb82ce7a12516b18, type: 3}
+      - {fileID: 2800000, guid: fc150947203895f4baf7e0f816ea0aa3, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 0
+    - name: Str Leaf 3
+      textures:
+      - {fileID: 2800000, guid: e8ff04f8d1a653f47983d99098b57502, type: 3}
+      - {fileID: 2800000, guid: dd7e2bb2bb571ec4f90db436076443ef, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 0
+    - name: Stem 1
+      textures:
+      - {fileID: 2800000, guid: b003afc3accb4f24f879e2f98432a01b, type: 3}
+      - {fileID: 2800000, guid: 6ce8d85e45f425d44837871a52cc80cb, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 2
+    - name: Diag Leaf 1
+      textures:
+      - {fileID: 2800000, guid: 0e194dc1d57832f4cad744572f24229c, type: 3}
+      - {fileID: 2800000, guid: 8a371ed988898f441b86acc5488be8fe, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 1
+    - name: Diag Leaf 2
+      textures:
+      - {fileID: 2800000, guid: 139e9cfe84549444bb1d5c75479f7adc, type: 3}
+      - {fileID: 2800000, guid: f8eba16b137a671488d78537385a02eb, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 1
+    - name: Diag Leaf 3
+      textures:
+      - {fileID: 2800000, guid: 8e5800e7bdf9c954f9d166bb3e32511f, type: 3}
+      - {fileID: 2800000, guid: 8208d92fa5a912b44a4e73a5ac22be44, type: 3}
+      connector: {x: 0, y: 0}
+      connectorType: 1

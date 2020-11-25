@@ -15,7 +15,8 @@ public class ItemGenerator : MonoBehaviour
         public enum ConnectorType
         {
             Straight = 0,
-            Diagonal = 1
+            Diagonal = 1,
+            Stem = 2
         }
         [SerializeField] string name;
         public List<Texture2D> textures; //First texture is the base, second is the silhouette
@@ -31,16 +32,17 @@ public class ItemGenerator : MonoBehaviour
     public Sprite GenerateItemSprite()
     {
         int temp = Random.Range(0, lists[0].groups.Count); //gets a base for the fruit
+        int temp2 = Random.Range(0, lists[1].groups.Count); //gets a base for the leaf
         Color fruitColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
         Color leafColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
 
-        return Sprite.Create(CreateTexture(temp, 0, fruitColor, leafColor, 0), new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 16);
+        return Sprite.Create(CreateTexture(temp, temp2, fruitColor, leafColor, 0), new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 16);
     }
-    public Texture2D CreateTexture(int fruit, int leaf, Color fruitColor_in, Color leafColor_in, float luminosity)
+    public Texture2D CreateTexture(int fruit, int leaf, Color fruitColor, Color leafColor_in, float luminosity)
     {
         Texture2D texture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
         List<Texture2D> fruitTextures = lists[0].groups[fruit].textures;
-        Color fruitColor = fruitColor_in;
+        AdjustColor(ref fruitColor);
         List<Texture2D> leafTextures = lists[1].groups[leaf].textures;
         Color leafColor = leafColor_in;
         Color[] pixels = new Color[32*32];
@@ -65,7 +67,7 @@ public class ItemGenerator : MonoBehaviour
     }
     Color GetPixel(Texture2D texture, int x, int y)
     {
-        if(x > 0 && y > 0 && x < texture.width && y < texture.height)
+        if(x >= 0 && y >= 0 && x < texture.width && y < texture.height)
         {
             return texture.GetPixel(x, y);
         }
@@ -73,7 +75,7 @@ public class ItemGenerator : MonoBehaviour
     }
     Color GetPixel(Texture2D texture, int x, int y, Color color, BlendMode mode, float luminosity)
     {
-        if (x > 0 && y > 0 && x < texture.width && y < texture.height)
+        if (x >= 0 && y >= 0 && x < texture.width && y < texture.height)
         {
             Color temp = texture.GetPixel(x, y);
             float h = 0, s = 0, v = 0;
@@ -102,5 +104,14 @@ public class ItemGenerator : MonoBehaviour
     void SetPixel(ref Color newColor, Color color)
     {
         if(color.a != 0) { newColor = color;}
+    }
+    void AdjustColor(ref Color color)
+    {
+        //Because, for example, the fruit base cant be desaturated or it will look like crap
+        //Meanwhile, leaves dont need this
+        float h = 0, s = 0, v = 0;
+        Color.RGBToHSV(color, out h, out s, out v);
+        if(s < 0.6f) { s = 0.6f; }
+        color = Color.HSVToRGB(h, s, v);
     }
 }

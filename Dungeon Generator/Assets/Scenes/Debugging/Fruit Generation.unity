@@ -247,46 +247,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[0].groups.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[1].groups.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[1].groups.Array.data[0].name
-      value: Leaf 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[0].groups.Array.data[0].connector.x
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[0].groups.Array.data[0].connector.y
-      value: 16
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[1].groups.Array.data[0].textures.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[1].groups.Array.data[0].textures.Array.data[0]
-      value: 
-      objectReference: {fileID: 2800000, guid: 66e0cf1ce4e721042a5a0705d7f8b2c3, type: 3}
-    - target: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
-        type: 3}
-      propertyPath: lists.Array.data[1].groups.Array.data[0].textures.Array.data[1]
-      value: 
-      objectReference: {fileID: 2800000, guid: 4d6b0656aecbdf34fafce4da72ea8120, type: 3}
     - target: {fileID: 8589002079279796895, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
         type: 3}
       propertyPath: m_Name
@@ -567,11 +527,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemGenerator: {fileID: 630418580}
-  fruit: 0
-  fruitColor: {r: 1, g: 0, b: 0.14754105, a: 1}
-  leaf: 0
+  fruit: 3
+  fruitColor: {r: 0.9296191, g: 1, b: 0, a: 1}
+  leaf: 5
   leafColor: {r: 0.67860556, g: 1, b: 0, a: 1}
-  luminosity: 0
+  luminosity: 0.2
 --- !u!4 &1169050691
 Transform:
   m_ObjectHideFlags: 0
