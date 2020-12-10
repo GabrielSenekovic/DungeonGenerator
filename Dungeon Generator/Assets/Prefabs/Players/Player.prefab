@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7718803507432236311}
   - component: {fileID: 7275153806096256017}
   - component: {fileID: 5207322000986146122}
-  - component: {fileID: 1620609151}
   - component: {fileID: 1620609152}
   - component: {fileID: 500624355516138987}
   - component: {fileID: 363024046711604991}
@@ -67,6 +66,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  canMove: 1
 --- !u!114 &5207322000986146122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,20 +79,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd48421fed22ba842b9e95954719cb6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1620609151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 761299564158947221}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ae69f3a1754e2b4aa7ef2d77dd59342, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_layer: -10
-  m_isEntity: 1
 --- !u!114 &1620609152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +218,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

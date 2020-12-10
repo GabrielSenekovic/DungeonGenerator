@@ -52,6 +52,7 @@ MonoBehaviour:
   levelGenerated: 0
   endOfLevel: {fileID: 4801553803627296397, guid: bb552cd3dce0a4d4eae1d9841e843e82,
     type: 3}
+  NPC: {fileID: 1495904575826847970, guid: f4b5ae4aaf79c8c4ba884e23234f78dd, type: 3}
 --- !u!114 &6922992177035552933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,6 +103,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RoomSize: {x: 20, y: 20}
+  q_data:
+    missionType: 0
   firstRoom: {fileID: 0}
   lastRoom: {fileID: 0}
   currentRoom: {fileID: 0}

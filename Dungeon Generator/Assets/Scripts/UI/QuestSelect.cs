@@ -66,7 +66,9 @@ public class QuestSelect : MonoBehaviour
     public void OnLoadLevel()
     {
         Time.timeScale = 1;
-        GameData.SetSeed(seeds[index].constructionSeed, seeds[index].dataSeed);
+        GameData.SetSeed(seeds[index].constructionSeed, seeds[index].dataSeed, seeds[index].questSeed);
+        GameData.currentQuest = GetComponent<QuestDataGenerator>().Initialize(seeds[index].questSeed);
+        Debug.Log(index);
         SceneManager.LoadSceneAsync("Level");
         OnClose();
         Time.timeScale = 1;
