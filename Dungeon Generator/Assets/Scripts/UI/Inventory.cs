@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
@@ -16,30 +17,36 @@ public class Inventory : MonoBehaviour
     [SerializeField] InventoryState state;
     bool list = false;
     [SerializeField] Sprite emptySlot;
-    [SerializeField] GameObject inventorySlot;
     [SerializeField] Transform inventoryGrid;
-    List<GameObject> inventorySlots = new List<GameObject>();
+    public List<InventorySlot> inventorySlots = new List<InventorySlot>();
     List<Item> inventorySlots_Item = new List<Item>();
     [SerializeField] ItemGenerator itemGenerator;
     //Either show them as a continual list with a weight value, or visually as differently sized boxes
 
+    int selectedSlot = -1;
+
     void Start()
     {
-        for(int i = 0; i < 30; i++)
+        inventorySlots_Item.Add(null);
+        for (int i = 0; i < 30-1; i++)
         {
-            inventorySlots.Add(Instantiate(inventorySlot, inventoryGrid));
+            inventorySlots.Add(Instantiate(inventorySlots[0], inventoryGrid));
+            inventorySlots[i].index += i;
             inventorySlots_Item.Add(null);
         }
         if(DebuggingTools.fillInventoryWithRandomItems)
         {
-            Sprite temp = itemGenerator.GenerateItemSprite();
-            if(temp == null) { return; }
-            AddItem(GenerateRandomItem(temp));
+            for(int i = 0; i < inventorySlots.Count; i++)
+            {
+                Sprite temp = itemGenerator.GenerateItemSprite();
+                if (temp == null) { return; }
+                AddItem(GenerateRandomItem(temp));
+            }
         }
     }
     public Item GenerateRandomItem(Sprite sprite)
     {
-        Item temp = null;
+        Item temp = new Item();
         temp.types.Add(Item.ItemType.IngredientItem);
         temp.sprite = sprite;
         temp.size = 1;
@@ -53,8 +60,20 @@ public class Inventory : MonoBehaviour
             if(inventorySlots_Item[i] == null)
             {
                 inventorySlots_Item[i] = item;
+                inventorySlots[i].GetComponentInChildren<Image>().sprite = item.sprite;
                 return;
             }
+        }
+    }
+
+    public void SelectItem(InventorySlot slot)
+    {
+        if(selectedSlot == -1) { selectedSlot = slot.index; return; }
+        else
+        {
+            Item temp = inventorySlots_Item[slot.index];
+            inventorySlots_Item[slot.index] = inventorySlots_Item[selectedSlot];
+            inventorySlots_Item[selectedSlot] = temp;
         }
     }
     public void ChangeState(int value)

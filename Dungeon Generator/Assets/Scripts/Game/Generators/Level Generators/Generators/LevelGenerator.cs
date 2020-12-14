@@ -74,7 +74,7 @@ public partial class LevelGenerator : MonoBehaviour
                 for(int i = 0; i < temp2.NPCsToBackup.Count; i++)
                 {
                     Instantiate(temp2.NPCsToBackup[i].NPC,
-                    new Vector2(temp2.NPCsToBackup[i].Room.x + 10, temp2.NPCsToBackup[i].Room.y + 10),
+                    new Vector2(level.lastRoom.transform.position.x + 10, level.lastRoom.transform.position.y + 10),
                     Quaternion.identity, level.lastRoom.transform);
                 }
                 break;

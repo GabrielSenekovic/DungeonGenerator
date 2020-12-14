@@ -10,6 +10,12 @@ public class QuestData
     {
         public EntityMovementModel NPC;
         public Vector2 Room;
+
+        public NPCInformation(EntityMovementModel NPC_in, Vector2 Room_in)
+        {
+            NPC = NPC_in;
+            Room = Room_in;
+        }
     }
     public enum MissionType
     {

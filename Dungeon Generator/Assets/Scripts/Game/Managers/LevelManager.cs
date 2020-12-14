@@ -143,15 +143,11 @@ public class LevelManager : MonoBehaviour
                 //If false, update timers about the status of the NPCs youre supposed to help
                 return false;
             case QuestData.MissionType.Delivery:
-                return false;
             case QuestData.MissionType.Escort:
-                return false;
             case QuestData.MissionType.Hunt:
-                return false;
             case QuestData.MissionType.Inquiry:
-                return q_data.GetStatus();
             case QuestData.MissionType.Investigation:
-                return false;
+                return q_data.GetStatus();
             default: return false;
         }
     }

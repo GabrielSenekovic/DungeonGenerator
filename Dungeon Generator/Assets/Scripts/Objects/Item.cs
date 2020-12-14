@@ -17,6 +17,7 @@ public class Item:ScriptableObject
         KeyItem = 7
     }
     public Sprite sprite;
-    public List<ItemType> types; //Sometimes an item can be both ingredient and material, for example
+    public List<ItemType> types = new List<ItemType>(); 
+    //Sometimes an item can be both ingredient and material, for example
     public int size; //determines how much space it takes up in the inventory
 }

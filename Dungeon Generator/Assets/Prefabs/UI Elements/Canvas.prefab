@@ -3554,6 +3554,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20782a036f9fb4b40a10e68a9e039fc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NPC: {fileID: 0}
 --- !u!1 &102790488255625301
 GameObject:
   m_ObjectHideFlags: 0
@@ -7878,7 +7879,6 @@ GameObject:
   - component: {fileID: 3448342060551691834}
   - component: {fileID: 5543759762340606166}
   - component: {fileID: 3102449116871822686}
-  - component: {fileID: 7011464183063606022}
   m_Layer: 0
   m_Name: Inventory
   m_TagString: Untagged
@@ -7935,61 +7935,7 @@ MonoBehaviour:
   inventorySlot: {fileID: 3802833628667102571, guid: 152944cc3a19405408f9672c6e0f3d3b,
     type: 3}
   inventoryGrid: {fileID: 2054901948}
---- !u!114 &7011464183063606022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8802630365824110084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad4fdbe77f633ee489029ecf3f699698, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lists:
-  - name: Veggies, Berries, Fruits
-    groups:
-    - name: Apple
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Pear
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Banana
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: BeautyBerry
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Carrot
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Currant
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Pomegranate
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Radish
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: RowanBerry
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
-    - name: Turnip
-      textures: []
-      connector: {x: 0, y: 0}
-      connectorType: 0
+  itemGenerator: {fileID: 0}
 --- !u!1 &9217717931952977773
 GameObject:
   m_ObjectHideFlags: 0

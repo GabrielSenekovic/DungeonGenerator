@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class HuntQuestData : QuestData
 {
-    NPCInformation hunt;
+    public NPCInformation hunt;
     public override bool GetStatus()
     {
         return hunt.NPC.GetComponent<HealthModel>().GetHealthPercentage() <= 0;

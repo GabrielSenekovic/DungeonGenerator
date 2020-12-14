@@ -30,7 +30,7 @@ public class BackupQuestData : QuestData
     public State state;
     public Disaster disaster;
 
-    public List<NPCInformation> NPCsToBackup;
+    public List<NPCInformation> NPCsToBackup = new List<NPCInformation>();
     //A timer of sorts will show you the collective HP of all the NPCs you have to backup.
     //The progress of the timer will determine your level of success.
     //If it turns out badly, it might add an event to your list of events

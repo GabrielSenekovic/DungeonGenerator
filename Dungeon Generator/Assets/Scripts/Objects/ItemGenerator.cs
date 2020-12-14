@@ -29,6 +29,7 @@ public class ItemGenerator : MonoBehaviour
         public List<TextureGroup> groups;
     }
     [SerializeField] List<TextureGroupList> lists = new List<TextureGroupList>();
+    [SerializeField] Sprite square;
     public Sprite GenerateItemSprite()
     {
         int temp = Random.Range(0, lists[0].groups.Count); //gets a base for the fruit
@@ -52,6 +53,8 @@ public class ItemGenerator : MonoBehaviour
             int x = i % texture.width; int y = i / texture.width;
             texture.SetPixel(x, y, Color.clear);
             Color color = Color.clear;
+            //Put square
+            SetPixel(ref color, GetPixel(square.texture, x, y));
             //Add together the borders
             SetPixel(ref color, GetPixel(leafTextures[1], x - (int)lists[0].groups[fruit].connector.x, y - (int)lists[0].groups[fruit].connector.y));
             SetPixel(ref color, GetPixel(fruitTextures[1], x, y));
