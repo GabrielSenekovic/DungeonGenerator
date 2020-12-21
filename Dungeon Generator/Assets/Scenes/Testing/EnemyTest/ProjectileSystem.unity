@@ -123,6 +123,80 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &1155489187
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2444188360278842472, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_Name
+      value: DefaultProjectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 4233087119220497069, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: speed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6924823231923387294, guid: 5c3c4ad36a469624eb0932390ce81829,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5c3c4ad36a469624eb0932390ce81829, type: 3}
 --- !u!1 &1375785302
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,12 +243,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waveData:
-  - horizontalAmount: 20
-    radius: 1.38
-    curvature: 1
+  - position: {x: 0, y: 0}
+    amountOfProjectiles: 10
+    radius: 1
+    curvature: 0.977
     separation: 0
+    globalDirection: {x: -1, y: -1}
+    projectileSpread: 0
+    orbitSpeed: -1
   attack: {fileID: -3456963412344892665, guid: 37396692977ff0b46b9aaea9071af729, type: 3}
-  attackFrequency_Limit: 20
+  attackFrequency_Limit: 200
   arrowLength: 3
 --- !u!135 &1375785305
 SphereCollider:

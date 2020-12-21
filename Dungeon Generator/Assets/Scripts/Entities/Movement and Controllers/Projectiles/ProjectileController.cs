@@ -40,6 +40,12 @@ public class ProjectileController : EntityMovementModel
         Acc = new Vector2(1,1);
         VisualsRotator.renderers.AddRange(visuals);
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, (Vector2)transform.position + Dir);
+    }
     new private void FixedUpdate() 
     {
         currentSpeed = speed;

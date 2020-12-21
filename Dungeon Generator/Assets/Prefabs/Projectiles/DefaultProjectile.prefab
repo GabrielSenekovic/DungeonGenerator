@@ -46,8 +46,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2d69cad26f669748b1447f9ef8812d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 10
   canMove: 1
+  orbitPoint: {x: 0, y: 0}
+  orbitSpeed: 0
   attractionSpeed: 0
   interactionRadius: 0
   currentTarget: {fileID: 0}
@@ -55,7 +57,7 @@ MonoBehaviour:
   accelerationMode: 0
   homingMode: 0
   visuals: []
-  lifeLength: 100
+  lifeLength: 4000
 --- !u!54 &1229294855823473878
 Rigidbody:
   m_ObjectHideFlags: 0

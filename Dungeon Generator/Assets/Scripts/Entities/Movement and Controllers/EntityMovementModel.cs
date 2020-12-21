@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,9 @@ public class EntityMovementModel : MovementModel
     public float speed;
     public bool canMove = true;
     Vector2 dir;
+
+    public Vector2 orbitPoint; //Anything that can move could orbit around something at some point
+    public float orbitSpeed;
 
     public Vector2 Dir
     {
@@ -84,6 +88,11 @@ public class EntityMovementModel : MovementModel
         else
         {
             rig().velocity = buffer;
+        }
+        if(orbitSpeed != 0)
+        {
+            transform.RotateAround(orbitPoint, Vector3.forward, orbitSpeed);
+            Dir = Quaternion.AngleAxis(orbitSpeed, Vector3.forward) * Dir;
         }
     }//Courtesy of Casper Gustavsson
 

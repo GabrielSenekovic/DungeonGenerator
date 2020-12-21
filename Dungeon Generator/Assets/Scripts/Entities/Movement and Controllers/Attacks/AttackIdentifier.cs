@@ -32,7 +32,16 @@ public class AttackIdentifier : MonoBehaviour
         state = CastingState.COMMENCED;
         OnAttack(direction, source, collider);
     }
+    public void Attack(Vector3 direction, Vector3 source, Vector3 origin, float orbitSpeed, Collider collider)
+    {
+        state = CastingState.COMMENCED;
+        OnAttack(direction, source, origin, orbitSpeed, collider);
+    }
     protected virtual void OnAttack(Vector3 direction, Vector3 source, Collider collider)
+    {
+
+    }
+    protected virtual void OnAttack(Vector3 direction, Vector3 source, Vector3 origin, float orbitSpeed, Collider collider)
     {
 
     }
