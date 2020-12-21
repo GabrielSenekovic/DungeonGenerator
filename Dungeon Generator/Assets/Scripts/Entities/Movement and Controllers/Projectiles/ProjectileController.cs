@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class ProjectileController : EntityMovementModel
 {
-    public enum ProjectileInteractionMode
+    struct targetData
     {
-        NONE = 0,
-        SUCK = 1,
-        TRAP = 2
-    }
+        public GameObject target;
+        public int pushIndex;
+
+        public targetData(GameObject target_in, int pushIndex_in)
+        {
+            target = target_in;
+            pushIndex = pushIndex_in;
+        }
+    };
     public enum ProjectileAccelerationMode
     {
         NONE = 0,
@@ -23,12 +28,14 @@ public class ProjectileController : EntityMovementModel
         REPULSED = 2, //goes in the opposite direction of the target, may hit allies instead because of it, or bounce off walls in unexpected manners
         HOMING_REPULSED = 3 //goes after player and tries to stay at a distance from them
     }
-    public float attractionSpeed;
-    public float interactionRadius;
+    public float blastRadius;
+    public float explosionPower;
     public GameObject currentTarget;
-    [SerializeField]ProjectileInteractionMode interactionMode;
     [SerializeField]ProjectileAccelerationMode accelerationMode;
     [SerializeField]HomingMode homingMode;
+
+    List<targetData> targets = new List<targetData>();
+    public float gravitySpeed;
 
     [SerializeField]List<GameObject> visuals;
 
@@ -39,6 +46,7 @@ public class ProjectileController : EntityMovementModel
         Fric = 0.0f;
         Acc = new Vector2(1,1);
         VisualsRotator.renderers.AddRange(visuals);
+        GetComponent<SphereCollider>().radius = blastRadius;
     }
 
     private void OnDrawGizmos()
@@ -50,38 +58,12 @@ public class ProjectileController : EntityMovementModel
     {
         currentSpeed = speed;
         lifeTimer++;
-        CheckInteractionMode();
         CheckAccelerationMode();
         CheckHomingMode();
         Move();
         if(lifeTimer >= lifeLength)
         {
             Destroy(this.gameObject);
-        }
-    }
-    protected virtual void CheckInteractionMode()
-    {
-        switch(interactionMode)
-        {
-            case ProjectileInteractionMode.SUCK:
-                //find target
-                //float distance = Vector2.Distance(transform.position, playerObject.transform.position)
-                /*
-                if(distance <= interactionRadius)
-                {
-                    target.position = Vector2.MoveTowards(targetposition, myposition, speed / distance)
-                }
-                */
-                break;
-            case ProjectileInteractionMode.TRAP:
-                //find target
-                //calculate distance
-                /*
-                target.position = Vector2.MoveTowards(targetPosition, myposition, speed * distance)
-                */
-                break;
-            default: 
-                break;
         }
     }
     protected virtual void CheckAccelerationMode()
@@ -112,8 +94,92 @@ public class ProjectileController : EntityMovementModel
                 break;
         }
     }
+    private void OnAttackStay(GameObject vic)
+    {
+        bool isNew = true;
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i].target != vic)
+            {
+                isNew = true;
+            }
+            else
+            {
+                isNew = false;
+                break;
+            }
+        }
+        if (isNew)
+        {
+            Vector2 vectorToTarget = (Vector2)(transform.position - vic.transform.position);
+            float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
+            Vector2 pushV2 = vectorToTarget.normalized * gravitySpeed * distanceModifier;
+            targets.Add(new targetData(vic, vic.GetComponent<EntityMovementModel>().AddPushVector(pushV2)));
+            //Debug.Log("Adding: " + vic + " index: " + targets[targets.Count - 1].pushIndex + " at: " + vic.transform.position);
+        }
+        else
+        {
+            if(gravitySpeed != 0){GravityEffect(vic);}
+        }
+    }
+    void GravityEffect(GameObject vic)
+    {
+        if (targets.Count > 0)
+        {
+            targetData targetVic = targets[0]; //If the list isnt empty, take the first element
+            foreach (targetData t in targets)
+            {
+                if (t.target == vic) //Check if you already have the new element
+                {
+                    targetVic = t; //If you do, then your target is it
+                    break;
+                }
+            }
+            if (targetVic.target != null)
+            {
+                Vector2 vectorToTarget = (Vector2)(transform.position - vic.transform.position);
+                float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
+                Vector2 value = vectorToTarget.normalized * gravitySpeed * distanceModifier;
+                targetVic.target.GetComponent<EntityMovementModel>().push[targetVic.pushIndex] = value;
+
+            }
+        }
+    }
+    void Explode()
+    {
+        foreach(targetData t in targets)
+        {
+            if(t.target != null)
+            {
+                Vector2 vectorToTarget = (Vector2)(transform.position - t.target.transform.position);
+                float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
+                Vector2 value = vectorToTarget.normalized * explosionPower * distanceModifier;
+                t.target.GetComponent<EntityMovementModel>().push[t.pushIndex] = -value;
+            }
+        }
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if(gameObject.tag != other.gameObject.tag && other.gameObject.GetComponent<EntityMovementModel>())
+        {
+            OnAttackStay(other.gameObject);
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        foreach (targetData t in targets)
+        {
+            if (t.target == other.gameObject)
+            {
+                other.gameObject.GetComponent<EntityMovementModel>().RemovePushVector(t.pushIndex);
+                targets.Remove(t);
+                break;
+            }
+        }
+    }
     public virtual void OnDestroy()
     {
+        if(blastRadius > 0 && explosionPower > 0){Explode();}
         Destroy(this.gameObject);
     }
 }

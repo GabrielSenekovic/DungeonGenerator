@@ -25,8 +25,10 @@ public class ProjectileSpawnDebug : MonoBehaviour
 
     public ProjectileAttackIdentifier attack;
 
-    public int attackFrequency_Limit;
-    int attackFrequency_Timer = 0;
+    public int waveFrequency_Limit; //Frequency between the waves, not the Attack Frequency.
+    int waveFrequencyTimer = 0;
+
+    public Gradient gradient; //Looping through the wave loops through the gradient
 
     public int arrowLength;
 
@@ -70,11 +72,11 @@ public class ProjectileSpawnDebug : MonoBehaviour
 
     private void FixedUpdate()
     {
-        attackFrequency_Timer++;
-        if (attackFrequency_Timer >= attackFrequency_Limit)
+        waveFrequencyTimer++;
+        if (waveFrequencyTimer >= waveFrequency_Limit)
         {
             WaveData w = waveData[waveIndex];
-            attackFrequency_Timer = 0;
+            waveFrequencyTimer = 0;
             float displacement = 0;
             float angle = (180 + 90 / 2) * Mathf.Deg2Rad; //Sets it so the first point goes forward
             float angleIncrease = 360 / w.amountOfProjectiles * Mathf.Deg2Rad * w.curvature;
@@ -93,7 +95,7 @@ public class ProjectileSpawnDebug : MonoBehaviour
                 Vector2 spread = new Vector2(w.projectileSpread * (Mathf.Cos(c_Angle) - Mathf.Sin(c_Angle)),
                                              w.projectileSpread * (Mathf.Sin(c_Angle) + Mathf.Cos(c_Angle)));
 
-                if(w.orbitSpeed <= 0)
+                if(w.orbitSpeed == 0)
                 {
                     Attack(w.globalDirection + spread, new Vector2(x, y));
                 }

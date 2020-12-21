@@ -46,7 +46,7 @@ public class EntityMovementModel : MovementModel
         }
     }
     [System.NonSerialized]public Vector2 Acc;
-    protected float Fric;
+    protected float Fric = 0.1f; //this value chosen because it worked well with explosion pushes
 
     public void AddVelocity(Vector2 vin)
     {
@@ -75,10 +75,16 @@ public class EntityMovementModel : MovementModel
     public void Move()
     {
         Vector2 buffer = Vector2.zero;
-        foreach( Vector2 v in push)
+        for(int i = 0; i < push.Count; i++)
+        {
+            buffer += push[i];
+            push[i] *= (1.0f / (1.0f + Fric));
+        }
+            //Gravity pushes should be reset all the time, but for example explosions wont. Therefore, it should be a for loop
+       /* foreach( Vector2 v in push)
         {
             buffer += v;
-        }
+        }*/
         if(canMove)
         { 
             rig().velocity = Vel + buffer;
