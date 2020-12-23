@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Testing/EnemyTest/ProjectileSystem.unity
+- path: Assets/Scenes/Game/HQ.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

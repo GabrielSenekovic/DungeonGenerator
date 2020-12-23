@@ -33,30 +33,27 @@ public class Party : MonoBehaviour
         if(!movingRoom)
         {
             cameraRotationObject.transform.position = m_PartyLeader.transform.position;
-            if(CameraMovement.cameraConstraints != Vector2.zero)
+
+            Vector2 c_constraints = CameraMovement.cameraConstraints; //Abbreviated for readability
+            Vector3 rot_pos = cameraRotationObject.transform.position;
+
+            if(CameraMovement.cameraConstraints != Vector2.zero) 
+            //Only move the point around which the camera rotates if there are constraints to the room
             {
-                if(cameraRotationObject.transform.position.x >= CameraMovement.cameraConstraints.x)
-                {
-                    cameraRotationObject.transform.position = new Vector3(cameraRotationObject.transform.position.x - (cameraRotationObject.transform.position.x - CameraMovement.cameraConstraints.x) - 0.5f, cameraRotationObject.transform.position.y, cameraRotationObject.transform.position.z);
-                }
-                else if(cameraRotationObject.transform.position.x < CameraMovement.cameraConstraints.x)
-                {
-                    cameraRotationObject.transform.position = new Vector3(cameraRotationObject.transform.position.x + ( CameraMovement.cameraConstraints.x - cameraRotationObject.transform.position.x) - 0.5f, cameraRotationObject.transform.position.y, cameraRotationObject.transform.position.z);
-                }
-                if(cameraRotationObject.transform.position.y >= CameraMovement.cameraConstraints.y)
-                {
-                    cameraRotationObject.transform.position = new Vector3(cameraRotationObject.transform.position.x, cameraRotationObject.transform.position.y - (cameraRotationObject.transform.position.y - CameraMovement.cameraConstraints.y) - 0.5f, cameraRotationObject.transform.position.z);
-                }
-                else if(cameraRotationObject.transform.position.y < CameraMovement.cameraConstraints.y)
-                {
-                    cameraRotationObject.transform.position = new Vector3(cameraRotationObject.transform.position.x, cameraRotationObject.transform.position.y + ( CameraMovement.cameraConstraints.y - cameraRotationObject.transform.position.y) - 0.5f, cameraRotationObject.transform.position.z);
-                }
+                cameraRotationObject.transform.position = rot_pos.x >= c_constraints.x 
+                    ? new Vector3(c_constraints.x - 0.5f, rot_pos.y, rot_pos.z)
+                    : new Vector3(rot_pos.x + (c_constraints.x - rot_pos.x) - 0.5f, rot_pos.y, rot_pos.z);
+
+                cameraRotationObject.transform.position = cameraRotationObject.transform.position.y >= c_constraints.y
+                    ? new Vector3(rot_pos.x, c_constraints.y - 0.5f, rot_pos.z)
+                    : new Vector3(rot_pos.x, rot_pos.y + (c_constraints.y - rot_pos.y) - 0.5f, rot_pos.z);
             }
         }
     }
     public bool LerpCamera(Vector3 newPosition)
     {
         cameraRotationObject.transform.position = new Vector3(Mathf.Lerp(cameraRotationObject.transform.position.x, newPosition.x, movementSpeed), Mathf.Lerp(cameraRotationObject.transform.position.y, newPosition.y, movementSpeed), newPosition.z);
+        
         if((int)(cameraRotationObject.transform.position.x *1.75f) == (int)(newPosition.x *1.75f) && (int)cameraRotationObject.transform.position.y == (int)newPosition.y)
         {
             cameraRotationObject.transform.position = newPosition;
