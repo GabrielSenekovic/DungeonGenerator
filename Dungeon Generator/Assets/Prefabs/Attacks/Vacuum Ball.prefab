@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6946611d74902f64db956edd9842affd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cd38306323ea6144db753a20e4e7f064, type: 3}
   castTime: 0.5
   projectile: {fileID: 3781577276053894830, guid: 99ff80fb677bb7f42b6dff474bfbb64a,
     type: 3}

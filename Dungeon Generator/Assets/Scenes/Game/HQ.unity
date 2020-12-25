@@ -25,7 +25,7 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SubtractiveShadowColor: {r: 0.50751156, g: 0.5801453, b: 0.764151, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -365,6 +365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a3850abba34ef840bf679c1c81cc75f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: {x: 1, y: 1}
 --- !u!1 &693930192
 GameObject:
   m_ObjectHideFlags: 0
@@ -1297,7 +1298,7 @@ PrefabInstance:
     - target: {fileID: 102790488917399973, guid: 000bc41cec5a7904897a59b5a413a540,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.4998188
+      value: -0.5000057
       objectReference: {fileID: 0}
     - target: {fileID: 102790488955115781, guid: 000bc41cec5a7904897a59b5a413a540,
         type: 3}
@@ -1417,7 +1418,7 @@ PrefabInstance:
     - target: {fileID: 102790489130643424, guid: 000bc41cec5a7904897a59b5a413a540,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 34.000225
+      value: 33.999996
       objectReference: {fileID: 0}
     - target: {fileID: 102790489197681072, guid: 000bc41cec5a7904897a59b5a413a540,
         type: 3}
@@ -1744,6 +1745,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 693930194}
     m_Modifications:
+    - target: {fileID: 1116601954, guid: 2f6288fdb7c86854c9a9ae341e738d93, type: 3}
+      propertyPath: m_SortingOrder
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1455570450541425049, guid: 2f6288fdb7c86854c9a9ae341e738d93,
         type: 3}
       propertyPath: m_SortingOrder
@@ -1808,6 +1813,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5936212065406368136, guid: 2f6288fdb7c86854c9a9ae341e738d93,
+        type: 3}
+      propertyPath: cameraSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5936212065406368136, guid: 2f6288fdb7c86854c9a9ae341e738d93,
+        type: 3}
+      propertyPath: cameraLerpValue
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f6288fdb7c86854c9a9ae341e738d93, type: 3}
@@ -1912,7 +1927,12 @@ PrefabInstance:
     - target: {fileID: 3114677172940251300, guid: 00f05ee29b3b0274f8363e664e302d58,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 1.0000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 3114677172940251300, guid: 00f05ee29b3b0274f8363e664e302d58,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.0000002
       objectReference: {fileID: 0}
     - target: {fileID: 3114677172940251300, guid: 00f05ee29b3b0274f8363e664e302d58,
         type: 3}

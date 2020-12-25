@@ -51,7 +51,7 @@ public class LevelManager : MonoBehaviour
             GetComponent<LevelGenerator>().PutDownQuestObjects(this, q_data);
         }
         currentRoom = firstRoom;
-        CameraMovement.cameraConstraints = new Vector2(firstRoom.transform.position.x + RoomSize.x/2, firstRoom.transform.position.y + RoomSize.y/2);
+        CameraMovement.cameraAnchor_in = new Vector2(firstRoom.transform.position.x + RoomSize.x/2, firstRoom.transform.position.y + RoomSize.y/2);
         CameraMovement.movementMode = CameraMovement.CameraMovementMode.SingleRoom;
     }
     private void Update()
@@ -69,11 +69,15 @@ public class LevelManager : MonoBehaviour
             party.GetPartyLeader().GetPMM().canMove = false;
             party.movingRoom = true;
         }
-        if(party.movingRoom)
+    }
+    private void LateUpdate()
+    {
+        if (party.movingRoom)
         {
-            if(party.LerpCamera(new Vector3(currentRoom.transform.position.x + RoomSize.x/2 - 0.5f, currentRoom.transform.position.y + RoomSize.y/2 - 0.5f,party.cameraRotationObject.transform.position.z)))
+            if (party.MoveCamera(new Vector3(currentRoom.transform.position.x + RoomSize.x / 2, currentRoom.transform.position.y + RoomSize.y / 2, party.cameraRotationObject.transform.position.z)))
             {
-                CameraMovement.cameraConstraints = new Vector2(currentRoom.transform.position.x + RoomSize.x/2, currentRoom.transform.position.y + RoomSize.y/2);
+                CameraMovement.cameraAnchor_in =
+                    new Vector2(currentRoom.transform.position.x + RoomSize.x / 2, currentRoom.transform.position.y + RoomSize.y / 2);
                 previousRoom.gameObject.SetActive(false);
             }
         }

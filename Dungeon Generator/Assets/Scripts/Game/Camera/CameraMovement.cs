@@ -19,8 +19,8 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]Party party;
     public CameraMode mode = CameraMode.Side;
     public static CameraMovementMode movementMode = CameraMovementMode.Free;
-    public static Vector2 cameraConstraints;
-    public Vector2 cameraConstraints2;
+    public static Vector2 cameraAnchor_in;
+    public Vector2 cameraAnchor;
 
     void Awake()
     {
@@ -29,11 +29,10 @@ public class CameraMovement : MonoBehaviour
     }
     void LateUpdate()
     {
-        cameraConstraints2 = cameraConstraints;
+        cameraAnchor = cameraAnchor_in;
         if(Input.GetKey(KeyCode.LeftArrow))
         {
             Rotate(rotationSpeed);
-            //rotatedPosition = new Vector3(temp.x - transform.position.x, temp.y - transform.position.y, temp.z - transform.position.z);
             rotationSideways+= rotationSpeed;
         }
         else if(Input.GetKey(KeyCode.RightArrow))
@@ -45,7 +44,6 @@ public class CameraMovement : MonoBehaviour
         {
             //ToggleCameraMode();
         }
-        //transform.position = new Vector3(party.GetPartyLeader().transform.position.x + rotatedPosition.x, party.GetPartyLeader().transform.position.y + rotatedPosition.y,party.GetPartyLeader().transform.position.z + rotatedPosition.z);
     }
     void Rotate(float speed)
     {

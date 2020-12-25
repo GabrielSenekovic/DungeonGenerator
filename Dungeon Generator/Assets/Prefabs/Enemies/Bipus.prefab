@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  canMove: 1
+  canMove: 0
   orbitPoint: {x: 0, y: 0}
   orbitSpeed: 0
 --- !u!114 &1489813947
@@ -300,9 +300,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 8509797670530042875, guid: a3960664551bfab4cb038f1a01419a8b,
-    type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e9356b3f463d9fd4dab03594c469958a, type: 3}
+  m_Color: {r: 0.1987806, g: 0.037646826, b: 0.4245283, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -320,7 +319,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5297475717053403869}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: e19eeaa15da20c045bc89a1f92824797, type: 2}
   m_CullingMode: 0

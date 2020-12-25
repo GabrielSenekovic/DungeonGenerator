@@ -7,6 +7,7 @@ public class Party : MonoBehaviour
     public static Party instance;
     List<PlayableCharacter> m_PartyMembers;
     [SerializeField]PlayableCharacter m_PartyLeader;
+    public float cameraSpeed;
 
     public bool movingRoom = false;
 
@@ -34,27 +35,19 @@ public class Party : MonoBehaviour
         {
             cameraRotationObject.transform.position = m_PartyLeader.transform.position;
 
-            Vector2 c_constraints = CameraMovement.cameraConstraints; //Abbreviated for readability
-            Vector3 rot_pos = cameraRotationObject.transform.position;
+            Vector2 anchor = CameraMovement.cameraAnchor_in; //Abbreviated for readability
 
-            if(CameraMovement.cameraConstraints != Vector2.zero) 
-            //Only move the point around which the camera rotates if there are constraints to the room
-            {
-                cameraRotationObject.transform.position = rot_pos.x >= c_constraints.x 
-                    ? new Vector3(c_constraints.x - 0.5f, rot_pos.y, rot_pos.z)
-                    : new Vector3(rot_pos.x + (c_constraints.x - rot_pos.x) - 0.5f, rot_pos.y, rot_pos.z);
-
-                cameraRotationObject.transform.position = cameraRotationObject.transform.position.y >= c_constraints.y
-                    ? new Vector3(rot_pos.x, c_constraints.y - 0.5f, rot_pos.z)
-                    : new Vector3(rot_pos.x, rot_pos.y + (c_constraints.y - rot_pos.y) - 0.5f, rot_pos.z);
-            }
+            if(CameraMovement.cameraAnchor_in != Vector2.zero) //Do not move the cmaera object if there is an anchor
+            {cameraRotationObject.transform.position = anchor;}
         }
     }
-    public bool LerpCamera(Vector3 newPosition)
+    public bool MoveCamera(Vector3 newPosition)
     {
-        cameraRotationObject.transform.position = new Vector3(Mathf.Lerp(cameraRotationObject.transform.position.x, newPosition.x, movementSpeed), Mathf.Lerp(cameraRotationObject.transform.position.y, newPosition.y, movementSpeed), newPosition.z);
-        
-        if((int)(cameraRotationObject.transform.position.x *1.75f) == (int)(newPosition.x *1.75f) && (int)cameraRotationObject.transform.position.y == (int)newPosition.y)
+        Vector2 direction = (newPosition - cameraRotationObject.transform.position).normalized;
+
+        cameraRotationObject.transform.position = new Vector3(cameraRotationObject.transform.position.x + direction.x * cameraSpeed, cameraRotationObject.transform.position.y + direction.y * cameraSpeed, newPosition.z);
+
+        if((int)cameraRotationObject.transform.position.x == (int)newPosition.x && (int)cameraRotationObject.transform.position.y == (int)newPosition.y)
         {
             cameraRotationObject.transform.position = newPosition;
             m_PartyLeader.GetPMM().canMove = true;

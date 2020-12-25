@@ -47,6 +47,7 @@ public class ProjectileController : EntityMovementModel
         Acc = new Vector2(1,1);
         VisualsRotator.renderers.AddRange(visuals);
         GetComponent<SphereCollider>().radius = blastRadius;
+        GetComponent<SphereCollider>().isTrigger = true;
     }
 
     private void OnDrawGizmos()
