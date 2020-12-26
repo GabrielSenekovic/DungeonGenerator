@@ -39,7 +39,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 433232098}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
@@ -177,7 +177,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: e9356b3f463d9fd4dab03594c469958a, type: 3}
   m_Color: {r: 1, g: 0, b: 0.9197521, a: 0}
   m_FlipX: 0
@@ -290,7 +290,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: e9356b3f463d9fd4dab03594c469958a, type: 3}
   m_Color: {r: 0.6981132, g: 0.07508005, b: 0.07508005, a: 1}
   m_FlipX: 0
@@ -349,6 +349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PartyLeader: {fileID: 5936212066991026617}
+  cameraSpeed: 0.5
   movingRoom: 0
   cameraRotationObject: {fileID: 1116601952}
 --- !u!114 &5936212065406368135
@@ -606,6 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -851946273978126543, guid: 441ef8059f7338a42a13cc9da98ddde0, type: 3}
+    - {fileID: 3782844423139062598, guid: 441ef8059f7338a42a13cc9da98ddde0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 441ef8059f7338a42a13cc9da98ddde0, type: 3}
 --- !u!1 &1178402491893490782 stripped
 GameObject:

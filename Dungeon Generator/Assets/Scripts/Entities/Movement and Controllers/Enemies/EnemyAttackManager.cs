@@ -8,6 +8,6 @@ public class EnemyAttackManager : AttackManager
 
     public void Attack(int index, Vector2 direction)
     {
-        attacks[index].Attack(direction, transform.position, GetComponent<Collider>());
+        //attacks[index].Attack(direction, transform.position, GetComponent<Collider>());
     }
 }

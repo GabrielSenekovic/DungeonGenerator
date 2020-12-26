@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class AttackIdentifier : MonoBehaviour
@@ -24,18 +25,24 @@ public class AttackIdentifier : MonoBehaviour
             {
                 state = CastingState.DONE;
                 castTimer = 0;
+                Initialize();
             }
         }
     }
-    public void Attack(Vector3 direction, Vector3 source, Collider collider)
+    public void Attack()
     {
         state = CastingState.COMMENCED;
-        OnAttack(direction, source, collider);
+        //OnAttack(direction, source, collider);
     }
-    public void Attack(Vector3 direction, Vector3 source, Vector3 origin, float orbitSpeed, Collider collider)
+
+    public virtual void Initialize()
     {
-        state = CastingState.COMMENCED;
-        OnAttack(direction, source, origin, orbitSpeed, collider);
+
+    }
+
+    public virtual void OnFixedUpdate(Vector3 direction, Vector3 source, Collider collider)
+    {
+        UpdateCasting();
     }
     protected virtual void OnAttack(Vector3 direction, Vector3 source, Collider collider)
     {

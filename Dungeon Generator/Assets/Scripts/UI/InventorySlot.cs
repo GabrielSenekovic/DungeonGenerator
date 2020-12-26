@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class InventorySlot : MonoBehaviour
 {
-    [System.NonSerialized]public int index = 0;
+    public int index = 0;
 }

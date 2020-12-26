@@ -110,16 +110,16 @@ public class ProjectileSpawnDebug : MonoBehaviour
 
     public void Attack(Vector2 direction)
     {
-        attack.Attack(direction, transform.position, GetComponent<Collider>());
+        //attack.Attack(direction, transform.position, GetComponent<Collider>());
     }
     public void Attack(Vector2 direction, Vector2 displacement)
     {
-        attack.Attack(direction, (Vector2)transform.position + displacement, GetComponent<Collider>());
+       // attack.Attack(direction, (Vector2)transform.position + displacement, GetComponent<Collider>());
     }
 
     public void Attack(Vector2 direction, Vector2 displacement, Vector2 origin, float orbitSpeed)
     {
         //For if the projectiles should orbit around the position of the spawner
-        attack.Attack(direction, (Vector2)transform.position + displacement, transform.position, orbitSpeed, GetComponent<Collider>());
+       // attack.Attack(direction, (Vector2)transform.position + displacement, transform.position, orbitSpeed, GetComponent<Collider>());
     }
 }

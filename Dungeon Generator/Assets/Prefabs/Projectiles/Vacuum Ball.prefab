@@ -45,6 +45,8 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -92,9 +94,10 @@ GameObject:
   - component: {fileID: 9124117698565861568}
   - component: {fileID: 3781577276053894830}
   - component: {fileID: 4803876165974465650}
+  - component: {fileID: 6675969655243590660}
   m_Layer: 0
   m_Name: Vacuum Ball
-  m_TagString: Untagged
+  m_TagString: Projectile (Debug)
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,12 +130,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  attractionSpeed: 0
-  interactionRadius: 0
+  canMove: 1
+  orbitPoint: {x: 0, y: 0}
+  orbitSpeed: 0
+  blastRadius: 4
+  explosionPower: 0
   currentTarget: {fileID: 0}
-  interactionMode: 0
   accelerationMode: 0
   homingMode: 0
+  targets: []
+  gravitySpeed: 3
   visuals:
   - {fileID: 1891306394831330166}
   lifeLength: 200
@@ -152,3 +159,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!135 &6675969655243590660
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7512497904578034126}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1
+  m_Center: {x: 0, y: 0, z: 0}

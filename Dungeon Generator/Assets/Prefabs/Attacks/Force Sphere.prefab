@@ -45,5 +45,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 12d23debf9499324e9b07c03cb251d28, type: 3}
   castTime: 1.2
+  waveData:
+  - position: {x: 0, y: 0}
+    amountOfProjectiles: 1
+    radius: 0
+    curvature: 0
+    separation: 0
+    globalDirection: {x: 0, y: 0}
+    projectileSpread: 0
+    orbitSpeed: 0
+  waveFrequency_Limit: 0
   projectile: {fileID: -6421113268174106122, guid: 8634bbb3177c12c4f90c76eeb939f740,
     type: 3}

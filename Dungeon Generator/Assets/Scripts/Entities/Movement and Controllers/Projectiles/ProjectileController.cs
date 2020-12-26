@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class ProjectileController : EntityMovementModel
 {
-    struct targetData
+    [System.Serializable]
+    public struct targetData
     {
         public GameObject target;
         public int pushIndex;
@@ -34,7 +36,7 @@ public class ProjectileController : EntityMovementModel
     [SerializeField]ProjectileAccelerationMode accelerationMode;
     [SerializeField]HomingMode homingMode;
 
-    List<targetData> targets = new List<targetData>();
+    public List<targetData> targets = new List<targetData>();
     public float gravitySpeed;
 
     [SerializeField]List<GameObject> visuals;
@@ -48,6 +50,10 @@ public class ProjectileController : EntityMovementModel
         VisualsRotator.renderers.AddRange(visuals);
         GetComponent<SphereCollider>().radius = blastRadius;
         GetComponent<SphereCollider>().isTrigger = true;
+        if(GetComponentInChildren<Light>())
+        {
+            GetComponentInChildren<Light>().color = GetComponentInChildren<MeshRenderer>().sharedMaterial.color;
+        }
     }
 
     private void OnDrawGizmos()

@@ -16,11 +16,19 @@ public class PlayerAttackManager : AttackManager
     {
         currentAttack = attacks[0].attack;
         currentAttack.state = AttackIdentifier.CastingState.DONE;
+        for(int i = 0; i < attacks.Length; i++)
+        {
+            attacks[i].attack.Initialize();
+        }
+    }
+    private void FixedUpdate()
+    {
+        if(currentAttack == null || currentAttack.state == AttackIdentifier.CastingState.DONE){ return; }
+        currentAttack.OnFixedUpdate(GetComponent<PlayerMovementModel>().facingDirection,transform.position, GetComponent<Collider>());
     }
 
     private void Update() 
     {
-        currentAttack.UpdateCasting();
         if(currentAttack.state == AttackIdentifier.CastingState.DONE)
         {
             for(int i = 0; i < 4; i++)
@@ -28,7 +36,7 @@ public class PlayerAttackManager : AttackManager
                 if(Input.GetKeyDown(attacks[i].key))
                 {
                     currentAttack = attacks[i].attack;
-                    currentAttack.Attack(GetComponent<PlayerMovementModel>().facingDirection, transform.position, GetComponent<Collider>());
+                    currentAttack.Attack();
                 }
             }
         }
