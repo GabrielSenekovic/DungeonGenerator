@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6946611d74902f64db956edd9842affd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: Fire Ball
   icon: {fileID: 21300000, guid: 3734f94db4ce55b45a9d9c7243c20a39, type: 3}
   castTime: 2
   waveData:

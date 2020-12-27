@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6946611d74902f64db956edd9842affd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: Laser
   icon: {fileID: 21300000, guid: 248d779e9bba4ba4798389d0ebdcd2db, type: 3}
   castTime: 0
   waveData:

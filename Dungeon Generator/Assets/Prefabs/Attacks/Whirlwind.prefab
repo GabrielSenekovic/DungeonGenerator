@@ -43,7 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6946611d74902f64db956edd9842affd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  name: Whirlwind
+  icon: {fileID: 21300000, guid: 19cf61f46ba4a6b408a663547bcc85a3, type: 3}
   castTime: 4
   waveData:
   - position: {x: 0, y: 0}

@@ -2,9 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Cursor : MonoBehaviour
 {
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            if (CustomInputReader.GetPointerEventData().pointerEnter.GetComponent<SkillSlot>())
+            {
+                //Move the clicking here instead
+            }
+        }
+    }
     public void OnClick(Image sprite)
     {
         if(GetComponentInChildren<Image>().sprite == null)

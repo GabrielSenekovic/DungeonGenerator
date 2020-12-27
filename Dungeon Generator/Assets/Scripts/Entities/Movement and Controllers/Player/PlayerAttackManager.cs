@@ -33,6 +33,7 @@ public class PlayerAttackManager : AttackManager
         {
             for(int i = 0; i < 4; i++)
             {
+                if(attacks[i].attack == null) { continue; }
                 if(Input.GetKeyDown(attacks[i].key))
                 {
                     currentAttack = attacks[i].attack;
