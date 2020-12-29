@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using UnityEngine;
 
 public class EntityMovementModel : MovementModel
@@ -8,7 +9,7 @@ public class EntityMovementModel : MovementModel
     public Rigidbody rig() {return this.GetComponent<Rigidbody>();}
     [System.NonSerialized]public List<Vector2> push = new List<Vector2>();
     [System.NonSerialized]public Vector2 directionToMove;
-    [System.NonSerialized]public Vector2 facingDirection;
+    public Vector2 facingDirection;
     [System.NonSerialized]public float currentSpeed;
     public float speed;
     public bool canMove = true;
@@ -105,6 +106,18 @@ public class EntityMovementModel : MovementModel
     public Vector2 GetFacingDirection()
     {
         return facingDirection;
+    }
+    public Vector2 GetRelativeFacingDirection()
+    {
+        //Youre gonna have to take the Vector2(x,y) and rotate it
+        //by the angle between 0,-1 and the facingdirection
+        float angle = Mathf.Deg2Rad * CameraMovement.rotationSideways;
+        float x = Mathf.Sin(angle);
+        float y = Mathf.Cos(-angle);
+        Vector2 temp = new Vector2(x, y);
+        temp = facingDirection * new Vector2(x, y);
+        temp.Normalize();
+        return new Vector2(x,y);
     }
     public void OnDeath()
     {

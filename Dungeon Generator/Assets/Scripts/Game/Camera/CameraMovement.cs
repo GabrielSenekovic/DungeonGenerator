@@ -14,7 +14,7 @@ public class CameraMovement : MonoBehaviour
         SingleRoom = 0,
         Free = 1
     }
-    float rotationSideways = 0;
+    public static float rotationSideways = 0;
     public int rotationSpeed;
     [SerializeField]Party party;
     public CameraMode mode = CameraMode.Side;

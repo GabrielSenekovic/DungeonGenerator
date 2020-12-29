@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  canMove: 0
+  canMove: 1
   orbitPoint: {x: 0, y: 0}
   orbitSpeed: 0
 --- !u!114 &1489813947
@@ -70,7 +70,6 @@ MonoBehaviour:
   visuals:
   - {fileID: 5297475717053403869}
   attackFrequency: 100
-  laser: {fileID: 4600219571859997174, guid: ba7e48c75c01f13479c68bbc30edd6af, type: 3}
 --- !u!54 &6309561479759852743
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -301,7 +300,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: e9356b3f463d9fd4dab03594c469958a, type: 3}
-  m_Color: {r: 0.1987806, g: 0.037646826, b: 0.4245283, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -319,9 +318,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5297475717053403869}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e19eeaa15da20c045bc89a1f92824797, type: 2}
+  m_Controller: {fileID: 9100000, guid: a966cd02397c0d241bc292b96582190e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

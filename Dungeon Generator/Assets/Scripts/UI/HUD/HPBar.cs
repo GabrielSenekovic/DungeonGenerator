@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,11 +8,45 @@ public class HPBar : MonoBehaviour
 {
     public HealthModel HP = null;
     [SerializeField] Image HealthBar = null;
-    public Text HealthText;
-    public float currentFill;
+    Text HealthText;
+    float currentFill;
     public float BarChangeSpeed;
 
-    public float buffer;
+    public Color first;
+    public Color last;
+    Gradient gradient;
+
+    private void Start()
+    {
+        float startHue = 0, s = 0, v = 0;
+        float endHue = 0;
+        Color.RGBToHSV(first, out startHue, out s, out v);
+        Color.RGBToHSV(last, out endHue, out s, out v);
+
+        gradient = new Gradient();
+        int colors = 6;
+        GradientColorKey[] colorKey = new GradientColorKey[colors + 1];
+        float range = 1 - (endHue - startHue);
+        float colorInterval = range / colors;
+        float timeInterval = 1.0f / colors;
+        float exponent = 2;
+
+        for (int i = 0; i <= 6; i++)
+        {
+            s = Math.SemiCircle(i, colors, 2);
+            v = Math.SemiSuperEllipse(i, timeInterval, colors, exponent);
+            colorKey[i].color = Color.HSVToRGB(Math.Mod(startHue - colorInterval * i, 1), s, v);
+            colorKey[i].time = timeInterval * i;
+        }
+
+        GradientAlphaKey[] alphaKey = new GradientAlphaKey[2];
+        alphaKey[0].alpha = 1.0f;
+        alphaKey[0].time = 0.0f;
+        alphaKey[1].alpha = 1.0f;
+        alphaKey[1].time = 1.0f;
+
+        gradient.SetKeys(colorKey, alphaKey);
+    }
 
     private void FixedUpdate()
     {
@@ -36,52 +71,6 @@ public class HPBar : MonoBehaviour
     }
     private void UpdateHealthBarColor()
     {
-        if(HP.GetHealthPercentage() > 0.75f)
-        {
-            //Green to yellow
-            HealthBar.color = new Color(1 - Mathf.Pow(HP.GetHealthPercentage(), 16), 1, 0, 1);
-        }
-        else if(HP.GetHealthPercentage() > 0.50f)
-        {
-            //Yellow to red
-            buffer = Mathf.Pow(HP.GetHealthPercentage(HP.maxHealth * 0.25f), 6);
-            HealthBar.color = new Color(1, buffer, 0, 1);
-        }
-        else if(HP.GetHealthPercentage() > 0.25f)
-        {
-            //red to blue
-            buffer = Mathf.Pow(HP.GetHealthPercentage(HP.maxHealth * 0.5f), 6);
-            HealthBar.color = new Color(buffer, 0, 1 - buffer, 1);
-        }
-        else
-        {
-            //blue to black
-            buffer = Mathf.Pow(HP.GetHealthPercentage(HP.maxHealth* 0.75f), 6);
-            HealthBar.color = new Color(0, 0, buffer, 1);
-        }
-        //From green to yellow
-        //HealthBar.color = new Color(1 * (1 - HP.GetHealthPercentage()), 1, 0, 1);
-        //From yellow to green
-        //HealthBar.color = new Color(1, HP.GetHealthPercentage(), 0, 1);
-        //From green to blue
-        //HealthBar.color = new Color(0, HP.GetHealthPercentage(), 1 * (1 - HP.GetHealthPercentage()), 1);
-        //Dark blue to black
-       // HealthBar.color = new Color(0, 0, HP.GetHealthPercentage(), 1);
-        
-        //Yellow to cyan
-        //HealthBar.color = new Color(HP.GetHealthPercentage(), 1, 1 * (1 - HP.GetHealthPercentage()), 1);
-        //Yellow to pink
-        //HealthBar.color = new Color(1, HP.GetHealthPercentage(), 1 * (1 - HP.GetHealthPercentage()), 1);
-
-        //From blue to cyan
-       // HealthBar.color = new Color(0, 1 * (1 - HP.GetHealthPercentage()), 1, 1);
-        //From red to yellow
-        //HealthBar.color = new Color(1, 1 * (1 - HP.GetHealthPercentage()), 0, 1);
-        //From dark blue to magenta
-        //HealthBar.color = new Color(1 * (1 - HP.GetHealthPercentage()), 0, 1, 1);
-        //From green to cyan
-        //HealthBar.color = new Color(0, 1, 1 * (1 - HP.GetHealthPercentage()), 1);
-        //From red to magenta
-        //HealthBar.color = new Color(1, 0, 1 * (1 - HP.GetHealthPercentage()), 1);
+        HealthBar.color = gradient.Evaluate(1 - HealthBar.fillAmount);
     }
 }
