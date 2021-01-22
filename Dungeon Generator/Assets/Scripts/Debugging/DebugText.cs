@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class DebugText : MonoBehaviour
 {
     Text m_DebugText;
-
+/*
     public void Display(LevelData levelData)
     {
         m_DebugText = GetComponentInChildren<Text>();
@@ -26,4 +26,5 @@ public class DebugText : MonoBehaviour
         m_DebugText.text += "Probability for Ambush Room: " + levelData.GetRoomPercentage(RoomType.AmbushRoom) + "%" + "\n";
         m_DebugText.text += "Probability for Safe Room: " + levelData.GetRoomPercentage(RoomType.RestingRoom) + "%" + "\n";
     }
+    */
 }

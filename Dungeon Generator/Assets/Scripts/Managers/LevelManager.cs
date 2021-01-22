@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    /*
     public Vector2 RoomSize = new Vector2(20,20);
 
     public LevelData data;
@@ -102,4 +103,5 @@ public class LevelManager : MonoBehaviour
         }
         return false;
     }
+    */
 }

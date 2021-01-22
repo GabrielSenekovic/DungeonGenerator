@@ -9,7 +9,7 @@ public class QuestButton : MonoBehaviour
 
     public void RevealDetails()
     {
-        select.index = index;
-        select.RevealDetails(index);
+        //select.index = index;
+        //select.RevealDetails(index);
     }
 }

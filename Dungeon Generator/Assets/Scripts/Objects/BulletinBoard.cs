@@ -23,7 +23,7 @@ public class BulletinBoard : InteractableBase
     {
         if(isInteractable)
         {
-            questScreen.GetComponent<QuestSelect>().Initialize(GenerateNewSeeds(), this);
+            //questScreen.GetComponent<QuestSelect>().Initialize(GenerateNewSeeds(), this);
             UIManager.OpenOrClose(questScreen);
             isInteractable = false;
         }

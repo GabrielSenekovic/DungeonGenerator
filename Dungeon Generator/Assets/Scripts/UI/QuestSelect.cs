@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 
 public class QuestSelect : MonoBehaviour
 {
+    /*
     public struct SeedBox
     {
         public SeedBox(int constSeed_in, int dataSeed_in, int questSeed_in)
@@ -178,4 +179,5 @@ public class QuestSelect : MonoBehaviour
             }
         }
     }
+    */
 }

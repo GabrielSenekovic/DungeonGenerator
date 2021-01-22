@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+/*
 public class MusicGenerator : MonoBehaviour
 {
     public enum Key
@@ -314,3 +315,4 @@ public class MusicGenerator : MonoBehaviour
         playing = false;
     }
 }
+*/
