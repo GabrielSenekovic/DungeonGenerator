@@ -4,6 +4,11 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     //This controller will control whoever is the party leader
+
+    public AudioClip openMenu;
+    public AudioClip closeMenu;
+
+    AudioClip clipToPlay;
     Party party;
 
     [SerializeField] GameObject camera;
@@ -15,6 +20,7 @@ public class PlayerController : MonoBehaviour
 
     void Start() 
     {
+        clipToPlay = openMenu;
         VisualsRotator.renderers.Add(GetComponentInChildren<SpriteRenderer>().gameObject);
     }
     private void OnDrawGizmos()
@@ -31,6 +37,8 @@ public class PlayerController : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.Q))
         {
+            GetComponent<AudioSource>().clip = clipToPlay; clipToPlay = clipToPlay == openMenu? closeMenu: openMenu;
+            GetComponent<AudioSource>().Play();
             UIManager.OpenOrClose(UIManager.UIScreen.MainMenu);
             UIManager.ToggleHUD();
         }

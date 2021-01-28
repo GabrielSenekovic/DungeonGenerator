@@ -75,6 +75,11 @@ public class SkillManager : MonoBehaviour
         {
             if(skillSlots[i].state == SkillSlot.EquipState.WAITING)
             {
+                if(i == selection.selectedSkill)
+                {
+                    Deselect(i);
+                    selection.selectedSkill = -1;
+                }
                 UnEquip(skillSlots[i]);
             }
             else if(skillSlots[i].selectState == SkillSlot.SelectState.WAITING)

@@ -5,10 +5,20 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class ResizeQuad : MonoBehaviour
 {
+    public bool multipleSprites;
+    public Vector2 spriteSize;
     [SerializeField] Vector2 scale;
     void Update()
     {
-        Vector2 textureSize = GetTextureSize();
+        Vector2 textureSize = Vector2.zero;
+        if(multipleSprites)
+        {
+            textureSize = spriteSize;
+        }
+        else
+        {
+            textureSize = GetTextureSize();
+        }
         if (GetDimensions() != textureSize)
         {
             scale.x = scale.x <= 0 ? 1 : scale.x; scale.y = scale.y <= 0 ? 1 : scale.y;
