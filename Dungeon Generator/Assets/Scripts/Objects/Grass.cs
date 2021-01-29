@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 using System.Linq;
 
 public class ObjectData
@@ -30,9 +31,22 @@ public class Grass : MonoBehaviour
     public Vector2 area;
     public int grassPerTile;
 
-    public Vector3 grassRotation;
+    [SerializeField]float burningSpeed;
 
+    public Vector3 grassRotation;
+    public LayerMask layerMask;
     List<List<ObjectData>> batches = new List<List<ObjectData>>();
+
+    public VisualEffectAsset VFX_Burning;
+
+    public class VFXData
+    {
+        public GameObject gameObject;
+        public bool playing;
+    }
+
+    public List<VFXData> VFX = new List<VFXData>();
+    List<System.Tuple<List<ObjectData>, Material>> burningBatches = new List<System.Tuple<List<ObjectData>, Material>>();
     void Start()
     {
         int batchIndexNum = 0;
@@ -72,6 +86,46 @@ public class Grass : MonoBehaviour
     private void Update() 
     {
         RenderBatches();
+        UpdateFire();
+    }
+
+    private void FixedUpdate() 
+    {
+        CheckCollision();
+        for(int i = 0; i < VFX.Count; i++)
+        {
+            if(VFX[i].gameObject.GetComponent<VisualEffect>().aliveParticleCount == 0 && !VFX[i].playing)
+            {
+                GameObject temp_2 = VFX[i].gameObject;
+                VFX.RemoveAt(i);
+                Destroy(temp_2);
+                i--;
+            }
+        }
+    }
+
+    void UpdateFire()
+    {
+        for(int i = 0; i < burningBatches.Count(); i++)
+        {
+            float temp = burningBatches[i].Item2.GetFloat("_Fade");
+            if(temp <= 0)
+            {
+                for(int j = 0; j < VFX.Count(); j++)
+                {
+                    if(VFX[j].gameObject.transform.position.x == (float)((int)burningBatches[i].Item1[0].pos.x) + 0.5f && 
+                       VFX[j].gameObject.transform.position.y == (float)((int)burningBatches[i].Item1[0].pos.y) + 0.5f)
+                    {
+                        VFX[j].gameObject.GetComponent<VisualEffect>().Stop();
+                        VFX[j].playing = false;
+                        break;
+                    }
+                }
+                burningBatches.RemoveAt(i); i--;
+                continue;
+            }
+            burningBatches[i].Item2.SetFloat("_Fade", temp - burningSpeed);
+        }
     }
 
     void RenderBatches()
@@ -80,6 +134,65 @@ public class Grass : MonoBehaviour
         {
             Graphics.DrawMeshInstanced(quad, 0, grassMaterial, b.Select((a) => a.matrix).ToList());
         }
+        foreach(var b in burningBatches)
+        {
+            Graphics.DrawMeshInstanced(quad, 0, b.Item2, b.Item1.Select((a) => a.matrix).ToList());
+        }
+    }
 
+    private void OnDrawGizmos() 
+    {
+        for(int i = 0; i < area.x * area.y; i++)
+        {
+            Vector3 center = new Vector3((int)(i%area.x) + 0.5f, (int)(i/area.x) + 0.5f, -0.5f);
+            Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
+            Gizmos.DrawCube(center, size);
+        }
+    }
+    void CheckCollision()
+    {
+        for(int i = 0; i < area.x * area.y; i++)
+        {
+            Vector3 center = new Vector3((int)(i%area.x) + 0.5f, (int)(i/area.x) + 0.5f, -0.5f);
+            Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
+            Collider[] hitColliders = Physics.OverlapBox(center, size, Quaternion.identity, layerMask, QueryTriggerInteraction.UseGlobal);
+            for(int j = 0; j < hitColliders.Length; j++)
+            {
+                if(hitColliders[j].gameObject.GetComponent<Fire>())
+                {
+                    Vector2 position = new Vector2((int)i%area.x, (int)i/area.x);
+                    int[] Index = GetBatchIndex(new Vector2((int)i%area.x, (int)i/area.x));
+                    if(Index != null && Index.Length == 2)
+                    {
+                        burningBatches.Add(new System.Tuple<List<ObjectData>, Material>(new List<ObjectData>(), new Material(grassMaterial)));
+                        burningBatches[burningBatches.Count - 1].Item1.AddRange(batches[Index[0]].GetRange(Index[1], grassPerTile));
+                        batches[Index[0]].RemoveRange(Index[1],grassPerTile);
+                        VFXData temp = new VFXData();
+                        temp.gameObject = new GameObject("VFX");
+                        temp.gameObject.transform.parent = transform; 
+                        temp.gameObject.transform.position = center;
+                        temp.gameObject.AddComponent<VisualEffect>();
+                        temp.gameObject.GetComponent<VisualEffect>().visualEffectAsset = VFX_Burning;
+                        temp.playing = true;
+                        VFX.Add(temp);
+                    }
+                }
+            }
+        }
+    }
+
+    int[] GetBatchIndex(Vector2 position)
+    {
+        for(int i = 0; i < batches.Count(); i++)
+        {
+            for(int j = 0; j < batches[i].Count; j+= grassPerTile)
+            {
+                if((int)batches[i][j].pos.x == (int)position.x && (int)batches[i][j].pos.y == (int)position.y)
+                {
+                    return new int[]{i,j};
+                }
+            }
+        } 
+        return null;       //return (int)(position.x + area.x * position.y);
     }
 }
