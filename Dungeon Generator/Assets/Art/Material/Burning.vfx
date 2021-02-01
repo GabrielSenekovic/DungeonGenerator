@@ -25,9 +25,9 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: 941
+    x: 0
     y: -190
-    width: 898
+    width: 1839
     height: 1679
 --- !u!114 &114350483966674976
 MonoBehaviour:
@@ -1174,7 +1174,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"obj":{"fileID":10912,"guid":"0000000000000000f000000000000000","type":0}}'
+      m_SerializableObject: '{"obj":{"fileID":2800000,"guid":"54407d2fb9f63f942a0cc730b39fd254","type":3}}'
     m_Space: 2147483647
   m_Property:
     name: mainTexture
@@ -1633,7 +1633,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"obj":{"fileID":10912,"guid":"0000000000000000f000000000000000","type":0}}'
+      m_SerializableObject: '{"obj":{"fileID":2800000,"guid":"e250055fdfe617a4aac8842b7ccb0790","type":3}}'
     m_Space: 2147483647
   m_Property:
     name: mainTexture

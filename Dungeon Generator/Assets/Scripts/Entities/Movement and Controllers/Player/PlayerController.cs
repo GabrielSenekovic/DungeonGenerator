@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject camera;
 
+    public UIManager UI;
+
     public void Awake()
     {
         party = GetComponent<Party>();
@@ -39,7 +41,7 @@ public class PlayerController : MonoBehaviour
         {
             GetComponent<AudioSource>().clip = clipToPlay; clipToPlay = clipToPlay == openMenu? closeMenu: openMenu;
             GetComponent<AudioSource>().Play();
-            UIManager.OpenOrClose(UIManager.UIScreen.MainMenu);
+            UI.OpenOrClose(UIManager.UIScreen.MainMenu);
             UIManager.ToggleHUD();
         }
     }

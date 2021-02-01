@@ -13,6 +13,11 @@ public class UIManager : MonoBehaviour
     {
         MainMenu = 0
     }
+    public AudioClip buttonEnter;
+    public AudioClip buttonClick;
+    public AudioClip buttonReturn;
+
+    List<CanvasGroup> openMenus = new List<CanvasGroup>();
 
     void Awake()
     {
@@ -20,12 +25,22 @@ public class UIManager : MonoBehaviour
         m_HUD = HUD;
     }
 
-    static public void OpenOrClose(UIScreen screen)
+    private void Start() 
+    {
+        m_mainMenu.GetComponent<MainMenu>().Initialize(this, GetComponent<AudioSource>(), buttonEnter);
+    }
+    public void OpenOrClose(UIScreen screen)
     {
         switch(screen)
         {
-            case UIScreen.MainMenu: OpenOrClose(m_mainMenu);
-                break;
+            case UIScreen.MainMenu: 
+
+            OpenOrClose(m_mainMenu);
+            if(m_mainMenu.alpha == 0)
+            {
+                EmptyMenus();
+            }
+            m_mainMenu.GetComponent<MainMenu>().SwitchMenu(0); break;
         }
     }
     static public void OpenOrClose(CanvasGroup screen)
@@ -39,5 +54,19 @@ public class UIManager : MonoBehaviour
     static public void ToggleHUD()
     {
         m_HUD.SetActive(!m_HUD.activeSelf);
+    }
+
+    public void AddMenu(CanvasGroup menu)
+    {
+        openMenus.Add(menu);
+    }
+
+    public void EmptyMenus()
+    {
+        for(int i = 0; i < openMenus.Count; i++)
+        {
+            OpenOrClose(openMenus[i]);
+        }
+        openMenus.Clear();
     }
 }
