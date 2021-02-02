@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     {
         MainMenu = 0
     }
+    public GraphemeDatabase graphemeDatabase;
     public AudioClip buttonEnter;
     public AudioClip buttonClick;
     public AudioClip buttonReturn;

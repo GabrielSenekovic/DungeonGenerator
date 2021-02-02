@@ -33,7 +33,9 @@ public class QuestSelect : MonoBehaviour
 
     [SerializeField]Button buttonPrefab;
     [SerializeField]Transform buttonParent;
-    [SerializeField]Text detailText;
+    [SerializeField]SpriteText detailText;
+
+    [SerializeField]GraphemeDatabase graphemeDatabase; //Remove later
 
     BulletinBoard board = null;
 
@@ -49,6 +51,7 @@ public class QuestSelect : MonoBehaviour
             buttons[i].GetComponent<QuestButton>().index = i;
             quests.Add(GetComponent<QuestDataGenerator>().Initialize(seeds[i].questSeed));
         }
+        detailText.Initialize(graphemeDatabase.fonts[0]);
     }
 
     public void OnClose()
@@ -140,10 +143,12 @@ public class QuestSelect : MonoBehaviour
         }
         detailText.text += "\nSeeds: \nData seed: " + seeds[index_in].dataSeed + "\n";
         detailText.text += "Construction seed: " + seeds[index_in].constructionSeed + "\n";
+        detailText.Write();
     }
     public void HideDetails()
     {
         detailText.text = "";
+        detailText.Write();
     }
     public string GetBiomeDescription(Mood mood, bool same)
     {
