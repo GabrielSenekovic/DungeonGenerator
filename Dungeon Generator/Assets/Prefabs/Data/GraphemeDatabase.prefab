@@ -97,4 +97,49 @@ MonoBehaviour:
       value: 89
     - sprite: {fileID: 21300000, guid: 9446b056e3ba47c4caf3841bbf6097e0, type: 3}
       value: 90
-    numbers: []
+    numbers:
+    - sprite: {fileID: 21300000, guid: 269393772a4da4644bbb30c9247333ef, type: 3}
+      value: 48
+    - sprite: {fileID: 21300000, guid: 020d037a2725be54cb45d5d31ee9ef73, type: 3}
+      value: 49
+    - sprite: {fileID: 21300000, guid: 40383b178201559419ca33a030d45aa6, type: 3}
+      value: 50
+    - sprite: {fileID: 21300000, guid: c62d3286b5c859a49a02f11608865191, type: 3}
+      value: 51
+    - sprite: {fileID: 21300000, guid: cd1dee018213c9440b64f5ad78d8b772, type: 3}
+      value: 52
+    - sprite: {fileID: 21300000, guid: 09d353762a0d42d4592cea9903b73067, type: 3}
+      value: 53
+    - sprite: {fileID: 21300000, guid: 1183624650106264cb871641a1ca57c8, type: 3}
+      value: 54
+    - sprite: {fileID: 21300000, guid: d93b2a1cb0818d446bd362ab9e0aa837, type: 3}
+      value: 55
+    - sprite: {fileID: 21300000, guid: 4fb42771499928147b2c9c749a91b1b9, type: 3}
+      value: 56
+    - sprite: {fileID: 21300000, guid: 2b1fa88570baa8540bfd49f47fbd4771, type: 3}
+      value: 57
+    orthography:
+    - sprite: {fileID: 21300000, guid: 95662cca819ed0a469a6ab647eae7e2e, type: 3}
+      value: 58
+    - sprite: {fileID: 21300000, guid: 8f5bba5c88ec4694097af5ab4e4bc44e, type: 3}
+      value: 59
+    - sprite: {fileID: 21300000, guid: 9a24b0878eda9c448b861a7fc40c05d7, type: 3}
+      value: 46
+    - sprite: {fileID: 21300000, guid: fea840d1a78acce4c8ee1dfadd3d9a8c, type: 3}
+      value: 44
+    - sprite: {fileID: 21300000, guid: b2d3435f661df2640af5ac89d22b7bd2, type: 3}
+      value: 63
+    - sprite: {fileID: 21300000, guid: 041115cb0cc18b044a6c333278335447, type: 3}
+      value: 33
+    - sprite: {fileID: 21300000, guid: a7a5fd7bdd2d25f478e9396c913e64ce, type: 3}
+      value: 126
+    - sprite: {fileID: 21300000, guid: 157d5616b46feb54cb90dbaa9492afb1, type: 3}
+      value: 95
+    - sprite: {fileID: 21300000, guid: 229cc11ab84b00440a6297ea3330b226, type: 3}
+      value: 38
+    - sprite: {fileID: 21300000, guid: c801243fc5b5d244cbdae2db86bd00fd, type: 3}
+      value: 42
+    - sprite: {fileID: 21300000, guid: bb02d36ddf190da4daafc478c38972f2, type: 3}
+      value: 39
+    - sprite: {fileID: 21300000, guid: bb90475577f59b34490c8d585452a587, type: 3}
+      value: 34

@@ -52,7 +52,8 @@ public class MainMenu : MonoBehaviour
                 buttons[j].GetComponent<Image>().color = Color.white;
                 buttons[j].GetComponent<Image>().raycastTarget = true;
                 int index_1 = i; int index_2 = j;
-                buttons[j].GetComponentInChildren<Text>().text = buttonLayouts[i].buttons[j].name; 
+                buttons[j].GetComponentInChildren<SpriteText>().text = buttonLayouts[i].buttons[j].name; 
+                buttons[j].GetComponentInChildren<SpriteText>().Write();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SwitchMenu(buttonLayouts[index_1].buttons[index_2].destination) );
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {UI.GetComponent<AudioSource>().clip = UI.buttonClick; UI.GetComponent<AudioSource>().Play();});
@@ -68,7 +69,7 @@ public class MainMenu : MonoBehaviour
             else if(j < buttons.Length - 1)
             {
                 buttons[j].GetComponent<Image>().color = Color.clear;
-                buttons[j].GetComponentInChildren<Text>().text = "";
+                buttons[j].GetComponentInChildren<SpriteText>().text = "";
                 buttons[j].GetComponent<Image>().raycastTarget = false;
             }
             else
@@ -76,7 +77,8 @@ public class MainMenu : MonoBehaviour
                 //Make return button
                 buttons[j].GetComponent<Image>().color = Color.white;
                 buttons[j].GetComponent<Image>().raycastTarget = true;
-                buttons[j].GetComponentInChildren<Text>().text = "Return";
+                buttons[j].GetComponentInChildren<SpriteText>().text = "Return";
+                buttons[j].GetComponentInChildren<SpriteText>().Write();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SwitchMenu(buttonLayouts[i].parentMenu) );
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {UI.GetComponent<AudioSource>().clip = UI.buttonReturn; UI.GetComponent<AudioSource>().Play();});
@@ -119,16 +121,15 @@ public class MainMenu : MonoBehaviour
             buttons[i].GetComponent<EventTrigger>().triggers.Add(entry);
 
             GameObject textObject = new GameObject("Text"); textObject.transform.parent = buttons[i].transform;
-            textObject.AddComponent<Text>(); textObject.GetComponent<Text>().text = "";
-            textObject.GetComponent<Text>().font = font;
-            textObject.GetComponent<Text>().fontSize = 14;
-            textObject.GetComponent<RectTransform>().localScale = new Vector3(0.5f,0.5f,1);
-            textObject.GetComponent<RectTransform>().localPosition = new Vector3(0, -21, 0);
+            textObject.AddComponent<SpriteText>();
+            textObject.GetComponent<SpriteText>().Initialize(UI.graphemeDatabase.fonts[0]);
+            textObject.GetComponent<SpriteText>().text = "";
+            textObject.AddComponent<RectTransform>();
+            textObject.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+            textObject.GetComponent<RectTransform>().localPosition = new Vector3(-26, 46, 0);
         }
 
         GameObject frame_temp = Instantiate(frame, new Vector3(0,0,0), Quaternion.identity, transform);
         frame_temp.GetComponent<RectTransform>().localPosition = Vector3.zero;
-
-        SwitchMenu(0);
     }
 }

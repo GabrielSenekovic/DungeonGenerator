@@ -68,6 +68,21 @@ public class EntityMovementModel : MovementModel
     {
         directionToMove = Vector2.zero; facingDirection = new Vector2(0, -1);
     }
+    private void Update() 
+    {
+        Vector2 facingDirection = GetFacingDirection();
+        if(Mathf.Abs(facingDirection.x) > Mathf.Abs(facingDirection.y))
+        {
+            facingDirection.y = 0;
+        }
+        else
+        {
+            facingDirection.x = 0;
+        };
+        facingDirection.x = Mathf.RoundToInt(facingDirection.x); facingDirection.y = Mathf.RoundToInt(facingDirection.y);
+        GetComponentInChildren<Animator>().SetFloat("DirectionX", facingDirection.x);
+        GetComponentInChildren<Animator>().SetFloat("DirectionY", facingDirection.y);
+    }
     public void FixedUpdate()
     {
         Move();
@@ -114,10 +129,20 @@ public class EntityMovementModel : MovementModel
         float angle = Mathf.Deg2Rad * CameraMovement.rotationSideways;
         float x = Mathf.Sin(angle);
         float y = Mathf.Cos(-angle);
-        Vector2 temp = new Vector2(x, y);
+        if(Mathf.Abs(x) > Mathf.Abs(y))
+        {
+            y = 0;
+        }
+        else
+        {
+            x = 0;
+        };
+        x = Mathf.RoundToInt(x); y = Mathf.RoundToInt(y);
+        Vector2 temp = new Vector2(x,y);
         temp = facingDirection * new Vector2(x, y);
         temp.Normalize();
-        return new Vector2(x,y);
+        //return temp;
+        return new Vector2(-x,-y);
     }
     public void OnDeath()
     {

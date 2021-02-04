@@ -8,7 +8,7 @@ public class SpriteText : MonoBehaviour
     GraphemeDatabase.Font font;
     public string text;
 
-    List<Sprite> letters = new List<Sprite>();
+    List<GameObject> letters = new List<GameObject>();
 
     public int row = 0;
     int width = 0;
@@ -26,8 +26,9 @@ public class SpriteText : MonoBehaviour
 
     public void Write()
     {
-        letters.Clear();
+        Reset();
         int i = 0;
+        if(text.Length == 0){return;}
         foreach(char c in text)
         {
             if(c != ' ' && (int)c != 10)
@@ -39,6 +40,7 @@ public class SpriteText : MonoBehaviour
                     throw new System.Exception();
                 }
                 GameObject temp = new GameObject();
+                letters.Add(temp);
                 temp.transform.parent = transform;
                 temp.AddComponent<Image>();
                 Sprite sprite = font.Find(c).sprite;
@@ -91,5 +93,17 @@ public class SpriteText : MonoBehaviour
             j++;
         }
         return wordWidth + width >= maxWidth;
+    }
+
+    void Reset()
+    {
+        GetComponent<RectTransform>().sizeDelta = new Vector2(100,100);
+        for(int j = letters.Count - 1; j >= 0 ; j-- )
+        {
+            Destroy(letters[j]);
+        }
+        letters.Clear();
+        width = 0;
+        row = 0;
     }
 }

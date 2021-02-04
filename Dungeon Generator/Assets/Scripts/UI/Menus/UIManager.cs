@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class UIManager : MonoBehaviour
 {
@@ -20,10 +22,15 @@ public class UIManager : MonoBehaviour
 
     List<CanvasGroup> openMenus = new List<CanvasGroup>();
 
+    [SerializeField]Volume volume;
+
+    static Volume m_volume;
+
     void Awake()
     {
         m_mainMenu = mainMenu;
         m_HUD = HUD;
+        m_volume = volume;
     }
 
     private void Start() 
@@ -55,6 +62,13 @@ public class UIManager : MonoBehaviour
     static public void ToggleHUD()
     {
         m_HUD.SetActive(!m_HUD.activeSelf);
+        ColorAdjustments colorAdjustments;
+        m_volume.profile.TryGet<ColorAdjustments>(out colorAdjustments);
+        colorAdjustments.active = !m_HUD.activeSelf;
+        DepthOfField depthOfField;
+        m_volume.profile.TryGet<DepthOfField>(out depthOfField);
+        depthOfField.focusDistance.value = m_HUD.activeSelf ? 1.8f : 4.5f;
+        depthOfField.focalLength.value = m_HUD.activeSelf ? 50 : 300;
     }
 
     public void AddMenu(CanvasGroup menu)

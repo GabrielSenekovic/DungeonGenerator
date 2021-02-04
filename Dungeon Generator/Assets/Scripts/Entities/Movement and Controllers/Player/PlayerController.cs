@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     {
         clipToPlay = openMenu;
         VisualsRotator.renderers.Add(GetComponentInChildren<SpriteRenderer>().gameObject);
+        VisualsRotator.quads.Add(GetComponentInChildren<MeshRenderer>().gameObject);
     }
     private void OnDrawGizmos()
     {
@@ -81,10 +82,12 @@ public class PlayerController : MonoBehaviour
                 party.GetPartyLeader().GetPMM().facingDirection = party.GetPartyLeader().GetPMM().Dir;
             }
             party.GetPartyLeader().GetPMM().currentSpeed = party.GetPartyLeader().GetPMM().speed;
+            GetComponentInChildren<Animator>().SetBool("Walking", true);
         }
         else
         {
             party.GetPartyLeader().GetPMM().Vel = Vector2.zero;
+            GetComponentInChildren<Animator>().SetBool("Walking", false);
         }
     }
     public void OnMove(KeyCode key)

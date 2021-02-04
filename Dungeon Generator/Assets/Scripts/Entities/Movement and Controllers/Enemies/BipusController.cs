@@ -9,8 +9,8 @@ public class BipusController : NPCController
 
     private void Update()
     {
-        GetComponentInChildren<Animator>().SetFloat("DirectionX", GetComponent<EnemyMovementModel>().GetRelativeFacingDirection().x);
-        GetComponentInChildren<Animator>().SetFloat("DirectionY", GetComponent<EnemyMovementModel>().GetRelativeFacingDirection().y);
+       //GetComponentInChildren<Animator>().SetFloat("DirectionX", GetComponent<EnemyMovementModel>().GetRelativeFacingDirection().x);
+        //GetComponentInChildren<Animator>().SetFloat("DirectionY", GetComponent<EnemyMovementModel>().GetRelativeFacingDirection().y);
     }
     private void FixedUpdate() 
     {

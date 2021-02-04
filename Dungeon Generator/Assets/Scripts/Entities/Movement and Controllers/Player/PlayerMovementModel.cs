@@ -10,5 +10,4 @@ public class PlayerMovementModel : EntityMovementModel
         Acc = new Vector2(1,1);
         Dir = new Vector2(1,0); 
     }
-
 }

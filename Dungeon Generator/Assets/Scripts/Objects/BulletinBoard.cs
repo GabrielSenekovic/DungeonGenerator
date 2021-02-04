@@ -25,6 +25,7 @@ public class BulletinBoard : InteractableBase
         {
             questScreen.GetComponent<QuestSelect>().Initialize(GenerateNewSeeds(), this);
             UIManager.OpenOrClose(questScreen);
+            UIManager.ToggleHUD();
             isInteractable = false;
         }
     }

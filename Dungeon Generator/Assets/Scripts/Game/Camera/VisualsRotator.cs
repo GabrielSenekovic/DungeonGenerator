@@ -5,6 +5,8 @@ using UnityEngine;
 public class VisualsRotator : MonoBehaviour
 {
     public static List<GameObject> renderers = new List<GameObject>(){};
+
+    public static List<GameObject> quads = new List<GameObject>(){};
     void LateUpdate()
     {
         for(int i = 0; i < renderers.Count; i++)
@@ -31,6 +33,18 @@ public class VisualsRotator : MonoBehaviour
             catch
             {
                 renderers.RemoveAt(i);
+                i--;
+            }
+        }
+         for(int i = 0; i < quads.Count; i++)
+        {
+            try
+            {
+                quads[i].transform.RotateAround(renderers[i].transform.position, Vector3.forward, speed);
+            }
+            catch
+            {
+                quads.RemoveAt(i);
                 i--;
             }
         }

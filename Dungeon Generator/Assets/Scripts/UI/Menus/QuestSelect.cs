@@ -36,6 +36,7 @@ public class QuestSelect : MonoBehaviour
     [SerializeField]SpriteText detailText;
 
     [SerializeField]GraphemeDatabase graphemeDatabase; //Remove later
+    [SerializeField]NameDatabase nameDatabase; //Remove later
 
     BulletinBoard board = null;
 
@@ -129,7 +130,8 @@ public class QuestSelect : MonoBehaviour
     {
         detailText.text = "Information about the quest: \n";
         detailText.text += quests[index_in].GetQuestDescription();
-        detailText.text += "\nQuestgiver: \nObjective: " + "\nDifficulty level: \nReward: \n";
+        detailText.text += "\nQuestgiver: " + nameDatabase.GetRandomName();
+        detailText.text += "\nObjective: " + "\nDifficulty level: \nReward: \n";
         detailText.text += "\nInformation about the destination: \n";
         detailText.text += "\nThis place is a: " + levels[index_in].m_biome + ". \n";
         if(levels[index_in].m_mood[0] != levels[index_in].m_mood[1])
