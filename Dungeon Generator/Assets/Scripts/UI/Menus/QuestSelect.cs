@@ -52,7 +52,7 @@ public class QuestSelect : MonoBehaviour
             buttons[i].GetComponent<QuestButton>().index = i;
             quests.Add(GetComponent<QuestDataGenerator>().Initialize(seeds[i].questSeed));
         }
-        detailText.Initialize(graphemeDatabase.fonts[0]);
+        detailText.Initialize(graphemeDatabase.fonts[0], true);
     }
 
     public void OnClose()

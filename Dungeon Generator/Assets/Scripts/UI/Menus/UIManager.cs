@@ -35,7 +35,8 @@ public class UIManager : MonoBehaviour
 
     private void Start() 
     {
-        m_mainMenu.GetComponent<MainMenu>().Initialize(this, GetComponent<AudioSource>(), buttonEnter);
+        m_mainMenu.GetComponent<Menu>().Initialize(this, GetComponent<AudioSource>(), buttonEnter);
+        if(m_mainMenu.alpha == 1){m_mainMenu.GetComponent<Menu>().SwitchMenu(0);}
     }
     public void OpenOrClose(UIScreen screen)
     {
@@ -48,7 +49,7 @@ public class UIManager : MonoBehaviour
             {
                 EmptyMenus();
             }
-            m_mainMenu.GetComponent<MainMenu>().SwitchMenu(0); break;
+            m_mainMenu.GetComponent<Menu>().SwitchMenu(0); break;
         }
     }
     static public void OpenOrClose(CanvasGroup screen)

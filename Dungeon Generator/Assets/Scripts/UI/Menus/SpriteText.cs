@@ -19,9 +19,12 @@ public class SpriteText : MonoBehaviour
     public int rowSeparation;
     public int maxWidth;
 
-    public void Initialize(GraphemeDatabase.Font font_in)
+    bool multipleRows;
+
+    public void Initialize(GraphemeDatabase.Font font_in, bool value)
     {
         font = font_in;
+        multipleRows = value;
     }
 
     public void Write()
@@ -31,7 +34,7 @@ public class SpriteText : MonoBehaviour
         if(text.Length == 0){return;}
         foreach(char c in text)
         {
-            if(c != ' ' && (int)c != 10)
+            if(c != ' ' && (int)c != 10) //If current letter isnt space and isnt new line
             {
                 if(c != text[i])
                 {
@@ -61,7 +64,7 @@ public class SpriteText : MonoBehaviour
             {
                 width += spaceSize;
                 i++;
-                if(i < text.Length && IsNextWordTooLong(ref i))
+                if(i < text.Length && multipleRows && IsNextWordTooLong(ref i))
                 {
                     width = 0;
                     row++;
@@ -84,11 +87,12 @@ public class SpriteText : MonoBehaviour
             //i++;
             return true;
         }
-        int j = 1;
+        int j = 1; //was 1 before
         int wordWidth = 0;
-        while(currentLetter != ' ' && (int)currentLetter != 10)
+        while(currentLetter != ' ' && (int)currentLetter != 10 && i+j < text.Length)
         {
             wordWidth += font.Find(currentLetter).sprite.texture.width;
+            Debug.Log(i + j);
             currentLetter = text[i + j];
             j++;
         }
