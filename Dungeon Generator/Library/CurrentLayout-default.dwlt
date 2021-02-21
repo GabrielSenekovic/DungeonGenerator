@@ -19,9 +19,9 @@ MonoBehaviour:
     width: 1768
     height: 909
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Project
   m_RootView: {fileID: 2}
-  m_MinSize: {x: 875, y: 300}
+  m_MinSize: {x: 875, y: 542}
   m_MaxSize: {x: 10000, y: 10000}
   m_Maximized: 1
 --- !u!114 &2
@@ -118,10 +118,10 @@ MonoBehaviour:
     y: 30
     width: 1768
     height: 859
-  m_MinSize: {x: 677, y: 492}
-  m_MaxSize: {x: 14001, y: 14042}
+  m_MinSize: {x: 679, y: 492}
+  m_MaxSize: {x: 14002, y: 14042}
   vertical: 1
-  controlID: 122
+  controlID: 113
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -143,10 +143,10 @@ MonoBehaviour:
     y: 0
     width: 1768
     height: 859
-  m_MinSize: {x: 677, y: 492}
-  m_MaxSize: {x: 14001, y: 14042}
+  m_MinSize: {x: 679, y: 492}
+  m_MaxSize: {x: 14002, y: 14042}
   vertical: 0
-  controlID: 123
+  controlID: 114
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -168,10 +168,10 @@ MonoBehaviour:
     y: 0
     width: 1349
     height: 859
-  m_MinSize: {x: 402, y: 492}
+  m_MinSize: {x: 403, y: 492}
   m_MaxSize: {x: 10001, y: 14042}
   vertical: 1
-  controlID: 124
+  controlID: 115
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -193,10 +193,10 @@ MonoBehaviour:
     y: 0
     width: 1349
     height: 550
-  m_MinSize: {x: 402, y: 221}
-  m_MaxSize: {x: 8002, y: 4021}
+  m_MinSize: {x: 403, y: 221}
+  m_MaxSize: {x: 8003, y: 4021}
   vertical: 0
-  controlID: 125
+  controlID: 89
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -242,8 +242,8 @@ MonoBehaviour:
     y: 0
     width: 1044
     height: 550
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
@@ -377,7 +377,7 @@ MonoBehaviour:
       y: 21
       width: 1042
       height: 508
-    m_Scale: {x: 0.47037035, y: 0.47037038}
+    m_Scale: {x: 0.47037038, y: 0.47037038}
     m_Translation: {x: 521, y: 254}
     m_MarginLeft: 0
     m_MarginRight: 0
@@ -426,9 +426,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 428ffcff
-      m_LastClickedID: -225470
-      m_ExpandedIDs: ae5bfcff428ffcff4a8ffcff688ffcff788ffcff9c8ffcffae8ffcff4490fcffbec2fcffaadafcff34e0fcffaae0fcff7ae2fcff64e5fcff68e5fcff78e8fcffeee8fcffbeeafcffa8edfcffacedfcff1cf8fcff92f8fcffb4f8fcff44fbfcff48fbfcff4efcfcffc4fcfcffe6fcfcff76fffcff7afffcffd000fdff4601fdff1a03fdff0806fdff1006fdff562cfdff5c2cfdff8e3afdff9e3afdffc23afdffd43afdff7e3ffdff843ffdff5245fdffa047fdffa647fdffb047fdffb647fdff444efeff7e50feff8e50feffb250feffc450feff7a55feff1e5ffeff265ffeffc669feffcc69feffd669feffdc69feff2292feff249efeff2a9efeff349efeff3a9efeffaccdfeffb4cdfeff0c2cffff142cffff2e31ffff6833ffff7833ffff9c33ffffae33ffff9a39ffffa839ffffb039ffff383fffff3e3fffff483fffff4e3fffff065effff8660ffff6e64ffff7664ffff2a91ffff3899ffff4099ffff90a2ffff98a2ffff78a7ffff7ea7ffff88a7ffff8ea7ffffdaabfffffeabffff10acffffbab8ffffaceafffff6eaffff06ebffff2aebffffd4ebffffb4f0ffff3af2ffffc2f2ffff0cfbfffff4ffffff0e520000d46e0000206f00009275000026790000d49700006c9d000020a20000f6c90000cecd000074ce0000d8e80000dce80000eee80000f6e80000ccf00000
+      m_SelectedIDs: a8510000
+      m_LastClickedID: 0
+      m_ExpandedIDs: 38fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -769,22 +769,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes/Game
+    - Assets/Scripts/Sound
     m_Globs: []
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scenes/Game
+  - Assets/Scripts/Sound
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Users\Tinyb\OneDrive\Dokument\Unity\Mystery Dungeon Clone\DungeonGenerator\Dungeon
     Generator
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 452}
-    m_SelectedIDs: c44c0000
-    m_LastClickedID: 19652
-    m_ExpandedIDs: 00000000564c0000704c0000724c0000744c0000764c0000784c00007c4c00007e4c0000c44c0000ba510000c051000000ca9a3b
+    scrollPos: {x: 0, y: 308}
+    m_SelectedIDs: f24c0000
+    m_LastClickedID: 19698
+    m_ExpandedIDs: 00000000544c0000664c00006e4c0000704c0000a64c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -812,7 +812,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000564c0000
+    m_ExpandedIDs: 00000000544c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -843,18 +843,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: c6230000fe3f0000e4400000cc400000fe430000fa4d000008490000884900008e770200d6510000de5a0000b44a0000302c000000000000ba4a0000964e0000703801005c38010048480000c04900001c480000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: AudioManager
+      m_OriginalName: AudioManager
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 20904
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 11}
     m_CreateAssetUtility:
