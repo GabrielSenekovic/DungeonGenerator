@@ -1,9 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class AudioManager : MonoBehaviour
+public sealed class AudioManager : MonoBehaviour
 {
+    static AudioManager instance;
+
+    public static AudioManager Instance 
+    {
+        get { return instance; }
+    }
+    public static AudioManager GetInstance() 
+    {
+        return instance;
+    }
     [System.Serializable]public class Sound
     {
         public string name;
@@ -20,66 +31,67 @@ public class AudioManager : MonoBehaviour
     public Sound[] sounds;
     public Music[] music;
 
-    AudioSource music_source;
-    AudioSource[] SFX_source = new AudioSource[100];
+    static AudioSource music_source;
+
+    static float music_volume = 1;
+    static float SFX_volume = 1;
+    static float global_volume = 1; //from 0 to 1
+    static AudioSource[] SFX_source = new AudioSource[100];
+
+    static int nextSFX_source = 0;
 
 
     private void Start() 
     {
+        instance = this;
         music_source = gameObject.AddComponent<AudioSource>();
-        StartCoroutine(playMusic());
-    }
-    
-    public IEnumerator playMusic()
-    {
-        Debug.Log(music.clip.length);
-        music.clip = intro;
-        music.Play();
-        yield return new WaitForSeconds(music.clip.length);
-        music.Stop();
-        music.loop = true;
-        music.clip = mainTheme;
-        music.Play();
-    }
-
-    void Awake()
-    {
-        foreach (Sound s in sounds)
+        for(int i = 0; i < 100; i++)
         {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.clip;
-
-            s.source.volume = s.volume;
-            s.source.pitch = s.pitch;
-            s.source.loop = s.loop;
+            SFX_source[i] = gameObject.AddComponent<AudioSource>();
+            SFX_source[i].volume = SFX_volume * global_volume;
         }
+        music_source.volume = music_volume * global_volume;
+        StartCoroutine(PlayMusic(music[0]));
     }
 
-    void Start()
+    public static void PlaySFX (string name)
     {
-        Play("BGM");
-    }
-
-    public void Play (string name)
-    {
-        Sound s = Array.Find(sounds, sound => sound.name == name);
+        Sound s = Array.Find(GetInstance().sounds, sound => sound.name == name);
         if (s == null)
         {
             Debug.LogWarning("sound: " + name + "not found");
             return;
         }
-        s.source.Play();
+        PlaySFX(s);
     }
-    public void PlayMusic(string name)
+    public static void PlaySFX(Sound sound)
     {
-        Music m = Array.Find(music, music => music.name == name);
+        SFX_source[nextSFX_source].clip = sound.clip;
+        SFX_source[nextSFX_source].Play();
+        Debug.Log("Playing SFX: " + sound.name);
+        nextSFX_source++;
+        nextSFX_source = nextSFX_source >= 100? 0: nextSFX_source;
+    }
+    public static void PlayMusic(string name)
+    {
+        Music m = Array.Find(GetInstance().music, music => music.name == name);
         if (m == null)
         {
-            Debug.LogWarning("sound: " + name + "not found");
+            Debug.LogWarning("music: " + name + "not found");
             return;
         }
-        musicPlayer.intro = m.intro;
-        musicPlayer.mainTheme = m.theme;
-        StartCoroutine(musicPlayer.playMusic());
+        AudioManager temp = AudioManager.GetInstance();
+        GetInstance().StartCoroutine(PlayMusic(m));
+    }
+    public static IEnumerator PlayMusic(Music music)
+    {
+        Debug.Log(music_source.clip.length);
+        music_source.clip = music.intro;
+        music_source.Play();
+        yield return new WaitForSeconds(music_source.clip.length);
+        music_source.Stop();
+        music_source.loop = true;
+        music_source.clip = music.theme;
+        music_source.Play();
     }
 }

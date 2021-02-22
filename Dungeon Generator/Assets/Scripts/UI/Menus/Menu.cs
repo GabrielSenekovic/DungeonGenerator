@@ -69,7 +69,7 @@ public class Menu : MonoBehaviour
                 {
                     buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {Application.Quit(); Debug.Log("Quit the game from Menu");});
                 }
-                buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {UI.GetComponent<AudioSource>().clip = UI.buttonClick; UI.GetComponent<AudioSource>().Play();});
+                buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => AudioManager.PlaySFX("button_click"));
                 if(buttonLayouts[i].buttons[j].canvas != null)
                 {
                     UnityEngine.Events.UnityAction temp = () => UIManager.OpenOrClose(buttonLayouts[index_1].buttons[index_2].canvas);
@@ -93,12 +93,12 @@ public class Menu : MonoBehaviour
                 buttons[j].GetComponentInChildren<SpriteText>().Write();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SwitchMenu(buttonLayouts[i].parentMenu) );
-                buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {UI.GetComponent<AudioSource>().clip = UI.buttonReturn; UI.GetComponent<AudioSource>().Play();});
+                buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => AudioManager.PlaySFX("button_return"));
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => UI.EmptyMenus());
             }
         }
     }
-    public void Initialize(UIManager UI_in, AudioSource audio, AudioClip buttonEnterClip)
+    public void Initialize(UIManager UI_in, AudioSource audio)
     {
         Debug.Log("Initializing Menu");
         UI = UI_in;
@@ -128,7 +128,6 @@ public class Menu : MonoBehaviour
 
         for(int i = 0; i < buttons.Length; i++)
         {
-            AudioSource audioSource = audio;
             buttons[i] = new GameObject("Button: " + (i+1)); buttons[i].transform.parent = buttonTransform.transform; 
             buttons[i].AddComponent<RectTransform>();
             buttons[i].GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
@@ -139,7 +138,7 @@ public class Menu : MonoBehaviour
             buttons[i].AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener( (data) => { audioSource.clip = buttonEnterClip; audioSource.Play();} );
+            entry.callback.AddListener( (data) => AudioManager.PlaySFX("button_hover") );
             buttons[i].GetComponent<EventTrigger>().triggers.Add(entry);
 
             GameObject textObject = new GameObject("Text"); textObject.transform.parent = buttons[i].transform;

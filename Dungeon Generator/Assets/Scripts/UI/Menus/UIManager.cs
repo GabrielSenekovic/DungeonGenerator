@@ -16,9 +16,6 @@ public class UIManager : MonoBehaviour
         MainMenu = 0
     }
     public GraphemeDatabase graphemeDatabase;
-    public AudioClip buttonEnter;
-    public AudioClip buttonClick;
-    public AudioClip buttonReturn;
 
     List<CanvasGroup> openMenus = new List<CanvasGroup>();
 
@@ -35,7 +32,7 @@ public class UIManager : MonoBehaviour
 
     private void Start() 
     {
-        m_mainMenu.GetComponent<Menu>().Initialize(this, GetComponent<AudioSource>(), buttonEnter);
+        m_mainMenu.GetComponent<Menu>().Initialize(this, GetComponent<AudioSource>());
         if(m_mainMenu.alpha == 1){m_mainMenu.GetComponent<Menu>().SwitchMenu(0);}
     }
     public void OpenOrClose(UIScreen screen)

@@ -516,6 +516,7 @@ GameObject:
   - component: {fileID: 693930193}
   - component: {fileID: 693930195}
   - component: {fileID: 693930196}
+  - component: {fileID: 693930197}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -584,6 +585,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Enable: 0
+--- !u!114 &693930197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693930192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93673eb5ddbc4214c941f5ceebe3896d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: button_hover
+    clip: {fileID: 8300000, guid: 380cb105e8512624798c975fc92bb384, type: 3}
+  - name: button_return
+    clip: {fileID: 8300000, guid: 0ea52a952e070314ba728e26645776a5, type: 3}
+  - name: button_click
+    clip: {fileID: 8300000, guid: a23ff4fc15bb1334b95bca61d7835523, type: 3}
+  - name: menu_open
+    clip: {fileID: 8300000, guid: ece3814b746b1fb4ea9ba9b401d0570a, type: 3}
+  - name: menu_close
+    clip: {fileID: 8300000, guid: 6abfe35f4f49b2d418f6e63dd057fab7, type: 3}
+  music: []
 --- !u!114 &761076108 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7667636732016740739, guid: c7aac8986ca15964e9f1ba6e3d7bb2b8,
