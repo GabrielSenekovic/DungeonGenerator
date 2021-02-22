@@ -13,6 +13,8 @@ public class Menu : MonoBehaviour
         public string name;
         public int destination;
 
+        public string tooltip;
+
         public UnityEngine.CanvasGroup canvas;
     }
     [System.Serializable]struct ButtonLayout
@@ -49,17 +51,30 @@ public class Menu : MonoBehaviour
     {
         for(int j = 0; j < buttons.Length; j++)
         {
+            buttons[j].GetComponent<EventTrigger>().triggers.Clear();
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerEnter;
+            entry.callback.AddListener( (data) => AudioManager.PlaySFX("button_hover") );
+
             if(j < buttonLayouts[i].buttons.Count)
             {
                 buttons[j].GetComponent<Image>().color = Color.white;
                 buttons[j].GetComponent<Image>().raycastTarget = true;
                 int index_1 = i; int index_2 = j;
-                buttons[j].GetComponentInChildren<SpriteText>().text = buttonLayouts[i].buttons[j].name; 
-                buttons[j].GetComponentInChildren<SpriteText>().Write();
+                buttons[j].GetComponentInChildren<SpriteText>().Write(buttonLayouts[i].buttons[j].name);
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
+
                 if(buttonLayouts[index_1].buttons[index_2].destination >= 0)
                 {
                     buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SwitchMenu(buttonLayouts[index_1].buttons[index_2].destination) );
+                    buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => MenuTooltip.UpdateUpperTooltip(" "));
+                    
+                    entry.callback.AddListener( (data) => MenuTooltip.UpdateUpperTooltip(buttonLayouts[index_1].buttons[index_2].tooltip));
+
+                    EventTrigger.Entry exit_entry = new EventTrigger.Entry();
+                    exit_entry.eventID = EventTriggerType.PointerExit;
+                    exit_entry.callback.AddListener( (data) => MenuTooltip.UpdateUpperTooltip(" "));
+                    buttons[j].GetComponent<EventTrigger>().triggers.Add(exit_entry);
                 }
                 else if(buttonLayouts[index_1].buttons[index_2].destination == -1)
                 {
@@ -81,7 +96,7 @@ public class Menu : MonoBehaviour
             else if(j < buttons.Length - 1 || buttonLayouts[i].parentMenu < 0)
             {
                 buttons[j].GetComponent<Image>().color = Color.clear;
-                buttons[j].GetComponentInChildren<SpriteText>().text = "";
+                buttons[j].GetComponentInChildren<SpriteText>().Write("");
                 buttons[j].GetComponent<Image>().raycastTarget = false;
             }
             else if(buttonLayouts[i].parentMenu >= 0)
@@ -89,13 +104,18 @@ public class Menu : MonoBehaviour
                 //Make return button
                 buttons[j].GetComponent<Image>().color = Color.white;
                 buttons[j].GetComponent<Image>().raycastTarget = true;
-                buttons[j].GetComponentInChildren<SpriteText>().text = "Return";
-                buttons[j].GetComponentInChildren<SpriteText>().Write();
+                buttons[j].GetComponentInChildren<SpriteText>().Write("Return");
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SwitchMenu(buttonLayouts[i].parentMenu) );
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => AudioManager.PlaySFX("button_return"));
                 buttons[j].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => UI.EmptyMenus());
+                entry.callback.AddListener( (data) => MenuTooltip.UpdateUpperTooltip("return"));
+                EventTrigger.Entry exit_entry = new EventTrigger.Entry();
+                exit_entry.eventID = EventTriggerType.PointerExit;
+                exit_entry.callback.AddListener( (data) => MenuTooltip.UpdateUpperTooltip(" "));
+                buttons[j].GetComponent<EventTrigger>().triggers.Add(exit_entry);
             }
+            buttons[j].GetComponent<EventTrigger>().triggers.Add(entry);
         }
     }
     public void Initialize(UIManager UI_in, AudioSource audio)
@@ -136,10 +156,6 @@ public class Menu : MonoBehaviour
             buttons[i].AddComponent<UnityEngine.UI.Button>();
             buttons[i].GetComponent<UnityEngine.UI.Button>().image = buttons[i].GetComponent<UnityEngine.UI.Image>();
             buttons[i].AddComponent<EventTrigger>();
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerEnter;
-            entry.callback.AddListener( (data) => AudioManager.PlaySFX("button_hover") );
-            buttons[i].GetComponent<EventTrigger>().triggers.Add(entry);
 
             GameObject textObject = new GameObject("Text"); textObject.transform.parent = buttons[i].transform;
             textObject.AddComponent<SpriteText>();

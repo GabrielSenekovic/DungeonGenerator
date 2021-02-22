@@ -27,6 +27,12 @@ public class SpriteText : MonoBehaviour
         multipleRows = value;
     }
 
+    public void Write(string text_in)
+    {
+        text = text_in;
+        Write();
+    }
+
     public void Write()
     {
         Reset();

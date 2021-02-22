@@ -281,6 +281,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &261250686 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1307059081, guid: 000bc41cec5a7904897a59b5a413a540,
+    type: 3}
+  m_PrefabInstance: {fileID: 102790489787128139}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &261250689 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1307059082, guid: 000bc41cec5a7904897a59b5a413a540,
+    type: 3}
+  m_PrefabInstance: {fileID: 102790489787128139}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &261250690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261250686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e709f9c8ca848e24f8a2a6d08a42b6c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upperText: {fileID: 456605976}
+  lowerText: {fileID: 448026162}
+  graphemeDatabase: {fileID: 1255704896}
 --- !u!114 &300231136 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5056087752191818362, guid: 2f6288fdb7c86854c9a9ae341e738d93,
@@ -375,6 +402,114 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &448026160
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 448026161}
+  - component: {fileID: 448026162}
+  m_Layer: 0
+  m_Name: LowerTooltip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &448026161
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448026160}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 261250689}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &448026162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 448026160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85f3f3b5222edf3488949325731bb485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 
+  row: 0
+  offset: {x: 0, y: 0}
+  spaceSize: 0
+  rowSeparation: 0
+  maxWidth: 0
+--- !u!1 &456605974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 456605975}
+  - component: {fileID: 456605976}
+  m_Layer: 0
+  m_Name: UpperTooltip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &456605975
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456605974}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 261250689}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -250, y: 160}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &456605976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456605974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85f3f3b5222edf3488949325731bb485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 
+  row: 0
+  offset: {x: 0, y: 0}
+  spaceSize: 8
+  rowSeparation: 0
+  maxWidth: 300
 --- !u!224 &461350388 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 102790488955115801, guid: 000bc41cec5a7904897a59b5a413a540,
@@ -1442,6 +1577,111 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[1].name
+      value: Materials
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[0].tooltip
+      value: Edit the members of the party
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[1].tooltip
+      value: Change your equipment
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[2].tooltip
+      value: Check your inventory
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[3].tooltip
+      value: Craft things using material
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[4].tooltip
+      value: Change your skillset
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[5].tooltip
+      value: Check your quests
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[6].tooltip
+      value: Check the world map
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[7].tooltip
+      value: Browse your knowledge
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[8].tooltip
+      value: Play music
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[9].tooltip
+      value: Browse your achievements
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[0].tooltip
+      value: Show all items
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[1].tooltip
+      value: Show materials
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[2].tooltip
+      value: Show weaponry
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[3].tooltip
+      value: Show armor
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[4].tooltip
+      value: Show accessories
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[3].buttons.Array.data[5].tooltip
+      value: Show key items
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[6].buttons.Array.data[0].tooltip
+      value: Show active quests
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[6].buttons.Array.data[1].tooltip
+      value: Show quests youve already completed
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[10].tooltip
+      value: Learn how to play
+      objectReference: {fileID: 0}
+    - target: {fileID: 7968470694109297029, guid: 000bc41cec5a7904897a59b5a413a540,
+        type: 3}
+      propertyPath: buttonLayouts.Array.data[0].buttons.Array.data[11].tooltip
+      value: Change the options
       objectReference: {fileID: 0}
     - target: {fileID: 8368315206542601415, guid: 000bc41cec5a7904897a59b5a413a540,
         type: 3}
