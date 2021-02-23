@@ -7,6 +7,12 @@ using UnityEngine.Rendering.Universal;
 
 public class UIManager : MonoBehaviour
 {
+    static UIManager instance;
+
+    public static UIManager GetInstance()
+    {
+        return instance;
+    }
     [SerializeField] CanvasGroup mainMenu;
     static CanvasGroup m_mainMenu;
     [SerializeField] GameObject HUD;
@@ -21,7 +27,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]Volume volume;
 
-    static Volume m_volume;
+    public static Volume m_volume;
+
+    public Color openMenuColor;
 
     void Awake()
     {
@@ -32,6 +40,7 @@ public class UIManager : MonoBehaviour
 
     private void Start() 
     {
+        instance = this;
         m_mainMenu.GetComponent<Menu>().Initialize(this, GetComponent<AudioSource>());
         if(m_mainMenu.alpha == 1){m_mainMenu.GetComponent<Menu>().SwitchMenu(0);}
     }
@@ -62,7 +71,7 @@ public class UIManager : MonoBehaviour
         m_HUD.SetActive(!m_HUD.activeSelf);
         ColorAdjustments colorAdjustments;
         m_volume.profile.TryGet<ColorAdjustments>(out colorAdjustments);
-        colorAdjustments.active = !m_HUD.activeSelf;
+        colorAdjustments.colorFilter.value = m_HUD.activeSelf ? Color.white : GetInstance().openMenuColor;
         DepthOfField depthOfField;
         m_volume.profile.TryGet<DepthOfField>(out depthOfField);
         depthOfField.focusDistance.value = m_HUD.activeSelf ? 1.8f : 4.5f;

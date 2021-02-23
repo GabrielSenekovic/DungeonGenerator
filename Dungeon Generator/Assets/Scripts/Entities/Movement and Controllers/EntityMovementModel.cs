@@ -70,7 +70,7 @@ public class EntityMovementModel : MovementModel
     }
     private void Update() 
     {
-        Vector2 facingDirection = GetFacingDirection();
+        Vector2 facingDirection = GetRelativeFacingDirection();
         if(Mathf.Abs(facingDirection.x) > Mathf.Abs(facingDirection.y))
         {
             facingDirection.y = 0;
@@ -124,25 +124,7 @@ public class EntityMovementModel : MovementModel
     }
     public Vector2 GetRelativeFacingDirection()
     {
-        //Youre gonna have to take the Vector2(x,y) and rotate it
-        //by the angle between 0,-1 and the facingdirection
-        float angle = Mathf.Deg2Rad * CameraMovement.rotationSideways;
-        float x = Mathf.Sin(angle);
-        float y = Mathf.Cos(-angle);
-        if(Mathf.Abs(x) > Mathf.Abs(y))
-        {
-            y = 0;
-        }
-        else
-        {
-            x = 0;
-        };
-        x = Mathf.RoundToInt(x); y = Mathf.RoundToInt(y);
-        Vector2 temp = new Vector2(x,y);
-        temp = facingDirection * new Vector2(x, y);
-        temp.Normalize();
-        //return temp;
-        return new Vector2(-x,-y);
+        return Quaternion.Euler(0,0,-CameraMovement.rotationSideways) * facingDirection;
     }
     public void OnDeath()
     {

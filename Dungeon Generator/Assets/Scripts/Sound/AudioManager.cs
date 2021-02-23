@@ -33,9 +33,9 @@ public sealed class AudioManager : MonoBehaviour
 
     static AudioSource music_source;
 
-    static float music_volume = 1;
-    static float SFX_volume = 1;
-    static float global_volume = 1; //from 0 to 1
+    static public float music_volume = 1;
+    static public float SFX_volume = 1;
+    static public float global_volume = 1; //from 0 to 1
     static AudioSource[] SFX_source = new AudioSource[100];
 
     static int nextSFX_source = 0;
@@ -54,6 +54,14 @@ public sealed class AudioManager : MonoBehaviour
         StartCoroutine(PlayMusic(music[0]));
     }
 
+    private void Update() 
+    {
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            PlaySFX("button_click");
+        }
+    }
+
     public static void PlaySFX (string name)
     {
         Sound s = Array.Find(GetInstance().sounds, sound => sound.name == name);
@@ -67,6 +75,7 @@ public sealed class AudioManager : MonoBehaviour
     public static void PlaySFX(Sound sound)
     {
         SFX_source[nextSFX_source].clip = sound.clip;
+        SFX_source[nextSFX_source].volume = SFX_volume * global_volume;
         SFX_source[nextSFX_source].Play();
         Debug.Log("Playing SFX: " + sound.name);
         nextSFX_source++;
