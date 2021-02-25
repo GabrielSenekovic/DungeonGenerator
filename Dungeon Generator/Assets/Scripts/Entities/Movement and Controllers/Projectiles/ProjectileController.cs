@@ -58,7 +58,7 @@ public class ProjectileController : EntityMovementModel
         renderer = GetComponentInChildren<MeshRenderer>();
         if(GetComponentInChildren<Light>())
         {
-            GetComponentInChildren<Light>().color =renderer.sharedMaterial.color;
+            GetComponentInChildren<Light>().color = renderer.sharedMaterial.color;
         }
         if(placedProjectile)
         {
@@ -75,7 +75,10 @@ public class ProjectileController : EntityMovementModel
     {
         currentSpeed = speed;
         lifeTimer++;
-        renderer.material.SetFloat("_IsExploding", (float)lifeTimer/(float)lifeLength);
+        if(placedProjectile)
+        {
+            renderer.material.SetFloat("_IsExploding", (float)lifeTimer/(float)lifeLength);
+        }
         CheckAccelerationMode();
         CheckHomingMode();
         Move();

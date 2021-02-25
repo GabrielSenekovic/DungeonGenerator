@@ -3569,6 +3569,11 @@ PrefabInstance:
       propertyPath: closeMenu
       value: 
       objectReference: {fileID: 8300000, guid: 6abfe35f4f49b2d418f6e63dd057fab7, type: 3}
+    - target: {fileID: 5936212065661128912, guid: 2f6288fdb7c86854c9a9ae341e738d93,
+        type: 3}
+      propertyPath: castingHeight
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f6288fdb7c86854c9a9ae341e738d93, type: 3}
 --- !u!1001 &6260838232150214781

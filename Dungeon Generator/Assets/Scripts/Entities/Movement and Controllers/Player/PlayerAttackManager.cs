@@ -12,6 +12,8 @@ public class PlayerAttackManager : AttackManager
     }
     public Attack[] attacks;
 
+    public float castingHeight; //How far up from the ground are you casting
+
     private void Start() 
     {
         currentAttack = attacks[0].attack;
@@ -24,7 +26,7 @@ public class PlayerAttackManager : AttackManager
     private void FixedUpdate()
     {
         if(currentAttack == null || currentAttack.state == AttackIdentifier.CastingState.DONE){ return; }
-        currentAttack.OnFixedUpdate(GetComponent<PlayerMovementModel>().facingDirection,transform.position, GetComponent<Collider>());
+        currentAttack.OnFixedUpdate(GetComponent<PlayerMovementModel>().facingDirection,new Vector3(transform.position.x, transform.position.y, transform.position.z - castingHeight), GetComponent<Collider>());
     }
 
     private void Update() 
