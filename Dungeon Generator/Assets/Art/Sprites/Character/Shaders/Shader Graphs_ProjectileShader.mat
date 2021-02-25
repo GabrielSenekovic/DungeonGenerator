@@ -27,5 +27,6 @@ Material:
     m_Floats:
     - Vector1_999C9A4B: 0
     - Vector1_D4760622: 20
+    - _IsExploding: 1
     m_Colors: []
   m_BuildTextureStacks: []

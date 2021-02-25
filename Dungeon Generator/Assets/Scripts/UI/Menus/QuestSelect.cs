@@ -130,7 +130,13 @@ public class QuestSelect : MonoBehaviour
     {
         detailText.text = "Information about the quest: \n";
         detailText.text += quests[index_in].GetQuestDescription();
-        detailText.text += "\nQuestgiver: " + nameDatabase.GetRandomName();
+        detailText.Write();
+        if(quests[index_in].missionType == QuestData.MissionType.Recovery)
+        {
+            RecoveryQuestData temp = quests[index_in] as RecoveryQuestData;
+            detailText.PlaceSprite((temp.thingToRecover.thing as ItemData).sprite);
+        }
+        detailText.text = "\nQuestgiver: " + nameDatabase.GetRandomName();
         detailText.text += "\nObjective: " + "\nDifficulty level: \nReward: \n";
         detailText.text += "\nInformation about the destination: \n";
         detailText.text += "\nThis place is a: " + levels[index_in].m_biome + ". \n";
@@ -145,7 +151,7 @@ public class QuestSelect : MonoBehaviour
         }
         detailText.text += "\nSeeds: \nData seed: " + seeds[index_in].dataSeed + "\n";
         detailText.text += "Construction seed: " + seeds[index_in].constructionSeed + "\n";
-        detailText.Write();
+        detailText.WriteAppend();
     }
     public void HideDetails()
     {

@@ -49,6 +49,8 @@ public class EntityMovementModel : MovementModel
     [System.NonSerialized]public Vector2 Acc;
     protected float Fric = 0.1f; //this value chosen because it worked well with explosion pushes
 
+    Animator anim;
+
     public void AddVelocity(Vector2 vin)
     {
         Vel += vin;
@@ -67,6 +69,7 @@ public class EntityMovementModel : MovementModel
     void Awake()
     {
         directionToMove = Vector2.zero; facingDirection = new Vector2(0, -1);
+        anim = GetComponentInChildren<Animator>();
     }
     private void Update() 
     {
@@ -80,8 +83,11 @@ public class EntityMovementModel : MovementModel
             facingDirection.x = 0;
         };
         facingDirection.x = Mathf.RoundToInt(facingDirection.x); facingDirection.y = Mathf.RoundToInt(facingDirection.y);
-        GetComponentInChildren<Animator>().SetFloat("DirectionX", facingDirection.x);
-        GetComponentInChildren<Animator>().SetFloat("DirectionY", facingDirection.y);
+        if(anim != null)
+        {
+            anim.SetFloat("DirectionX", facingDirection.x);
+            anim.SetFloat("DirectionY", facingDirection.y);
+        }
     }
     public void FixedUpdate()
     {

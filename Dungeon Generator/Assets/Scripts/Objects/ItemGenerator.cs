@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class ItemGenerator : MonoBehaviour
 {
+    static ItemGenerator instance;
+    public static ItemGenerator GetInstance()
+    {
+        return instance;
+    }
     public enum BlendMode
     {
         Multiply = 0,
@@ -30,6 +35,11 @@ public class ItemGenerator : MonoBehaviour
     }
     [SerializeField] List<TextureGroupList> lists = new List<TextureGroupList>();
     [SerializeField] Sprite square;
+
+    private void Start() 
+    {
+        instance = this;
+    }
     public Sprite GenerateItemSprite()
     {
         int temp = Random.Range(0, lists[0].groups.Count); //gets a base for the fruit
@@ -37,9 +47,9 @@ public class ItemGenerator : MonoBehaviour
         Color fruitColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
         Color leafColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
 
-        return Sprite.Create(CreateTexture(temp, temp2, fruitColor, leafColor, 0), new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 16);
+        return Sprite.Create(CreateTexture(temp, temp2, fruitColor, leafColor, 0.2f, Random.Range(0.5f, 1.0f)), new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f), 16);
     }
-    public Texture2D CreateTexture(int fruit, int leaf, Color fruitColor, Color leafColor_in, float luminosity)
+    public Texture2D CreateTexture(int fruit, int leaf, Color fruitColor, Color leafColor_in, float luminosity, float saturation)
     {
         Texture2D texture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
         List<Texture2D> fruitTextures = lists[0].groups[fruit].textures;
@@ -59,8 +69,8 @@ public class ItemGenerator : MonoBehaviour
             SetPixel(ref color, GetPixel(leafTextures[1], x - (int)lists[0].groups[fruit].connector.x, y - (int)lists[0].groups[fruit].connector.y));
             SetPixel(ref color, GetPixel(fruitTextures[1], x, y));
             //Add together the colored parts
-            SetPixel(ref color, GetPixel(leafTextures[0], x - (int)lists[0].groups[fruit].connector.x, y - (int)lists[0].groups[fruit].connector.y, leafColor, BlendMode.Multiply, luminosity));
-            SetPixel(ref color, GetPixel(fruitTextures[0],x, y, fruitColor, BlendMode.Overlay, luminosity));
+            SetPixel(ref color, GetPixel(leafTextures[0], x - (int)lists[0].groups[fruit].connector.x, y - (int)lists[0].groups[fruit].connector.y, leafColor, BlendMode.Multiply, luminosity, saturation));
+            SetPixel(ref color, GetPixel(fruitTextures[0],x, y, fruitColor, BlendMode.Overlay, luminosity, saturation));
             pixels[i] = color;
         }
         texture.SetPixels(pixels);
@@ -76,14 +86,12 @@ public class ItemGenerator : MonoBehaviour
         }
         return new Color(0,0,0,0);
     }
-    Color GetPixel(Texture2D texture, int x, int y, Color color, BlendMode mode, float luminosity)
+    Color GetPixel(Texture2D texture, int x, int y, Color color, BlendMode mode, float luminosity, float saturation)
     {
         if (x >= 0 && y >= 0 && x < texture.width && y < texture.height)
         {
             Color temp = texture.GetPixel(x, y);
             float h = 0, s = 0, v = 0;
-            Color.RGBToHSV(temp, out h, out s, out v);
-            if(temp.a != 0) { temp = Color.HSVToRGB(h, s, v + luminosity); }
 
             switch(mode)
             {
@@ -100,6 +108,8 @@ public class ItemGenerator : MonoBehaviour
                         temp *= color;
                     } break;
             }
+            Color.RGBToHSV(temp, out h, out s, out v);
+             if(temp.a != 0) { temp = Color.HSVToRGB(h, saturation, v + luminosity); }
             return temp;
         }
         return new Color(0, 0, 0, 0);

@@ -39,6 +39,11 @@ public class ProjectileController : EntityMovementModel
     public List<targetData> targets = new List<targetData>();
     public float gravitySpeed;
 
+    public bool placedProjectile;
+
+    public bool collideWithCaster;
+    MeshRenderer renderer;
+
     [SerializeField]List<GameObject> visuals;
 
     public int lifeLength;
@@ -50,9 +55,14 @@ public class ProjectileController : EntityMovementModel
         VisualsRotator.renderers.AddRange(visuals);
         GetComponent<SphereCollider>().radius = blastRadius;
         GetComponent<SphereCollider>().isTrigger = true;
+        renderer = GetComponentInChildren<MeshRenderer>();
         if(GetComponentInChildren<Light>())
         {
-            GetComponentInChildren<Light>().color = GetComponentInChildren<MeshRenderer>().sharedMaterial.color;
+            GetComponentInChildren<Light>().color =renderer.sharedMaterial.color;
+        }
+        if(placedProjectile)
+        {
+            VisualsRotator.Add(renderer);
         }
     }
 
@@ -65,6 +75,7 @@ public class ProjectileController : EntityMovementModel
     {
         currentSpeed = speed;
         lifeTimer++;
+        renderer.material.SetFloat("_IsExploding", (float)lifeTimer/(float)lifeLength);
         CheckAccelerationMode();
         CheckHomingMode();
         Move();

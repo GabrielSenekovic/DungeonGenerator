@@ -44,11 +44,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 820492b6020b30d4e9ddca7f032cb7ce, type: 3}
-  castTime: 4
+  castTime: 0
   waveData:
   - position: {x: 0, y: 0}
     amountOfProjectiles: 1
-    radius: 1
+    radius: 0
     curvature: 0
     separation: 0
     globalDirection: {x: 0, y: 0}

@@ -40,7 +40,7 @@ public class VisualsRotator : MonoBehaviour
         {
             try
             {
-                quads[i].transform.RotateAround(renderers[i].transform.position, Vector3.forward, speed);
+                quads[i].transform.RotateAround(quads[i].transform.position, Vector3.forward, speed);
             }
             catch
             {
@@ -48,5 +48,10 @@ public class VisualsRotator : MonoBehaviour
                 i--;
             }
         }
+    }
+    public static void Add(MeshRenderer quad)
+    {
+        quads.Add(quad.gameObject);
+        quad.transform.RotateAround(quad.transform.position, Vector3.forward, CameraMovement.rotationSideways);
     }
 }

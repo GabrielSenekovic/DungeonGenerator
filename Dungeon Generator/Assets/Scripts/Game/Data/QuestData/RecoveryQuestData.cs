@@ -7,7 +7,7 @@ public class RecoveryQuestData : QuestData
 {
     public class RecoveryObject
     {
-        public RecoveryObject(Data thing_in, State state_in)
+        public RecoveryObject(BaseData thing_in, State state_in)
         {
             thing = thing_in;
             state = state_in;
@@ -22,10 +22,10 @@ public class RecoveryQuestData : QuestData
         }
         //if it is a recoveryMission
         //CharacterData and ItemData inherit from Data
-        Data thing = null;
+        public BaseData thing = null;
         public State state;
     }
-    RecoveryObject thingToRecover;
+    public RecoveryObject thingToRecover;
 
     public override void Initialize(MissionType type_in)
     {
@@ -39,7 +39,7 @@ public class RecoveryQuestData : QuestData
         }
         temp.Add(RecoveryObject.State.Mythical_Exists);
         temp.Add(RecoveryObject.State.Mythical_Unreal);
-        thingToRecover = new RecoveryObject(null, temp[Random.Range(0, temp.Count)]);
+        thingToRecover = new RecoveryObject(new ItemData(ItemGenerator.GetInstance().GenerateItemSprite()), temp[Random.Range(0, temp.Count)]);
     }
 
     public override string GetQuestDescription()
@@ -56,6 +56,7 @@ public class RecoveryQuestData : QuestData
             default: description += "This item may not even exist, but... I will pay whoever can get it for me with unknown riches!";
                 break;
         }
+        description += "It looks like this: ";
         return description;
     }
 }

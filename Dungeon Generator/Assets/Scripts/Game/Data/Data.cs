@@ -2,6 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Data : MonoBehaviour
+public class BaseData:ScriptableObject
 {
+}
+
+public class ItemData:BaseData
+{
+    public Sprite sprite;
+    public ItemData(Sprite sprite_in)
+    {
+        sprite = sprite_in;
+    }
 }

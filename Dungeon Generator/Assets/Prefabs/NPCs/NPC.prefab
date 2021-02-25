@@ -95,7 +95,6 @@ GameObject:
   - component: {fileID: 1495904575826847972}
   - component: {fileID: 1495904575826847973}
   - component: {fileID: 1495904575826847974}
-  - component: {fileID: -1040269944655290225}
   - component: {fileID: 1324613242915724483}
   m_Layer: 0
   m_Name: NPC
@@ -131,8 +130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd526ad0cf6213f4ca72a1cc5eacdedc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  facingDirection: {x: 0, y: 0}
   speed: 3
   canMove: 1
+  orbitPoint: {x: 0, y: 0}
+  orbitSpeed: 0
 --- !u!54 &1495904575826847972
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -177,19 +179,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-1040269944655290225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495904575826847969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f47bcf12139a33b4288e650a025e7e5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myBody: {fileID: 0}
 --- !u!114 &1324613242915724483
 MonoBehaviour:
   m_ObjectHideFlags: 0
