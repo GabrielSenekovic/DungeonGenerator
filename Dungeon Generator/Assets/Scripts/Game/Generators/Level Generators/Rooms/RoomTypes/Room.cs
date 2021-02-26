@@ -63,6 +63,16 @@ public partial class Room: MonoBehaviour
 
     public bool hasFusedWalls = false;
 
+    public List<int> newTriangles = new List<int>();
+    public List<Vector3> newVertices = new List<Vector3>();
+    public List<Vector2> newUV = new List<Vector2>();
+    public Material material;
+
+    private void Start() 
+    {
+        Initialize(new Vector2(20,20));
+    }
+
     void BuildWallArray()
     {
         for(int i = 0; i < CameraBoundaries.x; i++)
@@ -88,7 +98,7 @@ public partial class Room: MonoBehaviour
     public void Initialize(Vector2 RoomSize)
     {
         //This Initialize() function is for the origin room specifically, as it already has its own position
-        OpenAllEntrances();
+        //OpenAllEntrances();
         OnInitialize(RoomSize);
     }
 
@@ -101,7 +111,14 @@ public partial class Room: MonoBehaviour
     {
         CameraBoundaries = RoomSize;
         directions = GetComponent<RoomDirections>();
-        BuildWallArray();
+        //Build wall meshes all around the start area in a 30 x 30 square
+        GameObject wallObject = new GameObject("Wall");
+        wallObject.transform.parent = this.gameObject.transform;
+        wallObject.AddComponent<MeshFilter>();
+        CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, new Vector3(20, 1, 4), new Vector2(3,3), 0.05f); //0.05f
+        wallObject.AddComponent<MeshRenderer>();
+        wallObject.GetComponent<MeshRenderer>().material = material;
+        wallObject.transform.localPosition = new Vector3(transform.position.x - RoomSize.x / 2 + 0.5f, transform.position.y + RoomSize.y / 2, 0);
     }
 
     public Vector2 GetCameraBoundaries()
@@ -764,7 +781,7 @@ public partial class Room: MonoBehaviour
                 break;
         }
     }
-    public void InstantiateWalls(WallBlueprints blueprints, Transform wallParent)
+    public void InstantiateWalls(WallBlueprints blueprints, Transform wallParent) //wil be deprecated
     {
         for (int i = 0; i < CameraBoundaries.x; i++)
         {
@@ -836,5 +853,156 @@ public partial class Room: MonoBehaviour
             newColor += new Color(0.3f, 0.3f, 0.3f);
         }
         return newColor;
+    }
+
+    public Mesh CreateWall(GameObject wall, Mesh mesh /*, List<List<int>> instructions*/, Vector3 dim, Vector2 divisions, float jaggedness)
+    {
+        //dim x = width, y = tilt, z = height
+        //divisions = how many vertices per unit tile
+        //instructions tells us how many steps to go before turning, and what direction to turn
+        float centering = 0.5f - ((1 / divisions.x) * (divisions.x - 1)); //the mesh starts at 0 and then goes to the left, which essentially makes it start in the middle of a ground tile and stretch outside it. This float will fix that
+
+        float x = transform.position.x + centering;
+        float y = transform.position.y;
+        float z = transform.position.z;
+
+        int amount_of_faces = (int)(divisions.x * divisions.y);
+        const int vertices_per_quad = 4;
+        int vertices_per_tile = amount_of_faces * vertices_per_quad;
+        int vertices_per_column = vertices_per_tile * (int)dim.z;
+
+        float tilt_increment = dim.y / (dim.z * divisions.y);
+
+        for(int i = 0; i < dim.x; i++)
+        {
+            Debug.Log("New Column!");
+            string debug_info = "";
+            //Go through each column of wall
+            for(int j = 0; j < dim.z; j++)
+            {
+                //Go through each square upwards
+                for(int k = 0; k < divisions.x * divisions.y; k++)
+                {
+                    //Go through each vertex of the square
+
+                    float v_x = ((k % divisions.x) / divisions.x) + i;
+                    float v_z = (k / (int)divisions.x) / divisions.y;
+                    int skip_left = (int)(Mathf.RoundToInt(((v_x - i) * divisions.x)-1 )) * vertices_per_quad;
+                    //I have to RoundToInt here because for some reason, on the second wall when doing D, it gave me 2 - 1 = 0.9999999
+                    //Epsilons suck
+                    int skip_up = (int)(Mathf.RoundToInt((v_z * divisions.y)-1)) * vertices_per_quad * (int)divisions.x;
+
+                    int steps_up = j * (int)divisions.y + (int)(v_z * divisions.y); //counts the total row you are on
+                    float current_tilt_increment = tilt_increment + tilt_increment * steps_up;
+                    
+                    float quad_val_x = 1.0f / divisions.x;
+                    float quad_val_z = 1.0f / divisions.y;
+
+                    //The 4 is because there's 4 vertices per quad
+                    int jump_quad_up = vertices_per_quad * k;
+                    int jump_tile = amount_of_faces * j * vertices_per_quad;
+                    int jump_quad_side = amount_of_faces * (int)dim.z * i * vertices_per_quad;
+                
+                    if(v_x * divisions.x > i * divisions.x && j > 0) //F
+                    {
+                        debug_info += "F";
+                        //Connect tiles upwards to tiles downwards
+                        newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + skip_up + skip_left ) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(((4 * (int)divisions.x) + vertices_per_quad -1) + skip_up + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if((v_z > 0 || j > 0) && v_x * divisions.x == i * divisions.x && i > 0) //H
+                    {
+                        debug_info += "H";
+                        //Connect the first quad of each row of right columns to the last quad of each row of left columns
+                        newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x - 1)) + j * vertices_per_tile + (i-1) * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x * 2 - 1)) + j * vertices_per_tile + (i-1) * vertices_per_column]);
+                        newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if(j > 0) //E
+                    {
+                        debug_info += "E";
+                        //Connect first quad of tile upwards to the tile downwards
+                        newVertices.Add( newVertices[((3 + skip_up) + j * vertices_per_tile) + i * vertices_per_column]);
+                        newVertices.Add( newVertices[((2 + skip_up) + j * vertices_per_tile) + i * vertices_per_column]);
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if(v_z * divisions.y > 0 && v_x * divisions.x > i * divisions.x) //D
+                    {
+                        debug_info += "D";
+                        //Connect quad diagonally up to the left to surrounding quads
+                        newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + skip_up + skip_left ) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(((4 * (int)divisions.x) + vertices_per_quad -1) + skip_up + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if(v_z * divisions.y > 0 && v_x * divisions.x == i * divisions.x) //C
+                    {
+                        debug_info += "C";
+                        //Connect quad upwards to quad downwards
+                        newVertices.Add( newVertices[(3 + skip_up) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(2 + skip_up) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if(v_x * divisions.x > i * divisions.x) //B
+                    {
+                        debug_info += "B";
+                        //Connect quad to the left to quad to the right
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - j));
+                        newVertices.Add( newVertices[(0 + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + skip_left) + j * vertices_per_tile + i * vertices_per_column]);
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else if(i > 0) //G
+                    {
+                        debug_info += "G";
+                        //Connect first quad of column to the right to the last quad of the first row of the first column
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - j));
+                        newVertices.Add( newVertices[(0 + vertices_per_quad * ((int)divisions.x - 1)) + j * vertices_per_tile + (i-1) * vertices_per_column]);
+                        newVertices.Add( newVertices[(3 + vertices_per_quad * ((int)divisions.x - 1)) + j * vertices_per_tile + (i-1) * vertices_per_column]);
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+                    else //A
+                    {
+                        debug_info += "A";
+                        //Make lone quad
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - j));
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - j));
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                        newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - j));
+                    }
+
+                    newTriangles.Add(0 + jump_quad_up + jump_tile + jump_quad_side);
+                    newTriangles.Add(1 + jump_quad_up + jump_tile + jump_quad_side);
+                    newTriangles.Add(3 + jump_quad_up + jump_tile + jump_quad_side);
+                    newTriangles.Add(1 + jump_quad_up + jump_tile + jump_quad_side);
+                    newTriangles.Add(2 + jump_quad_up + jump_tile + jump_quad_side);
+                    newTriangles.Add(3 + jump_quad_up + jump_tile + jump_quad_side);
+
+                    newUV.Add(new Vector2 (1, 0));
+                    newUV.Add(new Vector2 (0 , 0));
+                    newUV.Add(new Vector2 (0, 1));
+                    newUV.Add(new Vector2 (1, 1));
+                }
+                debug_info += "_";
+            }
+            Debug.Log(debug_info);
+        }
+        BoxCollider box = wall.AddComponent<BoxCollider>();
+        box.size = new Vector3( dim.x,1,dim.z);
+        box.center = new Vector3(box.size.x / 2 - 0.5f,0.5f,-box.size.z / 2);
+
+        mesh.Clear ();
+        mesh.vertices = newVertices.ToArray();
+        mesh.triangles = newTriangles.ToArray();
+        mesh.uv = newUV.ToArray(); 
+        mesh.Optimize ();
+        mesh.RecalculateNormals ();
+
+        return mesh;
     }
 }

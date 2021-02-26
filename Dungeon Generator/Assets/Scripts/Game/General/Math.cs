@@ -20,4 +20,16 @@ public class Math : MonoBehaviour
     {
         return a - b * Mathf.Floor(a / b);
     }
+    public static bool Compare(float a, float b)
+    {
+        if(a < 0)
+        {
+            return Mathf.FloorToInt(a) == Mathf.FloorToInt(b);
+        }
+        else if(a >= 0)
+        {
+            return (int)a == (int)b;
+        }
+        return false;
+    }
 }

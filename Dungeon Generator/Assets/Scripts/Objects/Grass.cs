@@ -39,22 +39,22 @@ public class Grass : MonoBehaviour
 
     public VisualEffectAsset VFX_Burning;
 
-    public class VFXData
+    [System.Serializable]public class VFXData
     {
         public GameObject gameObject;
         public bool playing;
     }
 
     public List<VFXData> VFX = new List<VFXData>();
-    List<System.Tuple<List<ObjectData>, Material>> burningBatches = new List<System.Tuple<List<ObjectData>, Material>>();
+    List<System.Tuple<List<ObjectData>, Material, VFXData>> burningBatches = new List<System.Tuple<List<ObjectData>, Material, VFXData>>();
     void Start()
     {
         int batchIndexNum = 0;
         List<ObjectData> currentBatch = new List<ObjectData>();
         for(int i = 0; i < area.x * area.y; i++)
         {
-            int x = (int)(i % area.x);
-            int y = (int)(i / area.y);
+            int x = (int)(i % area.x) + (int)transform.position.x;
+            int y = (int)(i / area.y) + (int)transform.position.y;
             for(int j = 0; j < grassPerTile; j++)
             {
                 AddObject(currentBatch, i, new Vector2(Random.Range(x, x + 1.0f), Random.Range(y, y+1.0f)));
@@ -111,18 +111,10 @@ public class Grass : MonoBehaviour
             float temp = burningBatches[i].Item2.GetFloat("_Fade");
             if(temp <= 0)
             {
-                for(int j = 0; j < VFX.Count(); j++)
-                {
-                    if(VFX[j].gameObject.transform.position.x == (float)((int)burningBatches[i].Item1[0].pos.x) + 0.5f && 
-                       VFX[j].gameObject.transform.position.y == (float)((int)burningBatches[i].Item1[0].pos.y) + 0.5f)
-                    {
-                        VFX[j].gameObject.GetComponent<VisualEffect>().Stop();
-                        VFX[j].playing = false;
-                        break;
-                    }
-                }
+                burningBatches[i].Item3.gameObject.GetComponent<VisualEffect>().Stop();
+                burningBatches[i].Item3.playing = false;
                 burningBatches.RemoveAt(i); i--;
-                continue;
+                break;
             }
             burningBatches[i].Item2.SetFloat("_Fade", temp - burningSpeed);
         }
@@ -144,7 +136,7 @@ public class Grass : MonoBehaviour
     {
         for(int i = 0; i < area.x * area.y; i++)
         {
-            Vector3 center = new Vector3((int)(i%area.x) + 0.5f, (int)(i/area.x) + 0.5f, -0.5f);
+            Vector3 center = new Vector3((int)(i%area.x) + 0.5f + transform.position.x, (int)(i/area.x) + 0.5f + transform.position.y, -0.5f);
             Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
             Gizmos.DrawCube(center, size);
         }
@@ -153,21 +145,20 @@ public class Grass : MonoBehaviour
     {
         for(int i = 0; i < area.x * area.y; i++)
         {
-            Vector3 center = new Vector3((int)(i%area.x) + 0.5f, (int)(i/area.x) + 0.5f, -0.5f);
+            Vector3 center = new Vector3((int)(i%area.x) + 0.5f + transform.position.x, (int)(i/area.x) + 0.5f + transform.position.y, -0.5f);
             Vector3 size = new Vector3(0.5f, 0.5f, 0.5f);
             Collider[] hitColliders = Physics.OverlapBox(center, size, Quaternion.identity, layerMask, QueryTriggerInteraction.UseGlobal);
             for(int j = 0; j < hitColliders.Length; j++)
             {
                 if(hitColliders[j].gameObject.GetComponent<Fire>())
                 {
-                    Vector2 position = new Vector2((int)i%area.x, (int)i/area.x);
-                    int[] Index = GetBatchIndex(new Vector2((int)i%area.x, (int)i/area.x));
+                    int[] Index = GetBatchIndex(new Vector2((int)i%area.x + transform.position.x, (int)i/area.x + transform.position.y));
                     if(Index != null && Index.Length == 2)
                     {
-                        burningBatches.Add(new System.Tuple<List<ObjectData>, Material>(new List<ObjectData>(), new Material(grassMaterial)));
+                        burningBatches.Add(new System.Tuple<List<ObjectData>, Material, VFXData>(new List<ObjectData>(), new Material(grassMaterial), new VFXData()));
                         burningBatches[burningBatches.Count - 1].Item1.AddRange(batches[Index[0]].GetRange(Index[1], grassPerTile));
                         batches[Index[0]].RemoveRange(Index[1],grassPerTile);
-                        VFXData temp = new VFXData();
+                        VFXData temp = burningBatches[burningBatches.Count - 1].Item3;
                         temp.gameObject = new GameObject("VFX");
                         temp.gameObject.transform.parent = transform; 
                         temp.gameObject.transform.position = center;
@@ -187,12 +178,16 @@ public class Grass : MonoBehaviour
         {
             for(int j = 0; j < batches[i].Count; j+= grassPerTile)
             {
-                if((int)batches[i][j].pos.x == (int)position.x && (int)batches[i][j].pos.y == (int)position.y)
+                if(batches[i][j].pos.x < 0 && Mathf.FloorToInt(batches[i][j].pos.x) == Mathf.FloorToInt(position.x) && Mathf.FloorToInt(batches[i][j].pos.y) == Mathf.FloorToInt(position.y))
+                {
+                    return new int[]{i,j};
+                }
+                else if((int)batches[i][j].pos.x >= 0 && (int)batches[i][j].pos.x == (int)position.x && (int)batches[i][j].pos.y == (int)position.y)
                 {
                     return new int[]{i,j};
                 }
             }
         } 
-        return null;       //return (int)(position.x + area.x * position.y);
+        return null;     
     }
 }
