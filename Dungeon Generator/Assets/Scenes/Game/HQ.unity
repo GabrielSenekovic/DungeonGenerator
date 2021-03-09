@@ -1832,6 +1832,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   VFX_Burning: {fileID: 8926484042661614526, guid: e2d82e4a5823b434897c52468a1e542d,
     type: 3}
+  VFX: []
 --- !u!4 &1528683710
 Transform:
   m_ObjectHideFlags: 0
@@ -2046,9 +2047,6 @@ MonoBehaviour:
     stepsAwayFromMainRoom: 0
     IsBuilt: 0
   hasFusedWalls: 0
-  newTriangles: 
-  newVertices: []
-  newUV: []
   material: {fileID: 2100000, guid: 3a4e5f473957a0b47a502fd3f49f4d43, type: 2}
 --- !u!4 &2028935315
 Transform:
