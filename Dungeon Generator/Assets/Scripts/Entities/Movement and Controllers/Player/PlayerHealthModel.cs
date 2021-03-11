@@ -8,7 +8,7 @@ public class PlayerHealthModel : HealthModel
     {
         if(Input.GetKeyDown(KeyCode.T))
         {
-            currentHealth--;
+            TakeDamage(1);
         }
     }
 }

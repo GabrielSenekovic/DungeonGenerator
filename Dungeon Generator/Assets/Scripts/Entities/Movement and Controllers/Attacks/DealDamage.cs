@@ -36,6 +36,19 @@ public class DealDamage : MonoBehaviour
     {
         if(other.GetComponent<HealthModel>())
         {
+            Debug.Log(gameObject.name + " hit: " + other.gameObject.name);
+            Hit(other.gameObject);
+        }
+        else
+        {
+            OnImpact();
+        }
+    }
+    void OnCollisionEnter(Collision other) 
+    {
+        if(other.gameObject.GetComponent<HealthModel>())
+        {
+            Debug.Log(gameObject.name + " hit: " + other.gameObject.name);
             Hit(other.gameObject);
         }
         else

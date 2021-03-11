@@ -10,11 +10,22 @@ public class HealthModel : MonoBehaviour
     {
         currentHealth = maxHealth;
     }
+    public void TakeDamage(int damage)
+    {
+        if(currentHealth - damage <= 0)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            currentHealth -= damage;
+        }
+    }
     public void TakeDamage(DealDamage.Damage damage)
     {
         if(currentHealth - damage.damage <= 0)
         {
-            Destroy(this.gameObject);
+            gameObject.SetActive(false);
         }
         else
         {
@@ -28,5 +39,10 @@ public class HealthModel : MonoBehaviour
     public float GetHealthPercentage(float modifier)
     {
         return (currentHealth + modifier) / (float)maxHealth;
+    }
+
+    public bool isDead()
+    {
+        return currentHealth <= 0;
     }
 }
