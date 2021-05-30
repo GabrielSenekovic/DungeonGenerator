@@ -375,6 +375,9 @@ public class MeshMaker : MonoBehaviour
     }
     static public void CreateWall_Rotate(List<Vector3> vertices, List<int> indices, Vector3 origin, int rotation)
     {
+        //Rotates the indices and vertices just made
+        //Without this function, the wall would only be able to span infinitely in the direction they were first made
+        //Thanks to this function, you can have corners, and also close a wall into a room
         if(rotation % 360 == 0){return;}
         if(indices.Count <= 0)
         {

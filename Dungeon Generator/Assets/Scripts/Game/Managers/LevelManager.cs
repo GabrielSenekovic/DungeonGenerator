@@ -66,7 +66,7 @@ public class LevelManager : MonoBehaviour
         }
         if(CheckIfChangeRoom())
         {
-            party.GetPartyLeader().GetPMM().canMove = false;
+            party.GetPartyLeader().GetPMM().SetCanMove(false);
             party.movingRoom = true;
         }
     }

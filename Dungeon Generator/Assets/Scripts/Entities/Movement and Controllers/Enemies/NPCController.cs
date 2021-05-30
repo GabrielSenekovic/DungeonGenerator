@@ -36,8 +36,10 @@ public class NPCController : MonoBehaviour
             directionShiftTimer = 0;
             movementDirection = directions[Random.Range(0, 4)];
         }
-        GetComponent<EntityMovementModel>().Dir = movementDirection;
-        GetComponent<EntityMovementModel>().facingDirection = movementDirection;
-        GetComponent<EntityMovementModel>().currentSpeed = GetComponent<EntityMovementModel>().speed;
+        /*
+        GetComponent<MovementModel>().Dir = movementDirection;
+        GetComponent<MovementModel>().facingDirection = movementDirection;
+        GetComponent<MovementModel>().currentSpeed = GetComponent<EntityMovementModel>().speed;
+        */
     }
 }

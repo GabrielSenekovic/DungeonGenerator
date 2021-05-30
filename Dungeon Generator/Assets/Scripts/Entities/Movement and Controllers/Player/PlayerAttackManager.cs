@@ -26,7 +26,7 @@ public class PlayerAttackManager : AttackManager
     private void FixedUpdate()
     {
         if(currentAttack == null || currentAttack.state == AttackIdentifier.CastingState.DONE){ return; }
-        currentAttack.OnFixedUpdate(GetComponent<PlayerMovementModel>().facingDirection,new Vector3(transform.position.x, transform.position.y, transform.position.z - castingHeight), GetComponent<Collider>());
+        currentAttack.OnFixedUpdate(GetComponent<MovementModel>().GetFacingDirection(),new Vector3(transform.position.x, transform.position.y, transform.position.z - castingHeight), GetComponent<Collider>());
     }
 
     private void Update() 

@@ -50,7 +50,7 @@ public class Party : MonoBehaviour
         if((int)cameraRotationObject.transform.position.x == (int)newPosition.x && (int)cameraRotationObject.transform.position.y == (int)newPosition.y)
         {
             cameraRotationObject.transform.position = newPosition;
-            m_PartyLeader.GetPMM().canMove = true;
+            m_PartyLeader.GetPMM().SetCanMove(true);
             movingRoom = false;
             return true;
         }

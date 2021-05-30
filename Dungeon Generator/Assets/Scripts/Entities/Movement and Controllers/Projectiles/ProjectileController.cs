@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class ProjectileController : EntityMovementModel
+public class ProjectileController : MovementModel
 {
     [System.Serializable]
     public struct targetData
@@ -50,11 +50,7 @@ public class ProjectileController : EntityMovementModel
     int lifeTimer = 0;
     void Start()
     {
-        Fric = 0.0f;
-        Acc = new Vector2(1,1);
         VisualsRotator.renderers.AddRange(visuals);
-        GetComponent<SphereCollider>().radius = blastRadius;
-        GetComponent<SphereCollider>().isTrigger = true;
         renderer = GetComponentInChildren<MeshRenderer>();
         if(GetComponentInChildren<Light>())
         {
@@ -63,16 +59,21 @@ public class ProjectileController : EntityMovementModel
         if(placedProjectile)
         {
             VisualsRotator.Add(renderer);
+            GetComponent<SphereCollider>().isTrigger = false;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, (Vector2)transform.position + Dir);
+        else
+        {
+            GetComponent<SphereCollider>().isTrigger = true;
+        }
     }
     new private void FixedUpdate() 
     {
+        Collider[] hits = Physics.OverlapSphere(transform.position, blastRadius);
+        for(int i = 0; i < hits.Length; i++)
+        {
+            OnAttackStay(hits[i].gameObject);
+        }
+
         currentSpeed = speed;
         lifeTimer++;
         if(placedProjectile)
@@ -130,13 +131,14 @@ public class ProjectileController : EntityMovementModel
                 break;
             }
         }
-        if (isNew)
+        if (isNew) //Check if this target is a new target
         {
             Vector2 vectorToTarget = (Vector2)(transform.position - vic.transform.position);
             float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
             Vector2 pushV2 = vectorToTarget.normalized * gravitySpeed * distanceModifier;
-            targets.Add(new targetData(vic, vic.GetComponent<EntityMovementModel>().AddPushVector(pushV2)));
-            //Debug.Log("Adding: " + vic + " index: " + targets[targets.Count - 1].pushIndex + " at: " + vic.transform.position);
+            //! Add gravity to target
+
+            targets.Add(new targetData(vic, 0));
         }
         else
         {
@@ -161,40 +163,25 @@ public class ProjectileController : EntityMovementModel
                 Vector2 vectorToTarget = (Vector2)(transform.position - vic.transform.position);
                 float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
                 Vector2 value = vectorToTarget.normalized * gravitySpeed * distanceModifier;
-                targetVic.target.GetComponent<EntityMovementModel>().push[targetVic.pushIndex] = value;
+                //! Apply gravity to all the targets
+
+                //targetVic.target.GetComponent<EntityMovementModel>().push[targetVic.pushIndex] = value;
 
             }
         }
     }
     void Explode()
-    {
+    {//? If this projectile is supposed to explode, explode
         foreach(targetData t in targets)
         {
-            if(t.target != null)
+            if(t.target != null && t.target.GetComponent<Rigidbody>())
             {
                 Vector2 vectorToTarget = (Vector2)(transform.position - t.target.transform.position);
                 float distanceModifier = vectorToTarget.magnitude <= blastRadius ? (blastRadius - vectorToTarget.magnitude) / blastRadius : 0;
                 Vector2 value = vectorToTarget.normalized * explosionPower * distanceModifier;
-                t.target.GetComponent<EntityMovementModel>().push[t.pushIndex] = -value;
-            }
-        }
-    }
-    private void OnTriggerStay(Collider other)
-    {
-        if(gameObject.tag != other.gameObject.tag && other.gameObject.GetComponent<EntityMovementModel>())
-        {
-            OnAttackStay(other.gameObject);
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        foreach (targetData t in targets)
-        {
-            if (t.target == other.gameObject)
-            {
-                other.gameObject.GetComponent<EntityMovementModel>().RemovePushVector(t.pushIndex);
-                targets.Remove(t);
-                break;
+                t.target.GetComponent<Rigidbody>().AddForce(-value, ForceMode.Impulse);
+                Debug.Log("Exploding with value: " + value);
+                //t.target.GetComponent<EntityMovementModel>().push[t.pushIndex] = -value;
             }
         }
     }

@@ -8,12 +8,12 @@ public class PlayableCharacter : MonoBehaviour
 
     [SerializeField] Collider2D m_collider;
 
-    PlayerMovementModel m_PMM;
+    MovementModel m_PMM;
     PlayerInteractionModel m_PIM;
 
     private void Awake()
     {
-        m_PMM = GetComponent<PlayerMovementModel>();
+        m_PMM = GetComponent<MovementModel>();
         m_PIM = GetComponent<PlayerInteractionModel>();
     }
 
@@ -22,7 +22,7 @@ public class PlayableCharacter : MonoBehaviour
         m_PIM.Initialize(m_collider);
     }
 
-    public PlayerMovementModel GetPMM()
+    public MovementModel GetPMM()
     {
         return m_PMM;
     }

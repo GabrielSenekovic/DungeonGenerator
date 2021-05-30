@@ -51,7 +51,11 @@ public sealed class AudioManager : MonoBehaviour
             SFX_source[i].volume = SFX_volume * global_volume;
         }
         music_source.volume = music_volume * global_volume;
-        StartCoroutine(PlayMusic(music[0]));
+        
+        if(music.Length > 0)
+        {
+            StartCoroutine(PlayMusic(music[0]));
+        }
     }
 
     private void Update() 

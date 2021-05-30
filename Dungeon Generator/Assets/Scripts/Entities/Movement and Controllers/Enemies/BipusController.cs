@@ -19,18 +19,13 @@ public class BipusController : NPCController
         directionShiftTimer++;
         if(directionShiftTimer == directionShiftFrequency){ ChangeDirection(); }
 
-        GetComponent<EnemyMovementModel>().Dir = movementDirection;
-        GetComponent<EnemyMovementModel>().currentSpeed = GetComponent<EnemyMovementModel>().speed;
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)GetComponent<EntityMovementModel>().GetRelativeFacingDirection() * 5);
+        //GetComponent<EnemyMovementModel>().Dir = movementDirection;
+        //GetComponent<EnemyMovementModel>().currentSpeed = GetComponent<EnemyMovementModel>().speed;
     }
     void Shoot()
     {
         GetComponentInChildren<Animator>().SetTrigger("Shooting");
-        GetComponent<EnemyAttackManager>().Attack(0, GetComponent<EnemyMovementModel>().GetFacingDirection());
+       // GetComponent<EnemyAttackManager>().Attack(0, GetComponent<EnemyMovementModel>().GetFacingDirection());
     }
     void Attack()
     {

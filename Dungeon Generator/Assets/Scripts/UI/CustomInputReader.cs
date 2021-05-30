@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class CustomInputReader : StandaloneInputModule
 {
+    //This script is used on the cursor object
     public static PointerEventData GetPointerEventData(int pointerId = -1)
     {
         PointerEventData eventData;

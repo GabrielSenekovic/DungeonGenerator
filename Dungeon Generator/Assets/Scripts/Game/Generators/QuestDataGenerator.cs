@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class QuestDataGenerator : MonoBehaviour
 {
-    public EntityMovementModel NPC;
+    public MovementModel NPC;
     public QuestData Initialize(int questSeed)
     {
         Random.InitState(questSeed);

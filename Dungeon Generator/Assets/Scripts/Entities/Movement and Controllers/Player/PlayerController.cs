@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)party.GetPartyLeader().GetComponent<EntityMovementModel>().GetRelativeFacingDirection() * 5);
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)party.GetPartyLeader().GetComponent<MovementModel>().GetRelativeFacingDirection() * 5);
     }
     public void Update()
     {
@@ -75,15 +75,13 @@ public class PlayerController : MonoBehaviour
                 if(Input.GetKey(KeyCode.W)) { temp.y = 1;}
                 if(Input.GetKey(KeyCode.S)) { temp.y =-1;}
 
-                party.GetPartyLeader().GetPMM().Dir = Quaternion.Euler(0, 0, camera.transform.rotation.eulerAngles.z) * temp;
-                party.GetPartyLeader().GetPMM().facingDirection = party.GetPartyLeader().GetPMM().Dir;
+                party.GetPartyLeader().GetPMM().SetMovementDirection(Quaternion.Euler(0, 0, camera.transform.rotation.eulerAngles.z) * temp);
             }
             party.GetPartyLeader().GetPMM().currentSpeed = party.GetPartyLeader().GetPMM().speed;
             GetComponentInChildren<Animator>().SetBool("Walking", true);
         }
         else
         {
-            party.GetPartyLeader().GetPMM().Vel = Vector2.zero;
             GetComponentInChildren<Animator>().SetBool("Walking", false);
         }
     }
@@ -92,21 +90,20 @@ public class PlayerController : MonoBehaviour
         switch (key)
         {
             case KeyCode.W:
-                party.GetPartyLeader().GetPMM().Dir = new Vector2(0, 1);
+                party.GetPartyLeader().GetPMM().SetMovementDirection(new Vector2(0, 1));
                 break;
             case KeyCode.A:
-                party.GetPartyLeader().GetPMM().Dir = new Vector2(-1, 0);
+                party.GetPartyLeader().GetPMM().SetMovementDirection(new Vector2(-1, 0));
                 break;
             case KeyCode.S:
-                party.GetPartyLeader().GetPMM().Dir = new Vector2(0, -1);
+                party.GetPartyLeader().GetPMM().SetMovementDirection(new Vector2(0, -1));
                 break;
             case KeyCode.D:
-                party.GetPartyLeader().GetPMM().Dir = new Vector2(1, 0);
+                party.GetPartyLeader().GetPMM().SetMovementDirection(new Vector2(1, 0));
                 break;
             default:
                 break;
         }
-        party.GetPartyLeader().GetPMM().facingDirection = party.GetPartyLeader().GetPMM().Dir;
     }
     public void Interact()
     {

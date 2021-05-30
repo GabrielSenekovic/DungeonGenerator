@@ -8,10 +8,10 @@ public class QuestData
 {
     public struct NPCInformation
     {
-        public EntityMovementModel NPC;
+        public MovementModel NPC;
         public Vector2 Room;
 
-        public NPCInformation(EntityMovementModel NPC_in, Vector2 Room_in)
+        public NPCInformation(MovementModel NPC_in, Vector2 Room_in)
         {
             NPC = NPC_in;
             Room = Room_in;

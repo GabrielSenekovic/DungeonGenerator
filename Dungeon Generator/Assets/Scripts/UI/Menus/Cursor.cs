@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class Cursor : MonoBehaviour
 {
+    //The cursor is currently used in the menu
     private void Update()
     {
         if(Input.GetMouseButtonDown(0))

@@ -95,7 +95,7 @@ public class ProjectileAttackIdentifier : AttackIdentifier
     }
     void SetDirectionAndRotate(ref ProjectileController projectile, Vector3 direction)
     {
-        projectile.Dir = direction;
+        projectile.SetConstantVelocity(direction);
         float dot = Vector2.Dot(direction, Vector2.up);
         float angle = Mathf.Asin(direction.x) * Mathf.Rad2Deg;
         angle = dot > 0 ? -(angle + 180) : angle;
