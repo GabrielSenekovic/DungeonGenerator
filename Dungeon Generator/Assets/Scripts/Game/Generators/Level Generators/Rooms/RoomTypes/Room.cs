@@ -29,6 +29,24 @@ public enum RoomLayout
 //Core code
 public partial class Room: MonoBehaviour
 {
+    [System.Serializable]public struct RoomDebug 
+    {
+        public bool CheckTemplate;
+        public Color floorColor;
+        public Color wallColor;
+    }
+    public class RoomTemplate
+    {
+        //This class is given to the CreateWalls in order to draw the meshes for walls
+        //It is also given to the CreateFloor in order to draw the floor
+        public Vector2Int size;
+        public List<int> positions;
+        public RoomTemplate(Vector2Int size_in, List<int> positions_in)
+        {
+            size = size_in;
+            positions = positions_in;
+        }
+    }
     public class Fusion
     {
         public List<bool> hasFusedWalls;
@@ -62,25 +80,18 @@ public partial class Room: MonoBehaviour
     public RoomData roomData = new RoomData();
 
     public bool hasFusedWalls = false;
-    public Material material;
+    public Material wallMaterial;
+    public Material floorMaterial; //Will be the same material later
+
+    public Color floorAndWallColor;
+
+    public RoomDebug debug;
+
+    public GameObject debugFloor;
 
     private void Start() 
     {
         Initialize(new Vector2(20,20));
-    }
-
-    void BuildWallArray()
-    {
-        for(int i = 0; i < CameraBoundaries.x; i++)
-        {
-            wallPositions.Add(new List<WallPosition> { });
-            for(int j = 0; j < CameraBoundaries.y; j++)
-            {
-                WallPosition newWall = Instantiate(wallPosition, new Vector2(transform.position.x + i, transform.position.y + j), Quaternion.identity, transform);
-                wallPositions[i].Add(newWall);
-                //m_wallPositions[i][j].SetPosition(new Vector2(transform.position.x + i, transform.position.y + j));
-            }
-        }
     }
 
     public void OpenAllEntrances()
@@ -108,20 +119,113 @@ public partial class Room: MonoBehaviour
         CameraBoundaries = RoomSize;
         directions = GetComponent<RoomDirections>();
         //Build wall meshes all around the start area in a 30 x 30 square
+        CreateWalls(CreateRoomTemplate(RoomSize));
+        wallMaterial.color = floorAndWallColor;
+        floorMaterial.color = floorAndWallColor;
+    }
+
+    RoomTemplate CreateRoomTemplate(Vector2 RoomSize)
+    {
+        RoomTemplate template = new RoomTemplate(new Vector2Int((int)RoomSize.x, (int)RoomSize.y), new List<int>());
+        //Create a perfect square room
+        for(int i = 0; i < RoomSize.x; i++)
+        {
+            template.positions.Add(1);
+        }
+        for(int i = 1; i < RoomSize.y - 1; i++)
+        {
+            for(int j = 0; j < RoomSize.x; j++)
+            {
+                if(j == 0 || j == RoomSize.x - 1)
+                {
+                    template.positions.Add(1); //1 is a wall
+                }
+                else
+                {
+                    template.positions.Add(2); //2 is a floor
+                }
+            }
+        }
+        for(int i = 0; i < RoomSize.x; i++)
+        {
+            template.positions.Add(1);
+        }
+        return template;
+    }
+    List<MeshMaker.WallData> ReadTemplate(RoomTemplate template)
+    {
+        //Find a wall that has a floor next to it
+        Vector2Int pos = new Vector2Int(-1,-1);
+        for(int x = 0; x < template.size.x; x++)
+        {
+            for(int y = 0; y < template.size.y; y++)
+            {
+                //If there are walls in all four directions, then turn this wall into 0, a nothingness
+                //Check in the four directions for floor
+                if(x < template.size.x && template.positions[x + 1 + template.size.x * y] == 2)
+                {
+                    pos = new Vector2Int(x + 1, y); break; 
+                }
+                else if(x > 0 && template.positions[x - 1 + template.size.x * y] == 2)
+                {
+                    pos = new Vector2Int(x - 1, y);break; 
+                }
+                else if(y < template.size.y && template.positions[x + template.size.x * (y + 1)] == 2)
+                {
+                    pos = new Vector2Int(x, y + 1);break; 
+                }
+                else if(y > 0 && template.positions[x + template.size.x * (y - 1)] == 2)
+                {
+                    pos = new Vector2Int(x, y - 1);break; 
+                }
+            }
+            if(pos != new Vector2Int(-1,-1))
+            {
+                break;
+            }
+        }
+        //Now we should have a piece of a wall we can start from
+        //!Now, follow the walls and create new WallData everytime it turns once
+        List<MeshMaker.WallData> data = new List<MeshMaker.WallData>();
+        data = new List<MeshMaker.WallData> 
+        {
+            new MeshMaker.WallData(new Vector3(0,0,0), 0, 20, 4, 0),
+            new MeshMaker.WallData(new Vector3(19.5f,-0.5f,0), -90, 4, 0),
+            new MeshMaker.WallData(new Vector3(19,-20), -180, 4, 0),
+            new MeshMaker.WallData(new Vector3(-0.5f,-19.5f), -270, 4, 0)
+        };
+        return data;
+    }
+    void CreateWalls(RoomTemplate template)
+    {
         GameObject wallObject = new GameObject("Wall");
         wallObject.transform.parent = this.gameObject.transform;
         wallObject.AddComponent<MeshFilter>();
-        List<MeshMaker.WallData> wallData = new List<MeshMaker.WallData> 
+
+        if(!debug.CheckTemplate)
         {
-            new MeshMaker.WallData(new Vector3(0,0,0), 0, 20, 4, 0),
-            new MeshMaker.WallData(new Vector3(19.5f,-0.5f,0), -90, 20, 4, 0),
-            new MeshMaker.WallData(new Vector3(19,-20), -180, 20, 4, 0),
-            new MeshMaker.WallData(new Vector3(-0.5f,-19.5f), -270, 20, 4, 0)
-        };
-        MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, wallData, new Vector2(3,3), 0.05f); //0.05f
-        wallObject.AddComponent<MeshRenderer>();
-        wallObject.GetComponent<MeshRenderer>().material = material;
-        wallObject.transform.localPosition = new Vector3(transform.position.x - RoomSize.x / 2 + 0.5f, transform.position.y + RoomSize.y / 2, 0);
+            List<MeshMaker.WallData> wallData = ReadTemplate(template);
+            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, wallData, new Vector2(3,3), 0.05f); //0.05f
+
+            wallObject.AddComponent<MeshRenderer>();
+            wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
+            wallObject.transform.localPosition = new Vector3(transform.position.x - template.size.x / 2 + 0.5f, transform.position.y + template.size.y / 2, 0);
+        }
+        else
+        {
+            DEBUG_TemplateCheck(template);
+        }
+    }
+    void DEBUG_TemplateCheck(RoomTemplate template)
+    {
+        for(int x = 0; x < template.size.x; x++)
+        {
+            for(int y = 0; y < template.size.y; y++)
+            {
+                GameObject temp = Instantiate(debugFloor, new Vector3(x,y,-1), Quaternion.identity, transform);
+                temp.GetComponent<MeshRenderer>().material.color = template.positions[x + template.size.x * y] == 1 ? debug.floorColor : debug.wallColor;
+            }
+        }
     }
 
     public Vector2 GetCameraBoundaries()
@@ -200,12 +304,6 @@ public partial class Room: MonoBehaviour
             }
         }
         roomData.m_type = probabilityList[UnityEngine.Random.Range(0, probabilityList.Count)];
-    }
-    public bool CheckIfRoomIsIndoors(LevelData data)
-    {
-        List<bool> boolsToCheckIfIndoors = new List<bool> { };
-
-        return true;
     }
     public void SetRoomType(RoomType newType)
     {

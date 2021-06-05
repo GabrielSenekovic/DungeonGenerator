@@ -43,7 +43,13 @@ public class ItemGenerator : MonoBehaviour
     public Sprite GenerateItemSprite()
     {
         int temp = Random.Range(0, lists[0].groups.Count); //gets a base for the fruit
-        int temp2 = Random.Range(0, lists[1].groups.Count); //gets a base for the leaf
+        int temp2 = 0;
+        do
+        {
+            temp2 = Random.Range(0, lists[1].groups.Count); //gets a base for the leaf
+        }
+        while(lists[1].groups[temp2].connectorType != lists[0].groups[temp].connectorType); //Makes sure that the leaf / stem actually matches the fruit in question
+
         Color fruitColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
         Color leafColor = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
 
