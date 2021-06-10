@@ -1958,7 +1958,7 @@ MonoBehaviour:
   area: {x: 20, y: 20}
   grassPerTile: 10
   burningSpeed: 0.005
-  grassRotation: {x: -90, y: 0, z: 0}
+  grassRotation: {x: -90, y: 90, z: -90}
   layerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -3654,7 +3654,7 @@ PrefabInstance:
     - target: {fileID: 401981219154236068, guid: 2f6288fdb7c86854c9a9ae341e738d93,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.75
+      value: -0.65
       objectReference: {fileID: 0}
     - target: {fileID: 401981219154236068, guid: 2f6288fdb7c86854c9a9ae341e738d93,
         type: 3}
@@ -3700,6 +3700,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5650579989011528373, guid: 2f6288fdb7c86854c9a9ae341e738d93,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5650579989011528373, guid: 2f6288fdb7c86854c9a9ae341e738d93,
+        type: 3}
+      propertyPath: m_Center.z
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5936212065406368133, guid: 2f6288fdb7c86854c9a9ae341e738d93,
         type: 3}

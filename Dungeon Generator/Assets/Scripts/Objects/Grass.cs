@@ -85,6 +85,7 @@ public class Grass : MonoBehaviour
 
     private void Update() 
     {
+        UpdateRotation();
         RenderBatches();
         UpdateFire();
     }
@@ -100,6 +101,16 @@ public class Grass : MonoBehaviour
                 VFX.RemoveAt(i);
                 Destroy(temp_2);
                 i--;
+            }
+        }
+    }
+    void UpdateRotation()
+    {
+        for(int i = 0; i < batches.Count; i++)
+        {
+            for(int j = 0; j < batches[i].Count; j++)
+            {
+                batches[i][j].rot = Quaternion.Euler(-CameraMovement.rotationSideways - 90, 90, -90);
             }
         }
     }
