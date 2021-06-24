@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class RoomBuilder : MonoBehaviour
 {
-    [SerializeField] WallBlueprints wallBlueprints; //This is a placeholder for what will be later
-    [SerializeField] GameObject floorPrefab;
 
     public void Build(List<Room> rooms, LevelData data)
     {
-        if(!DebuggingTools.spawnOnlyBasicRooms)
-        {
-           // floorPrefab.GetComponentInChildren<SpriteRenderer>().sprite = GetComponent<EntranceLibrary>().GetFloorSprite(data.m_biome);
-        }
         BuildRooms(rooms);
         CloseOpenDoors(rooms);
     }
@@ -23,9 +17,6 @@ public class RoomBuilder : MonoBehaviour
         {
             if (!rooms[i].roomData.IsBuilt)
             {
-                rooms[i].PlaceDownWalls(wallBlueprints);
-                //room.InstantiateWalls(wallBlueprints);
-                rooms[i].InstantiateFloor(floorPrefab);
                 rooms[i].DisplayDistance();
 
                 foreach (Transform child in rooms[i].transform)
@@ -44,7 +35,7 @@ public class RoomBuilder : MonoBehaviour
         //This function must close all open doors in each room that doesnt lead anywhere
         for(int i = 0; i < rooms.Count; i++)
         {
-            if (!rooms[i].GetDirections())
+            if (rooms[i].GetDirections() == null)
             {
                 continue;
             }

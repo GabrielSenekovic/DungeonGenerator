@@ -46,11 +46,11 @@ public class QuestSelect : MonoBehaviour
         for(int i = 0; i < seeds_in.Item1.Length; i++)
         {
             seeds.Add(new SeedBox(seeds_in.Item1[i], seeds_in.Item2[i], seeds_in.Item3[i]));
-            levels.Add(GetComponent<LevelDataGenerator>().Initialize(seeds[i].dataSeed));
+            levels.Add(LevelDataGenerator.Initialize(seeds[i].dataSeed));
             buttons.Add(Instantiate(buttonPrefab, buttonPrefab.transform.position, Quaternion.identity, buttonParent));
             buttons[i].GetComponent<QuestButton>().select = this;
             buttons[i].GetComponent<QuestButton>().index = i;
-            quests.Add(GetComponent<QuestDataGenerator>().Initialize(seeds[i].questSeed));
+            quests.Add(QuestDataGenerator.Initialize(seeds[i].questSeed));
         }
         detailText.Initialize(graphemeDatabase.fonts[0], true);
     }
@@ -71,8 +71,9 @@ public class QuestSelect : MonoBehaviour
     {
         Time.timeScale = 1;
         GameData.SetSeed(seeds[index].constructionSeed, seeds[index].dataSeed, seeds[index].questSeed);
-        GameData.currentQuest = GetComponent<QuestDataGenerator>().Initialize(seeds[index].questSeed);
+        GameData.currentQuest = QuestDataGenerator.Initialize(seeds[index].questSeed);
         Debug.Log(index);
+        DontDestroyOnLoad(DunGenes.Instance);
         SceneManager.LoadSceneAsync("Level");
         OnClose();
         Time.timeScale = 1;

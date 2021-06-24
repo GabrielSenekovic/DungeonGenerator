@@ -21,31 +21,33 @@ public partial class LevelGenerator : MonoBehaviour
 
     public bool levelGenerated = false;
 
+    public Material wallMaterial;
+    public Material floorMaterial; //Will be the same material later
+
     public InteractableBase endOfLevel; //Debugging object for Recovery Quest
     [System.NonSerialized]public InteractableBase spawnedEndOfLevel; // spawned version
 
-    public void GenerateLevel(LevelManager level, Vector2 RoomSize)
+    public void GenerateLevel(LevelManager level, Vector2 RoomSize, Vector2Int amountOfRooms)
     {
         System.DateTime before = System.DateTime.Now;
 
         UnityEngine.Random.InitState(GameData.m_LevelConstructionSeed);
 
         rooms.Add(Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity, transform));
-        rooms[0].Initialize(RoomSize);
+        rooms[0].Initialize(RoomSize, wallMaterial, floorMaterial);
 
-        SpawnRooms(UnityEngine.Random.Range((int)(level.l_data.m_amountOfRoomsCap.x + rooms.Count),
-                                (int)(level.l_data.m_amountOfRoomsCap.y + rooms.Count)), RoomSize, level.l_data);
+        SpawnRooms(UnityEngine.Random.Range((int)(amountOfRooms.x + rooms.Count),
+                                (int)(amountOfRooms.y + rooms.Count)), RoomSize, level.l_data);
 
         level.firstRoom = rooms[0];
         level.lastRoom = rooms[rooms.Count - 1];
 
-        //FuseRooms(RoomSize, level.data);
         AdjustRoomTypes(level.l_data);
         AdjustEntrances(RoomSize);
 
         System.DateTime after = System.DateTime.Now; 
         System.TimeSpan duration = after.Subtract(before);
-        Debug.Log("Time to generate: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
+        Debug.Log("<color=blue>Time to generate: </color>" + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
         Debug.Log("Amount of random open entrances: " + amountOfRandomOpenEntrances);
         if(DebuggingTools.spawnOnlyBasicRooms){FindObjectOfType<DebugText>().Display(level.l_data);}
     }
@@ -61,9 +63,9 @@ public partial class LevelGenerator : MonoBehaviour
                 break;
             case QuestData.MissionType.Inquiry:
                 InquiryQuestData temp = data as InquiryQuestData;
-                Instantiate(temp.Target.NPC,
+               /* Instantiate(temp.Target.NPC,
                     new Vector2(temp.Target.Room.x + 10, temp.Target.Room.y + 10),
-                    Quaternion.identity, level.lastRoom.transform);
+                    Quaternion.identity, level.lastRoom.transform);*/
                 break;
             case QuestData.MissionType.Delivery:
                 break;
@@ -109,20 +111,21 @@ public partial class LevelGenerator : MonoBehaviour
         //this spawns all rooms
         for (int i = rooms.Count; i < amountOfRooms; i++)
         {
+            Debug.Log("<color=yellow>Spawning room: </color>" + i);
             Tuple<Room, List<RoomEntrance>> originRoom;// = new Tuple<Room, List<RoomEntrance>>(new Room(), new List<RoomEntrance>(){});
             try
             {
-                originRoom = GetRandomRoomInList();
+                originRoom = GetRandomRoomInList(); //! If there are no open entrances in any room, the catch will be executed
             }
             catch
             {
-                Debug.Log("Could no longer spawn new rooms");
+                Debug.Log("<color=red>Could no longer spawn new rooms</color>");
                 break;
             }
             rooms.Add(Instantiate(ChooseLayout(data), transform));
             rooms[i].name = "Room #" + (numberOfRooms+1); numberOfRooms++;
             
-            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize);
+            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize, wallMaterial, floorMaterial);
             rooms[i].roomData.stepsAwayFromMainRoom = originRoom.Item1.roomData.stepsAwayFromMainRoom + 1;
             if(rooms[i].roomData.stepsAwayFromMainRoom > furthestDistanceFromSpawn)
             {
@@ -134,7 +137,7 @@ public partial class LevelGenerator : MonoBehaviour
         }
         System.DateTime after = System.DateTime.Now; 
         System.TimeSpan duration = after.Subtract(before);
-        Debug.Log("Time to spawn rooms: " + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
+        Debug.Log("<color=blue>Time to spawn rooms: </color>" + duration.TotalMilliseconds + " milliseconds, which is: " + duration.TotalSeconds + " seconds");
     }
 
     void SetEntrances(Vector2 A_pos, Vector2 B_pos, List<RoomEntrance> A_entrances, List<RoomEntrance> B_entrances)
@@ -313,7 +316,7 @@ public partial class LevelGenerator : MonoBehaviour
                     room.SetRoomType(RoomType.BossRoom);
                     bossRoom = room;
                     bossSpawned = true;
-                    Debug.Log("Boss spawned in: " + bossRoom);
+                    Debug.Log("<color=green>Boss spawned in: </color>" + bossRoom);
                 }
                 if(room.GetRoomType() == RoomType.TreasureRoom)
                 {
@@ -429,6 +432,8 @@ public partial class LevelGenerator : MonoBehaviour
                 roomsWithOpenDoors.Add(new Tuple<Room, List<RoomEntrance>>(room, openEntrances));
             }
         }
+        //! if rooms with open doors is empty, this will cause an error
+        //! this will only happen if no rooms have open doors
         return roomsWithOpenDoors[UnityEngine.Random.Range(0, roomsWithOpenDoors.Count - 1)];
     }
     Room GetRandomRoomInListNorthOrRight()

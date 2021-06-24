@@ -3,6 +3,40 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
+
+[System.Serializable]public class RoomDirections
+{
+    public List<RoomEntrance> directions;
+
+    public RoomDirections(Transform transform, RoomEntrance entrance)
+    {
+        directions = new List<RoomEntrance>();
+        for(int i = 0; i < 4; i++)
+        {
+            directions.Add(UnityEngine.Object.Instantiate(entrance, transform));
+        }
+        directions[0].SetDirectionModifier(new Vector2(0, 1)); directions[0].name = "North Entrance";
+        directions[1].SetDirectionModifier(new Vector2(1, 0)); directions[1].name = "Right Entrance";
+        directions[2].SetDirectionModifier(new Vector2(-1, 0)); directions[2].name = "Left Entrance";
+        directions[3].SetDirectionModifier(new Vector2(0, -1)); directions[3].name = "South Entrance";
+    }
+    public void OpenAllEntrances()
+    {
+        for(int i = 0; i < directions.Count; i++)
+        {
+            directions[i].Open = true;
+        }
+    }
+}
+[System.Serializable]public class RoomData
+{
+    public RoomType m_type = RoomType.NormalRoom;
+    public RoomPosition m_roomPosition = RoomPosition.None;
+    public RoomLayout m_layout = RoomLayout.NormalOutdoors;
+    public bool m_Indoors = false;
+    public int stepsAwayFromMainRoom = 0;
+    public bool IsBuilt = false;
+}
 public enum RoomType
 {
     NormalRoom = 0,
@@ -110,6 +144,21 @@ public partial class Room: MonoBehaviour
            // Debug.Log("It has a neighbor in this direction: " + direction);
             return new Tuple<bool, Vector2Int>(value, direction);
         }
+        public List<Vector2Int> ExtractFloor()
+        {
+            List<Vector2Int> returnData = new List<Vector2Int>();
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    if(positions[x + size.x * y].identity == 2 || positions[x + size.x * y].identity == 1 ) //If this position is a floor or a wall
+                    {
+                        returnData.Add(new Vector2Int(x,-y -1));
+                    }
+                }
+            }
+            return returnData;
+        }
     }
     public List<List<WallPosition>> wallPositions = new List<List<WallPosition>> { };
     /*
@@ -120,7 +169,7 @@ public partial class Room: MonoBehaviour
      */
     public WallPosition wallPosition; //This will not be here later ofc
 
-    RoomDirections directions;
+    public RoomDirections directions;
 
     public Vector2 CameraBoundaries;
     public Vector2 wallPositionBoundaries = Vector2.zero;
@@ -128,8 +177,6 @@ public partial class Room: MonoBehaviour
     public RoomData roomData = new RoomData();
 
     public bool hasFusedWalls = false;
-    public Material wallMaterial;
-    public Material floorMaterial; //Will be the same material later
 
     public Color floorAndWallColor;
 
@@ -137,39 +184,48 @@ public partial class Room: MonoBehaviour
 
     public GameObject debugFloor;
 
+    public RoomEntrance roomEntrance;
+
     private void Start() 
     {
-        Initialize(new Vector2(20,20));
+        //Initialize(new Vector2(20,20));
     }
 
     public void OpenAllEntrances()
     {
-        if(!directions)
+        if(directions == null)
         {
-            directions = GetComponent<RoomDirections>();
+            directions = new RoomDirections(transform, roomEntrance);
         }
         directions.OpenAllEntrances();
     }
-    public void Initialize(Vector2 RoomSize)
+    public void Initialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
     {
+        Debug.Log("<color=green>Initializing the Origin Room</color>");
         //This Initialize() function is for the origin room specifically, as it already has its own position
-        //OpenAllEntrances();
-        OnInitialize(RoomSize);
+        OnInitialize(RoomSize, wallMaterial, floorMaterial);
+        OpenAllEntrances();
     }
 
-    public void Initialize(Vector2 location, Vector2 RoomSize)
+    public void Initialize(Vector2 location, Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
     {
         transform.position = location;
-        OnInitialize(RoomSize);
+        OnInitialize(RoomSize, wallMaterial, floorMaterial);
     }
-    void OnInitialize(Vector2 RoomSize)
+    void OnInitialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
     {
         CameraBoundaries = RoomSize;
-        directions = GetComponent<RoomDirections>();
+        directions = new RoomDirections(transform, roomEntrance);
         //Build wall meshes all around the start area in a 30 x 30 square
-        CreateWalls(CreateRoomTemplate(RoomSize));
+        CreateRoom(CreateRoomTemplate(RoomSize), wallMaterial, floorMaterial);
         wallMaterial.color = floorAndWallColor;
         floorMaterial.color = floorAndWallColor;
+    }
+
+    void CreateRoom(RoomTemplate template, Material wallMaterial, Material floorMaterial)
+    {
+        CreateWalls(template, wallMaterial);
+        CreateFloor(template, floorMaterial);
     }
 
     RoomTemplate CreateRoomTemplate(Vector2 RoomSize)
@@ -200,7 +256,7 @@ public partial class Room: MonoBehaviour
         }
         return template;
     }
-    List<MeshMaker.WallData> ReadTemplate(RoomTemplate template)
+    List<MeshMaker.WallData> ExtractWalls(RoomTemplate template)
     {
         //Find a wall that has a floor next to it
         Vector2Int pos = new Vector2Int(-1,-1);
@@ -277,7 +333,7 @@ public partial class Room: MonoBehaviour
 
         return data;
     }
-    void CreateWalls(RoomTemplate template)
+    void CreateWalls(RoomTemplate template, Material wallMaterial)
     {
         GameObject wallObject = new GameObject("Wall");
         wallObject.transform.parent = this.gameObject.transform;
@@ -285,8 +341,7 @@ public partial class Room: MonoBehaviour
 
         if(debug.CheckTemplate == RoomDebug.RoomBuildMode.NONE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
         {
-            List<MeshMaker.WallData> wallData = ReadTemplate(template);
-            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, wallData, new Vector2(3,3), 0.05f); //0.05f
+            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, ExtractWalls(template), new Vector2(3,3), 0.05f); //0.05f
 
             wallObject.AddComponent<MeshRenderer>();
             wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
@@ -295,7 +350,22 @@ public partial class Room: MonoBehaviour
         {
             DEBUG_TemplateCheck(template, wallObject.transform);
         }
-        wallObject.transform.localPosition = new Vector3(transform.position.x - template.size.x / 2 + 0.5f, transform.position.y + template.size.y / 2, 0);
+        wallObject.transform.localPosition = new Vector3(- template.size.x / 2 + 0.5f, template.size.y / 2, 0);
+    }
+    void CreateFloor(RoomTemplate template, Material floorMaterial)
+    {
+        GameObject floorObject = new GameObject("Floor");
+        floorObject.transform.parent = this.gameObject.transform;
+        floorObject.AddComponent<MeshFilter>();
+
+        MeshMaker.CreateSurface(template.ExtractFloor(), floorObject.GetComponent<MeshFilter>().mesh);
+        floorObject.transform.localPosition = new Vector3(- template.size.x / 2, template.size.y / 2, 0);
+
+        floorObject.AddComponent<MeshRenderer>();
+        floorObject.GetComponent<MeshRenderer>().material = floorMaterial;
+
+        MeshCollider mc = floorObject.AddComponent<MeshCollider>();
+        mc.sharedMesh = floorObject.GetComponent<MeshFilter>().mesh;
     }
     void DEBUG_TemplateCheck(RoomTemplate template, Transform wallObject)
     {
@@ -347,7 +417,7 @@ public partial class Room: MonoBehaviour
         //This gets if the room is an endroom. However, this could be set by having the rooms be endrooms when they spawn, unless they get linked
         //And then set rooms being spawned from as no longer being endrooms
         List<RoomEntrance> entrances = new List<RoomEntrance> { };
-        if(!directions){return false;}
+        if(directions == null){return false;}
         foreach(RoomEntrance entrance in directions.directions)
         {
             if(entrance == null){continue;}
@@ -428,7 +498,7 @@ public partial class Room: MonoBehaviour
     {
         GameObject wallParent = new GameObject("Walls");
         wallParent.transform.SetParent(transform);
-        if (!directions)
+        if (directions == null)
         {
             return;
         }

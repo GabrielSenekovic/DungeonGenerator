@@ -23,11 +23,6 @@ public class PlayerController : MonoBehaviour
         VisualsRotator.renderers.Add(GetComponentInChildren<SpriteRenderer>().gameObject);
         VisualsRotator.quads.Add(GetComponentInChildren<MeshRenderer>().gameObject);
     }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)party.GetPartyLeader().GetComponent<MovementModel>().GetRelativeFacingDirection() * 5);
-    }
     public void Update()
     {
         Move();
