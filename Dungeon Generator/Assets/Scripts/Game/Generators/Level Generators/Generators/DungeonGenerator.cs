@@ -7,7 +7,7 @@ public class DungeonGenerator : LevelGenerator
     [SerializeField]CorridorRoom CorridorRoomPrefab;
     public override Room ChooseLayout(LevelData data)
     {
-        RoomLayout layout = RoomLayout.NormalOutdoors;
+        /*RoomLayout layout = RoomLayout.NormalOutdoors;
         List<RoomLayout> layouts = new List < RoomLayout >{ };
         if(data.GetMood(0) == Mood.Decrepit || data.GetMood(1) == Mood.Decrepit)
         {
@@ -30,7 +30,7 @@ public class DungeonGenerator : LevelGenerator
             case RoomLayout.NormalIndoors: RoomPrefab.roomData.m_layout = RoomLayout.NormalIndoors; return RoomPrefab;
             case RoomLayout.NormalOutdoors: RoomPrefab.roomData.m_layout = RoomLayout.NormalOutdoors; return RoomPrefab;
             case RoomLayout.Corridor: return CorridorRoomPrefab;
-        }
+        }*/
         return CorridorRoomPrefab;
     }
 }

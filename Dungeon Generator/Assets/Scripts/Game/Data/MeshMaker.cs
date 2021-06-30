@@ -11,15 +11,18 @@ public class MeshMaker : MonoBehaviour
         public int height; //How tall are the walls
         public int rotation; //Determines what direction the walls are drawn in. Sides, up, down, diagonal etc
 
+        public Vector2Int divisions;
+
         public Vector3 position; //The start position to draw the wall from
 
-        public WallData(Vector3 position_in, int rotation_in, int length_in, int height_in, int tilt_in)
+        public WallData(Vector3 position_in, int rotation_in, int length_in, int height_in, int tilt_in, Vector2Int divisions_in)
         {
             position = position_in;
             rotation = rotation_in;
             length = length_in;
             height = height_in;
             tilt = tilt_in;
+            divisions = divisions_in;
         }
         public WallData(Vector3 position_in, int rotation_in, int height_in, int tilt_in) //If this wall has the same length as the previous one, you don't have to define length
         {
@@ -28,6 +31,7 @@ public class MeshMaker : MonoBehaviour
             length = 0;
             height = height_in;
             tilt = tilt_in;
+            divisions = new Vector2Int(1,1);
         }
     }
     public static void CreateChest(Mesh mesh)
@@ -38,8 +42,11 @@ public class MeshMaker : MonoBehaviour
     {
         
     }
-    public static void CreateWall(GameObject wall, Mesh mesh, List<WallData> instructions, Vector2 divisions, float jaggedness)
+    public static void CreateWall(GameObject wall, Mesh mesh, List<WallData> instructions)
     {
+        float jaggedness = 0.05f;
+        Vector2 divisions = new Vector2(instructions[0].divisions.x, instructions[0].divisions.y);
+        if(divisions.x == 1){jaggedness = 0;}
         //dim x = width, y = tilt, z = height
         //divisions = how many vertices per unit tile
         //instructions tells us how many steps to go before turning, and what direction to turn
@@ -75,7 +82,7 @@ public class MeshMaker : MonoBehaviour
 
             for(int j = 0; j < savedLengthOfWall; j++)
             {
-                //Debug.Log("New Column!");
+                Debug.Log("New Column!");
                 string debug_info = j+ ": ";
                 //Go through each column of wall
                 for(int k = 0; k < instructions[i].height; k++)
@@ -115,6 +122,12 @@ public class MeshMaker : MonoBehaviour
                         //* j * divisions.x + division.x - 1 = The last vertex position of each column              ||
                         //*                                                                                         ||
                         //******************************************************************************************||
+
+                        float upperJaggedness = jaggedness;
+                        if(l > divisions.x * divisions.y - divisions.x)
+                        {
+                            upperJaggedness = 0;
+                        }
                     
                         if(i == instructions.Count - 1 && j == savedLengthOfWall - 1 && v_z * divisions.y + k > 0 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //L
                         {
@@ -123,8 +136,16 @@ public class MeshMaker : MonoBehaviour
                             debug_info += "L";
                             //Connect tiles upwards to tiles downwards
                             newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left)+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
-                            newVertices.Add( newVertices[(3 + skip_up + skip_left )+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
-                            newVertices.Add( newVertices[(((4 * (int)divisions.x) + vertices_per_quad -1) + skip_up + skip_left)+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                            if(divisions.x > 1)
+                            {
+                                newVertices.Add( newVertices[(3 + skip_up + skip_left )+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                                newVertices.Add( newVertices[(((4 * (int)divisions.x) + vertices_per_quad -1) + skip_up + skip_left)+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                            }
+                            else
+                            {
+                                newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + (j-1) * vertices_per_column]);
+                                newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x * 2 - 1)) + jump_wall + k * vertices_per_tile + (j-1) * vertices_per_column]);
+                            }
                             newVertices.Add( newVertices[2 + skip_up + k * vertices_per_tile + vertices_per_quad * (int)divisions.x]);
                         }
                         else if(i == instructions.Count - 1 && j == savedLengthOfWall - 1 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //K
@@ -133,8 +154,17 @@ public class MeshMaker : MonoBehaviour
                             //Then connect to the first wall
                             debug_info += "K";
                             newVertices.Add( newVertices[1]);
-                            newVertices.Add( newVertices[(0 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
-                            newVertices.Add( newVertices[(3 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                            if(divisions.x > 1)
+                            {
+                                newVertices.Add( newVertices[(0 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                                newVertices.Add( newVertices[(3 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
+                            }
+                            else //When divisions.x is 1, then G isnt there to connect to the column before. Instead K has to do it, and it isnt normally equipped to do so.
+                            {
+                                int jump_column = j > 0 ? (j-1) * vertices_per_column: 0;
+                                newVertices.Add( newVertices[(0 + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + jump_column]);
+                                newVertices.Add( newVertices[(3 + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + jump_column]);
+                            }
                             newVertices.Add( newVertices[2]);
                         }
                         else if(v_x * divisions.x > j * divisions.x && k > 0) //F
@@ -144,7 +174,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left)+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( newVertices[(3 + skip_up + skip_left )+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( newVertices[(((4 * (int)divisions.x) + vertices_per_quad -1) + skip_up + skip_left)+ jump_wall + k * vertices_per_tile + j * vertices_per_column]);
-                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
+                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
                             CreateWall_Rotate(newVertices, new List<int>{3}, instructions[i].position, instructions[i].rotation);
                         }
                         else if((v_z > 0 || k > 0) && v_x * divisions.x == j * divisions.x && j > 0) //H
@@ -154,7 +184,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( newVertices[((3 + vertices_per_quad) + skip_up + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + (j-1) * vertices_per_column]);
                             newVertices.Add( newVertices[(3 + skip_up + vertices_per_quad * ((int)divisions.x * 2 - 1)) + jump_wall + k * vertices_per_tile + (j-1) * vertices_per_column]);
-                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
+                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
                             CreateWall_Rotate(newVertices, new List<int>{3}, instructions[i].position, instructions[i].rotation);
                         }
                         else if((v_z > 0 || k > 0) && v_x * divisions.x == j * divisions.x && i > 0) //H
@@ -165,7 +195,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( newVertices[((3 + jump_wall + skip_up + vertices_per_quad)+ skip_left) + k * vertices_per_tile+ j * vertices_per_column + jump_column]);
                             newVertices.Add( newVertices[(3 + (jump_wall- vertices_per_column) + skip_up + vertices_per_quad * ((int)divisions.x - 1)) + k * vertices_per_tile + jump_column]);
                             newVertices.Add( newVertices[(3 + (jump_wall - vertices_per_column) + skip_up + vertices_per_quad * ((int)divisions.x * 2 - 1)) + k * vertices_per_tile + jump_column]);
-                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
+                            newVertices.Add(  new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
                             CreateWall_Rotate(newVertices, new List<int>{3}, instructions[i].position, instructions[i].rotation);
                         }
                         else if(k > 0) //E
@@ -174,8 +204,8 @@ public class MeshMaker : MonoBehaviour
                             //Connect first quad of tile upwards to the tile downwards
                             newVertices.Add( newVertices[((3 + skip_up) + k * vertices_per_tile) + j * vertices_per_column]);
                             newVertices.Add( newVertices[((2 + skip_up) + k * vertices_per_tile) + j * vertices_per_column]);
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
                             CreateWall_Rotate(newVertices, new List<int>{}, instructions[i].position, instructions[i].rotation);
                         }
                         else if(v_z * divisions.y > 0 && v_x * divisions.x > j * divisions.x) //D
@@ -202,7 +232,7 @@ public class MeshMaker : MonoBehaviour
                         {
                             debug_info += "B";
                             //Connect quad to the left to quad to the right
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + UnityEngine.Random.Range(-jaggedness, 0) , ((z - v_z )) - k));
                             newVertices.Add( newVertices[(0 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( newVertices[(3 + skip_left) + jump_wall + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
@@ -213,7 +243,7 @@ public class MeshMaker : MonoBehaviour
                             debug_info += "I";
                             int jump_column = j > 0 ? (j-1) * vertices_per_column: 0;
                             //Connect the first quad of the second wall to the last quad of the first row of the first wall
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, 0) , ((z - v_z ) ) - k));
                             newVertices.Add( newVertices[(0 + (jump_wall - vertices_per_column) + vertices_per_quad * ((int)divisions.x - 1)) + k * vertices_per_tile]);
                             newVertices.Add( newVertices[(3 + (jump_wall - vertices_per_column) + vertices_per_quad * ((int)divisions.x - 1)) + k * vertices_per_tile]);
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
@@ -224,7 +254,7 @@ public class MeshMaker : MonoBehaviour
                             debug_info += "G";
                             int jump_column = j > 0 ? (j-1) * vertices_per_column: 0;
                             //Connect first quad of column to the right to the last quad of the first row of the first column
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, 0) , ((z - v_z ) ) - k));
                             newVertices.Add( newVertices[(0 + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + jump_column]);
                             newVertices.Add( newVertices[(3 + vertices_per_quad * ((int)divisions.x - 1)) + jump_wall + k * vertices_per_tile + jump_column]);
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
@@ -234,8 +264,8 @@ public class MeshMaker : MonoBehaviour
                         {
                             debug_info += "A";
                             //Make lone quad
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - k));
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness))                 ) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + UnityEngine.Random.Range(-jaggedness, 0) , (z - v_z ) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y  + UnityEngine.Random.Range(-jaggedness, 0), (z - v_z ) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
                             CreateWall_Rotate(newVertices, new List<int>{}, instructions[i].position, instructions[i].rotation);
@@ -284,18 +314,54 @@ public class MeshMaker : MonoBehaviour
             //Debug.Log(vertices[j + indices[i]]);
         }
     }
-    static public void CreateSurface(List<Vector2Int> positions, Mesh mesh)
+    static public void CreateSurface(List<Vector3Int> positions, Mesh mesh)
     {
+        //Positions literally mean the position of every single quad on the grid
         List<int> newTriangles = new List<int>();
         List<Vector3> newVertices = new List<Vector3>();
         List<Vector2> newUV = new List<Vector2>();
 
         for(int i = 0; i < positions.Count; i++)
         {
-            newVertices.Add(new Vector3(positions[i].x, positions[i].y, 0));
-            newVertices.Add(new Vector3(positions[i].x + 1, positions[i].y, 0));
-            newVertices.Add(new Vector3(positions[i].x + 1, positions[i].y + 1, 0));
-            newVertices.Add(new Vector3(positions[i].x, positions[i].y + 1, 0));
+            newVertices.Add(new Vector3(positions[i].x,     positions[i].y,     -positions[i].z));
+            newVertices.Add(new Vector3(positions[i].x + 1, positions[i].y,     -positions[i].z));
+            newVertices.Add(new Vector3(positions[i].x + 1, positions[i].y + 1, -positions[i].z));
+            newVertices.Add(new Vector3(positions[i].x,     positions[i].y + 1, -positions[i].z));
+
+            newTriangles.Add(3 + 4 * i); //0, 1, 3, 1, 2, 3
+            newTriangles.Add(1 + 4 * i);
+            newTriangles.Add(0 + 4 * i);
+            newTriangles.Add(3 + 4 * i);
+            newTriangles.Add(2 + 4 * i);
+            newTriangles.Add(1 + 4 * i);
+
+            newUV.Add(new Vector2 (1,0));                      //1,0
+            newUV.Add(new Vector2 (0,0));                      //0,0
+            newUV.Add(new Vector2 (0,1)); //0,1
+            newUV.Add(new Vector2 (1,1)); //1,1
+        }
+
+        mesh.Clear ();
+        mesh.vertices = newVertices.ToArray();
+        mesh.triangles = newTriangles.ToArray();
+        mesh.uv = newUV.ToArray(); 
+        mesh.Optimize();
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+    }
+    static public void CreateSurface(Mesh mesh, float height)
+    {
+        //When you are making a completely flat room without walls
+        List<int> newTriangles = new List<int>();
+        List<Vector3> newVertices = new List<Vector3>();
+        List<Vector2> newUV = new List<Vector2>();
+
+        for(int i = 0; i < 20 * 20; i++) //20 is the standard room size
+        {
+            newVertices.Add(new Vector3(i % 20, -i / 20 -1, -height));
+            newVertices.Add(new Vector3(i % 20 + 1, -i / 20 -1, -height));
+            newVertices.Add(new Vector3(i % 20 + 1, -i / 20, -height));
+            newVertices.Add(new Vector3(i % 20, -i / 20, -height));
 
             newTriangles.Add(3 + 4 * i); //0, 1, 3, 1, 2, 3
             newTriangles.Add(1 + 4 * i);

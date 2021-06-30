@@ -6,6 +6,7 @@ using System;
 public partial class LevelGenerator : MonoBehaviour
 {
     [SerializeField]List<Room> rooms = new List<Room> { };
+    List<MeshRenderer> surroundings = new List<MeshRenderer>{};
     List<Room> fusedRooms = new List<Room>{};
     
     [SerializeField]protected Room RoomPrefab;
@@ -27,6 +28,28 @@ public partial class LevelGenerator : MonoBehaviour
     public InteractableBase endOfLevel; //Debugging object for Recovery Quest
     [System.NonSerialized]public InteractableBase spawnedEndOfLevel; // spawned version
 
+    public void GenerateStartArea()
+    {
+        //Called when not in the level
+        rooms[0].Initialize(new Vector2(20,20), wallMaterial, floorMaterial, false);
+        //Surround this one room with floors
+        GameObject surroundings = new GameObject("Surroundings");
+        surroundings.transform.parent = this.gameObject.transform;
+        for(int x = 0; x < 3; x++)
+        {
+            for(int y = 0; y < 3; y++)
+            {
+                if(x == 1 && y == 1){continue;}
+                GameObject surroundingObject = new GameObject("Surroundings");
+                surroundingObject.transform.parent = surroundings.gameObject.transform;
+                surroundingObject.AddComponent<MeshFilter>();
+                MeshMaker.CreateSurface(surroundingObject.GetComponent<MeshFilter>().mesh, 4);
+                surroundingObject.AddComponent<MeshRenderer>();
+                surroundingObject.GetComponent<MeshRenderer>().material = floorMaterial;
+                surroundingObject.transform.localPosition = new Vector3(-10 - 20 + (x * 20), 10 + 20 - (y * 20), 0);
+            }
+        }
+    }
     public void GenerateLevel(LevelManager level, Vector2 RoomSize, Vector2Int amountOfRooms)
     {
         System.DateTime before = System.DateTime.Now;
@@ -34,7 +57,7 @@ public partial class LevelGenerator : MonoBehaviour
         UnityEngine.Random.InitState(GameData.m_LevelConstructionSeed);
 
         rooms.Add(Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity, transform));
-        rooms[0].Initialize(RoomSize, wallMaterial, floorMaterial);
+        rooms[0].Initialize(RoomSize, wallMaterial, floorMaterial, true);
 
         SpawnRooms(UnityEngine.Random.Range((int)(amountOfRooms.x + rooms.Count),
                                 (int)(amountOfRooms.y + rooms.Count)), RoomSize, level.l_data);
@@ -125,7 +148,7 @@ public partial class LevelGenerator : MonoBehaviour
             rooms.Add(Instantiate(ChooseLayout(data), transform));
             rooms[i].name = "Room #" + (numberOfRooms+1); numberOfRooms++;
             
-            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize, wallMaterial, floorMaterial);
+            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize, wallMaterial, floorMaterial, true);
             rooms[i].roomData.stepsAwayFromMainRoom = originRoom.Item1.roomData.stepsAwayFromMainRoom + 1;
             if(rooms[i].roomData.stepsAwayFromMainRoom > furthestDistanceFromSpawn)
             {

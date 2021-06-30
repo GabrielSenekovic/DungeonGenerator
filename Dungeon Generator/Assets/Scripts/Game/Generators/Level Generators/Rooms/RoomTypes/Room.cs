@@ -32,7 +32,6 @@ using System;
 {
     public RoomType m_type = RoomType.NormalRoom;
     public RoomPosition m_roomPosition = RoomPosition.None;
-    public RoomLayout m_layout = RoomLayout.NormalOutdoors;
     public bool m_Indoors = false;
     public int stepsAwayFromMainRoom = 0;
     public bool IsBuilt = false;
@@ -54,12 +53,6 @@ public enum RoomPosition
     DeadEnd = 1
 }
 
-public enum RoomLayout
-{
-    NormalOutdoors = 0,
-    NormalIndoors = 1,
-    Corridor = 2
-}
 //Core code
 public partial class Room: MonoBehaviour
 {
@@ -85,10 +78,14 @@ public partial class Room: MonoBehaviour
             public int identity; //0 for void, 1 for wall, 2 for floor
             public bool read;
 
-            public TileTemplate(int identity_in)
+            public Vector2Int divisions; //This also only does something if the identity is a wall
+            //If divide into multiple parts, like, three by three quads on one wall tile on outdoor walls for instance. Usually, on indoor walls, its completely flat
+
+            public TileTemplate(int identity_in, Vector2Int divisions_in)
             {
                 identity = identity_in;
                 read = false;
+                divisions = divisions_in;
             }
             public void SetIdentity(int newIdentity)
             {
@@ -101,59 +98,465 @@ public partial class Room: MonoBehaviour
         }
         public Vector2Int size;
         public List<TileTemplate> positions;
-        public RoomTemplate(Vector2Int size_in, List<TileTemplate> positions_in)
+        public bool indoors;
+        public RoomTemplate(Vector2Int size_in, List<TileTemplate> positions_in, bool indoors_in)
         {
             size = size_in;
             positions = positions_in;
+            indoors = indoors_in;
+            CreateRoomTemplate();
         }
+        void CreateRoomTemplate()
+        {
+            //In here it will be determined if the room is a circle, if it is a corridor, etc
+            Vector2 roomCenter = new Vector2(size.x / 2, size.y / 2);
+            Vector2 wallThickness = new Vector2(UnityEngine.Random.Range(size.x/2 - 4, size.x/2), UnityEngine.Random.Range(size.y/2 - 4, size.y/2));
+            Debug.Log("Thickness of wall: " + wallThickness);
+
+            for(int y = 0; y < size.y; y++)
+            {
+                for(int x = 0; x < size.x; x++)
+                {
+                    Vector2Int divisions = new Vector2Int(1,1);
+                    if(!indoors){divisions = new Vector2Int(3,3);}
+                    positions.Add(new RoomTemplate.TileTemplate(2, divisions));
+
+                    CreateRoomTemplate_Square(new Vector2(2,2), x, y); //?Basic thickness. Can't be thinner than 2
+                    //CreateRoomTemplate_Circle(roomCenter, wallThickness, x, y);
+                    CreateRoomTemplate_Cross(wallThickness, x, y);
+                }
+            }
+            UnscatterWalls();
+            WeedOutUnseeableWalls(); //Later only when indoors
+        }
+        void CreateRoomTemplate_Circle(Vector2 center, Vector2 wallThickness, int x, int y)
+        {
+            float distanceToCenter = new Vector2(x+0.5f - center.x, y+0.5f - center.y).magnitude;
+            if (distanceToCenter > wallThickness.x && distanceToCenter > wallThickness.y)
+            {
+                //if the higher limit is 0, then the code just generates a circle, period
+                int temp = UnityEngine.Random.Range(0, 2);
+                if (temp == 0)
+                {
+                    positions[x + (int)size.x * y].identity = 1;
+                }
+            }
+        }
+        void CreateRoomTemplate_Square(Vector2 wallThickness, int x, int y)
+        {
+            if(x < wallThickness.x || x > size.x - wallThickness.x - 1||
+               y < wallThickness.y || y > size.y - wallThickness.y - 1)
+            {
+                positions[x + (int)size.x * y].identity = 1;
+            }
+        }
+        void CreateRoomTemplate_Cross(Vector2 wallThickness, int x, int y)
+        {
+            if((x < wallThickness.x || x > size.x - wallThickness.x -1)&&
+               (y < wallThickness.y || y > size.y - wallThickness.y -1))
+            {
+                positions[x + (int)size.x * y].identity = 1;
+            }
+        }
+
+        void UnscatterWalls()
+        {
+            //First, removes stray positions
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    bool deleteWall = true;
+                    for(int i = -1; i < 2; i++)
+                    {
+                        for(int j = -1; j < 2; j++)
+                        {
+                            if((i == 0 && j == 0) || i != 0 && j != 0){continue;} //Only check directly up or directly down
+                            if(IsPositionWithinBounds(new Vector2Int(x + i, -y + j)))
+                            {
+                                if(!(positions[x + i + (int)size.x * (y + -j)].identity == 2)) //If the position is not a floor
+                                {
+                                    deleteWall = false; //Then dont delete
+                                }
+                            }
+                        }
+                    }
+                    if(deleteWall)
+                    {
+                        positions[x + (int)size.x * y].identity = 2;
+                    }
+                }
+            }
+            //Second, fill in holes
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    int amountOfWallNeighbors = 0;
+                    for(int i = -1; i < 2; i++)
+                    {
+                        for(int j = -1; j < 2; j++)
+                        {
+                            if(i == 0 && j == 0){continue;}
+                            if(IsPositionWithinBounds(new Vector2Int(x + i, -y + j)))
+                            {
+                                if(positions[x + i + (int)size.x * (y + -j)].identity == 1) //If the position is a wall
+                                {
+                                    amountOfWallNeighbors++; //Then count up
+                                }
+                            }
+                        }
+                    }
+                    if(amountOfWallNeighbors > 5)
+                    {
+                        positions[x + (int)size.x * y].identity = 1;
+                    }
+                }
+            }
+            //Shave off excess wall
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    int amountOfFloorNeighbors = 0;
+                    for(int i = -1; i < 2; i++)
+                    {
+                        for(int j = -1; j < 2; j++)
+                        {
+                            if(i == 0 && j == 0){continue;}
+                            if(IsPositionWithinBounds(new Vector2Int(x + i, -y + j)))
+                            {
+                                if(positions[x + i + (int)size.x * (y + -j)].identity == 2) //If the position is a floor
+                                {
+                                    amountOfFloorNeighbors++; //Then count up
+                                }
+                            }
+                        }
+                    }
+                    if(amountOfFloorNeighbors > 5)
+                    {
+                        positions[x + (int)size.x * y].identity = 2;
+                    }
+                }
+            }
+        }
+        void WeedOutUnseeableWalls()
+        {
+            //Cleans out walls so they become void
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    bool isVoid = true;
+                    for(int i = -1; i < 2; i++)
+                    {
+                        for(int j = -1; j < 2; j++)
+                        {
+                            if(i == 0 && j == 0){continue;}
+                            if(IsPositionWithinBounds(new Vector2Int(x + i, -y + j)))
+                            {
+                                if(!(positions[x + i + (int)size.x * (y + -j)].identity == 1 || positions[x + i + (int)size.x * (y + -j)].identity == 0))
+                                {
+                                    isVoid = false;
+                                }
+                            }
+                        }
+                    }
+                    if(isVoid)
+                    {
+                        positions[x + (int)size.x * y].identity = 0;
+                    }
+                }
+            }
+        }
+        /*void CreateRoomTemplate()
+        {
+            //Create a cross shaped room
+            for(int i = 0; i < size.x; i++)
+            {
+                positions.Add(new RoomTemplate.TileTemplate(1));
+            }
+            for(int i = 1; i < size.y - 1; i++)
+            {
+                if(i > 4 && i < size.y - 4)
+                {
+                    for(int j = 0; j < size.x; j++)
+                    {
+                        if(j == 0 || j == size.x - 1)
+                        {
+                            positions.Add(new RoomTemplate.TileTemplate(1)); //1 is a wall
+                        }
+                        else
+                        {
+                            positions.Add(new RoomTemplate.TileTemplate(2)); //2 is a floor
+                        }
+                    }
+                }
+                else
+                {
+                    for(int j = 0; j < size.x; j++)
+                    {
+                        if(j < 4 || j > size.x - 4)
+                        {
+                            positions.Add(new RoomTemplate.TileTemplate(1)); //1 is a wall
+                        }
+                        else
+                        {
+                            positions.Add(new RoomTemplate.TileTemplate(2)); //2 is a floor
+                        }
+                    }
+                }
+            }
+            for(int i = 0; i < size.x; i++)
+            {
+                positions.Add(new RoomTemplate.TileTemplate(1));
+            }
+            //Cleans out walls so they become void
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    bool isVoid = true;
+                    for(int i = -1; i < 2; i++)
+                    {
+                        for(int j = -1; j < 2; j++)
+                        {
+                            if(i == 0 && j == 0){continue;}
+                            if(IsPositionWithinBounds(new Vector2Int(x + i, -y + j)))
+                            {
+                                if(!(positions[x + i + (int)size.x * (y + -j)].identity == 1 || positions[x + i + (int)size.x * (y + -j)].identity == 0))
+                                {
+                                    isVoid = false;
+                                }
+                            }
+                        }
+                    }
+                    if(isVoid)
+                    {
+                        positions[x + (int)size.x * y].identity = 0;
+                    }
+                }
+            }
+            
+            //Create a perfect square room
+            /*for(int i = 0; i < RoomSize.x; i++)
+            {
+                template.positions.Add(new RoomTemplate.TileTemplate(1));
+            }
+            for(int i = 1; i < RoomSize.y - 1; i++)
+            {
+                for(int j = 0; j < RoomSize.x; j++)
+                {
+                    if(j == 0 || j == RoomSize.x - 1)
+                    {
+                        template.positions.Add(new RoomTemplate.TileTemplate(1)); //1 is a wall
+                    }
+                    else
+                    {
+                        template.positions.Add(new RoomTemplate.TileTemplate(2)); //2 is a floor
+                    }
+                }
+            }
+            for(int i = 0; i < RoomSize.x; i++)
+            {
+                template.positions.Add(new RoomTemplate.TileTemplate(1));
+            }
+        }*/
         public bool IsPositionWithinBounds(Vector2Int pos)
         {
             if(pos.x >= 0 && pos.x < size.x && pos.y <= 0 && pos.y > -size.y )
             {
                 return true;
             }
+           // Debug.Log(pos + " <color=red>is not within bounds</color>");
             return false;
         }
-        public Tuple<bool, Vector2Int> HasWallNeighbor(Vector2Int pos, int rotation)
+        public Tuple<bool, Vector2Int, int> HasWallNeighbor(Vector2Int pos, int rotation)
         {
             //Debug.Log("Checking if position: " + pos + "Has any free neighbors");
             Vector2Int direction = Vector2Int.zero;
             bool value = true;
-            if(rotation == 0 && IsPositionWithinBounds(new Vector2Int(pos.x + 1, pos.y)) && positions[pos.x + 1 + size.x * -pos.y].identity == 1 && !positions[pos.x + 1 + size.x * -pos.y].read)
+            int rotationDir = 0;
+            if(rotation == 270)
             {
-                direction = new Vector2Int(1, 0);
+                if(IsPositionWithinBounds(new Vector2Int(pos.x + 1, pos.y)) && positions[pos.x + 1 + size.x * -pos.y].identity == 1 && !positions[pos.x + 1 + size.x * -pos.y].read)
+                {
+                    direction = new Vector2Int(1, 0);
+                    rotationDir = 1;
+                }
+                else if(IsPositionWithinBounds(new Vector2Int(pos.x - 1, pos.y)) && positions[pos.x - 1 + size.x * -pos.y].identity == 1 && !positions[pos.x - 1 + size.x * -pos.y].read)
+                {
+                    direction = new Vector2Int(-1, 0);
+                    rotationDir = -1;
+                }
+                else
+                {
+                    value = false;
+                }
             }
-            else if(rotation == 180 && IsPositionWithinBounds(new Vector2Int(pos.x - 1, pos.y)) && positions[pos.x - 1 + size.x * -pos.y].identity == 1 && !positions[pos.x - 1 + size.x * -pos.y].read)
+            else if(rotation == 90)
             {
-                direction = new Vector2Int(-1, 0);
+                if(IsPositionWithinBounds(new Vector2Int(pos.x + 1, pos.y)) && positions[pos.x + 1 + size.x * -pos.y].identity == 1 && !positions[pos.x + 1 + size.x * -pos.y].read)
+                {
+                    direction = new Vector2Int(1, 0);
+                    rotationDir = -1;
+                }
+                else if(IsPositionWithinBounds(new Vector2Int(pos.x - 1, pos.y)) && positions[pos.x - 1 + size.x * -pos.y].identity == 1 && !positions[pos.x - 1 + size.x * -pos.y].read)
+                {
+                    direction = new Vector2Int(-1, 0);
+                    rotationDir = 1;
+                }
+                else
+                {
+                    value = false;
+                }
             }
-            else if(rotation == 270 && IsPositionWithinBounds(new Vector2Int(pos.x, pos.y + 1)) && positions[pos.x + size.x * (-pos.y - 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y - 1)].read)
+            else if(rotation == 180)
             {
-                direction = new Vector2Int(0, -1);
+                if(IsPositionWithinBounds(new Vector2Int(pos.x, pos.y + 1)) && positions[pos.x + size.x * (-pos.y - 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y - 1)].read)
+                {
+                    direction = new Vector2Int(0, -1);
+                    rotationDir = 1;
+                }
+                else if(IsPositionWithinBounds(new Vector2Int(pos.x, pos.y - 1)) && positions[pos.x + size.x * (-pos.y + 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y + 1)].read)
+                {
+                    direction = new Vector2Int(0, 1);
+                    rotationDir = -1;
+                }
+                else
+                {
+                    value = false;
+                }
             }
-            else if(rotation == 90 && IsPositionWithinBounds(new Vector2Int(pos.x, pos.y - 1)) && positions[pos.x + size.x * (-pos.y + 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y + 1)].read)
+            else if(rotation == 0)
             {
-                direction = new Vector2Int(0, 1);
+                if(IsPositionWithinBounds(new Vector2Int(pos.x, pos.y + 1)) && positions[pos.x + size.x * (-pos.y - 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y - 1)].read)
+                {
+                    direction = new Vector2Int(0, -1);
+                    rotationDir = -1;
+                }
+                else if(IsPositionWithinBounds(new Vector2Int(pos.x, pos.y - 1)) && positions[pos.x + size.x * (-pos.y + 1)].identity == 1 && !positions[pos.x + size.x * (-pos.y + 1)].read)
+                {
+                    direction = new Vector2Int(0, 1);
+                    rotationDir = 1;
+                }
+                else
+                {
+                    value = false;
+                }
             }
-            else
-            {
-                //Debug.Log(pos.x + size.x * (-pos.y - 1));
-                //Debug.Log("This wall has no unread neighbors");
-                value = false;
-            }
-           // Debug.Log("It has a neighbor in this direction: " + direction);
-            return new Tuple<bool, Vector2Int>(value, direction);
+            Debug.Log("It has a neighbor in this direction: " + direction);
+            return new Tuple<bool, Vector2Int, int>(value, direction, rotationDir);
         }
-        public List<Vector2Int> ExtractFloor()
+        
+        public List<MeshMaker.WallData> ExtractWalls()
         {
-            List<Vector2Int> returnData = new List<Vector2Int>();
+            //Find a wall that has a floor next to it
+            Debug.Log("Extracting walls");
+            Vector2Int pos = new Vector2Int(-1,-1);
+            int currentAngle = 0; //Current angle should only be 0 if the floor found points down.
+
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    //Check if there is floor diagonally right down, because walls can only be drawn from left to right
+                    //If there are none, rotate the search three times. If there still are none, then there is an error
+                    if(IsPositionWithinBounds(new Vector2Int(x + 1, -y - 1)) && x < size.x && positions[x + 1 + size.x * (y + 1)].identity == 2)
+                    {
+                        pos = new Vector2Int(x, -y); 
+                        currentAngle = 90;
+                        break; 
+                    }
+                        //if none of the directions are a floor, then it is a void
+                    // template.positions[x + template.size.x * y].SetIdentity(0);
+                }
+                if(pos != new Vector2Int(-1,-1))
+                {
+                    break;
+                }
+            }
+            Debug.Log("The position found to start from, that has a floor next to it: " + pos);
+
+            //Now we should have a piece of a wall we can start from
+            //!Now, follow the walls and create new WallData everytime it turns once
+
+            //Find direction to follow
+            List<MeshMaker.WallData> data = new List<MeshMaker.WallData>();
+
+            Tuple<bool, Vector2Int, int> returnData = HasWallNeighbor(pos, currentAngle); //Item2 is the direction to go to
+            currentAngle += 90 * returnData.Item3; //This code can only do inner corners atm, not outer corners
+            currentAngle = (int)Math.Mod(currentAngle, 360);
+            positions[pos.x + size.x * -pos.y].SetRead(true);
+            Vector2Int startPosition = pos;
+
+            while(returnData.Item1) //If there is a wall neighbor, proceed
+            {
+                startPosition = pos;
+                //Follow that direction until its empty
+                int steps = 1;
+                Debug.Log("Checking index: " + (pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)));
+                while(IsPositionWithinBounds(new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y)) && positions[pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)].identity == 1) //While the position in the next direction is a wall
+                {
+                    steps++;
+                    pos = new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y);
+                    Debug.Log("Checking index: " + (pos.x + size.x * -pos.y));
+                    positions[pos.x + size.x * -pos.y].SetRead(true);
+                }
+                
+                int isThisWallFollowingOuterCorner = 0;
+                if(returnData.Item3 < 0 && data.Count > 0)
+                {
+                    //If lastWall is less than 0, then this is the following wall after an outer corner, so it must be moved up and shortened
+                    isThisWallFollowingOuterCorner = 1;
+                }
+                returnData = HasWallNeighbor(pos, currentAngle);
+                int isThisWallEndingWithOuterCorner = 0;
+                if(returnData.Item3 < 0)
+                {
+                    //If Item3 is less than 0, then this is an outer corner, so the wall shouldn't go the whole way
+                    isThisWallEndingWithOuterCorner = 1;
+                }
+                
+                Debug.Log("<color=green>Amount of steps: </color>" + steps + " angle: " + currentAngle);
+                if(currentAngle == 0)
+                {
+                    data.Add(new MeshMaker.WallData(new Vector3(startPosition.x + isThisWallFollowingOuterCorner,startPosition.y,0), currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                }
+                if(currentAngle == 90)
+                {
+                    data.Add(new MeshMaker.WallData(new Vector3(startPosition.x + 0.5f, startPosition.y - 0.5f - isThisWallFollowingOuterCorner,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                }
+                if(currentAngle == 180)
+                {
+                    data.Add(new MeshMaker.WallData(new Vector3(startPosition.x - isThisWallFollowingOuterCorner,startPosition.y - 1,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                }
+                if(currentAngle == 270)
+                {
+                    data.Add(new MeshMaker.WallData(new Vector3(startPosition.x - 0.5f,startPosition.y - 0.5f + isThisWallFollowingOuterCorner ,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions)); // y - 0.5f
+                }
+                //Sometimes it has to decrease by 90, so it has to know what direction the next wall goes in (fuck)
+                currentAngle += 90 * returnData.Item3; //This code can only do inner corners atm, not outer corners
+                currentAngle = (int)Math.Mod(currentAngle, 360);
+            }
+            Debug.Log("There is this amount of walls: " + data.Count);
+
+            return data;
+        }
+        public List<Vector3Int> ExtractFloor()
+        {
+            List<Vector3Int> returnData = new List<Vector3Int>();
             for(int x = 0; x < size.x; x++)
             {
                 for(int y = 0; y < size.y; y++)
                 {
                     if(positions[x + size.x * y].identity == 2 || positions[x + size.x * y].identity == 1 ) //If this position is a floor or a wall
                     {
-                        returnData.Add(new Vector2Int(x,-y -1));
+                        returnData.Add(new Vector3Int(x,-y -1, 0));
+                    }
+                    else //If it is a void
+                    {
+                        returnData.Add(new Vector3Int(x,-y -1, 4));
                     }
                 }
             }
@@ -186,11 +589,6 @@ public partial class Room: MonoBehaviour
 
     public RoomEntrance roomEntrance;
 
-    private void Start() 
-    {
-        //Initialize(new Vector2(20,20));
-    }
-
     public void OpenAllEntrances()
     {
         if(directions == null)
@@ -199,139 +597,46 @@ public partial class Room: MonoBehaviour
         }
         directions.OpenAllEntrances();
     }
-    public void Initialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
+    public void Initialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial, bool indoors)
     {
         Debug.Log("<color=green>Initializing the Origin Room</color>");
         //This Initialize() function is for the origin room specifically, as it already has its own position
-        OnInitialize(RoomSize, wallMaterial, floorMaterial);
+        OnInitialize(RoomSize, wallMaterial, floorMaterial, indoors);
         OpenAllEntrances();
     }
 
-    public void Initialize(Vector2 location, Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
+    public void Initialize(Vector2 location, Vector2 RoomSize, Material wallMaterial, Material floorMaterial, bool indoors)
     {
         transform.position = location;
-        OnInitialize(RoomSize, wallMaterial, floorMaterial);
+        OnInitialize(RoomSize, wallMaterial, floorMaterial, indoors);
     }
-    void OnInitialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial)
+    void OnInitialize(Vector2 RoomSize, Material wallMaterial, Material floorMaterial, bool indoors)
     {
         CameraBoundaries = RoomSize;
         directions = new RoomDirections(transform, roomEntrance);
         //Build wall meshes all around the start area in a 30 x 30 square
-        CreateRoom(CreateRoomTemplate(RoomSize), wallMaterial, floorMaterial);
+        CreateRoom(new RoomTemplate(new Vector2Int((int)RoomSize.x, (int)RoomSize.y), new List<RoomTemplate.TileTemplate>(), indoors), wallMaterial, floorMaterial);
         wallMaterial.color = floorAndWallColor;
         floorMaterial.color = floorAndWallColor;
     }
 
-    void CreateRoom(RoomTemplate template, Material wallMaterial, Material floorMaterial)
+    void CreateRoom(RoomTemplate template, Material wallMaterial_in, Material floorMaterial_in)
     {
+        //This shouldn't actually get called until the doors have all been finalized, which is only when the whole dungeon is done
+        //So this should not get called in OnInitialize!!
+        Color color = new Color32((byte)UnityEngine.Random.Range(125, 220),(byte)UnityEngine.Random.Range(125, 220),(byte)UnityEngine.Random.Range(125, 220), 255);
+        Material wallMaterial = new Material(wallMaterial_in.shader);
+        wallMaterial.CopyPropertiesFromMaterial(wallMaterial_in);
+        if(template.indoors)
+        {
+            wallMaterial.mainTexture = floorMaterial_in.mainTexture;
+            wallMaterial.color = color + Color.white / 10;
+        }
+        Material floorMaterial = new Material(floorMaterial_in.shader);
+        floorMaterial.CopyPropertiesFromMaterial(floorMaterial_in);
+        floorMaterial.color = color;
         CreateWalls(template, wallMaterial);
         CreateFloor(template, floorMaterial);
-    }
-
-    RoomTemplate CreateRoomTemplate(Vector2 RoomSize)
-    {
-        RoomTemplate template = new RoomTemplate(new Vector2Int((int)RoomSize.x, (int)RoomSize.y), new List<RoomTemplate.TileTemplate>());
-        //Create a perfect square room
-        for(int i = 0; i < RoomSize.x; i++)
-        {
-            template.positions.Add(new RoomTemplate.TileTemplate(1));
-        }
-        for(int i = 1; i < RoomSize.y - 1; i++)
-        {
-            for(int j = 0; j < RoomSize.x; j++)
-            {
-                if(j == 0 || j == RoomSize.x - 1)
-                {
-                    template.positions.Add(new RoomTemplate.TileTemplate(1)); //1 is a wall
-                }
-                else
-                {
-                    template.positions.Add(new RoomTemplate.TileTemplate(2)); //2 is a floor
-                }
-            }
-        }
-        for(int i = 0; i < RoomSize.x; i++)
-        {
-            template.positions.Add(new RoomTemplate.TileTemplate(1));
-        }
-        return template;
-    }
-    List<MeshMaker.WallData> ExtractWalls(RoomTemplate template)
-    {
-        //Find a wall that has a floor next to it
-        Vector2Int pos = new Vector2Int(-1,-1);
-        for(int x = 0; x < template.size.x; x++)
-        {
-            for(int y = 0; y < template.size.y; y++)
-            {
-                //Check if there is floor diagonally right down, because walls can only be drawn from left to right
-                //If there are none, rotate the search three times. If there still are none, then there is an error
-                if(x < template.size.x && template.positions[x + 1 + template.size.x * (y + 1)].identity == 2)
-                {
-                   // Debug.Log("Index: " + (x + 1 + template.size.x * (y + 1)));
-                    pos = new Vector2Int(x, y); break; 
-                }
-                    //if none of the directions are a floor, then it is a void
-                   // template.positions[x + template.size.x * y].SetIdentity(0);
-            }
-            if(pos != new Vector2Int(-1,-1))
-            {
-                break;
-            }
-        }
-
-        //Now we should have a piece of a wall we can start from
-        //!Now, follow the walls and create new WallData everytime it turns once
-
-        //Find direction to follow
-        List<MeshMaker.WallData> data = new List<MeshMaker.WallData>();
-
-        int currentAngle = 0;
-
-        Tuple<bool, Vector2Int> returnData = template.HasWallNeighbor(pos, currentAngle); //Item2 is the direction to go to
-        template.positions[pos.x + template.size.x * pos.y].SetRead(true);
-        Vector2Int startPosition = pos;
-
-        //Debug.Log("Start making wall from: " + pos);
-
-        while(returnData.Item1) //If there is a wall neighbor, proceed
-        {
-            startPosition = pos;
-            //Follow that direction until its empty
-            int steps = 1;
-            //Debug.Log("Checking index: " + (pos.x + returnData.Item2.x + template.size.x * (-pos.y + returnData.Item2.y)));
-            while(template.IsPositionWithinBounds(new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y)) && template.positions[pos.x + returnData.Item2.x + template.size.x * (-pos.y + returnData.Item2.y)].identity == 1) //While the position in the next direction is a wall
-            {
-                //Debug.Log("Looping the while");
-                steps++;
-                pos = new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y);
-                //Debug.Log("Checking index: " + (pos.x + template.size.x * -pos.y));
-                template.positions[pos.x + template.size.x * -pos.y].SetRead(true);
-            }
-            
-            // Debug.Log("Amount of steps: " + steps);
-            if(currentAngle == 0)
-            {
-                data.Add(new MeshMaker.WallData(new Vector3(startPosition.x,startPosition.y,0), currentAngle, steps, 4, 0));
-            }
-            if(currentAngle == 90)
-            {
-                data.Add(new MeshMaker.WallData(new Vector3(startPosition.x + 0.5f, startPosition.y - 0.5f,0), -currentAngle, steps, 4, 0));
-            }
-            if(currentAngle == 180)
-            {
-                data.Add(new MeshMaker.WallData(new Vector3(startPosition.x,startPosition.y - 1,0), -currentAngle, steps, 4, 0));
-            }
-            if(currentAngle == 270)
-            {
-                data.Add(new MeshMaker.WallData(new Vector3(startPosition.x - 0.5f,startPosition.y - 0.5f,0), -currentAngle, steps, 4, 0));
-            }
-            currentAngle += 90; //This code can only do inner corners atm, not outer corners
-            returnData = template.HasWallNeighbor(pos, currentAngle);
-        }
-      //  Debug.Log("There are this amount of walls: " + data.Count);
-
-        return data;
     }
     void CreateWalls(RoomTemplate template, Material wallMaterial)
     {
@@ -341,7 +646,7 @@ public partial class Room: MonoBehaviour
 
         if(debug.CheckTemplate == RoomDebug.RoomBuildMode.NONE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
         {
-            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, ExtractWalls(template), new Vector2(3,3), 0.05f); //0.05f
+            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, template.ExtractWalls());
 
             wallObject.AddComponent<MeshRenderer>();
             wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
@@ -373,8 +678,8 @@ public partial class Room: MonoBehaviour
         {
             for(int y = 0; y < template.size.y; y++)
             {
-                GameObject temp = Instantiate(debugFloor, new Vector3(x,-y,-1), Quaternion.identity, wallObject);
-                temp.GetComponent<MeshRenderer>().material.color = template.positions[x + template.size.x * y].identity == 2 ? debug.floorColor : 
+                GameObject temp = Instantiate(debugFloor, new Vector3(x,-y - 0.5f,-1), Quaternion.identity, wallObject);
+                temp.GetComponent<MeshRenderer>().material.color = template.positions[x + template.size.x * y].identity == 2 ? debug.floorColor : template.positions[x + template.size.x * y].identity == 0 ? Color.black:
                 template.positions[x + template.size.x * y].read ? debug.wallColor: Color.white;
             }
         }
@@ -383,11 +688,6 @@ public partial class Room: MonoBehaviour
     public Vector2 GetCameraBoundaries()
     {
         return CameraBoundaries;
-    }
-
-    public List<List<WallPosition>> GetWallPositions()
-    {
-        return wallPositions;
     }
 
     public RoomPosition GetRoomPositionType()
@@ -513,9 +813,7 @@ public partial class Room: MonoBehaviour
             UnscatterWalls(); //Make sure there are no free standing wall pieces nor empty holes
         } 
 
-        WeedOutUnseeableWalls();
-        if(!DebuggingTools.spawnOnlyBasicRooms){DetermineWallVariant();}
-        InstantiateWalls(blueprints, wallParent.transform);
+        //WeedOutUnseeableWalls();
     }
     public void OnPlaceDownWall(Vector2 entranceDirection, int limit, int startValue, 
     int x_modifier, int y_modifier, int x_offset, int y_offset)
@@ -592,24 +890,10 @@ public partial class Room: MonoBehaviour
                         }
                     }
                 }
-                if(roomData.m_layout == RoomLayout.NormalOutdoors)
+               /* if(roomData.m_layout == RoomLayout.NormalOutdoors)
                 {
-                    BuildLayout(i, j, roomCenter, wallThickness, blueprints, parent);
-                }
-            }
-        }
-    }
-
-    public virtual void BuildLayout(int i, int j, Vector2 center, Vector2 wallThickness, WallBlueprints blueprints, Transform parent)
-    {
-        float distanceToCenter = new Vector2(i+0.5f - center.x, j+0.5f - center.y).magnitude;
-        if (distanceToCenter > wallThickness.x && distanceToCenter > wallThickness.y)
-        {
-            //if the higher limit is 0, then the code just generates a circle, period
-            int temp = UnityEngine.Random.Range(0, 2);
-            if (temp == 0)
-            {
-                wallPositions[i][j].PlaceDown();
+                    //BuildLayout(i, j, roomCenter, wallThickness, blueprints, parent);
+                }*/
             }
         }
     }
@@ -653,276 +937,8 @@ public partial class Room: MonoBehaviour
             }
         }
     }
-    public void WeedOutUnseeableWalls()
-    {
-        List<WallPosition> positionsToDestroy = new List<WallPosition>(){};
-        //If this wall has walls all around it, it cannot be seen
-        for(int i = 0; i < wallPositions.Count; i++)
-        {
-            for(int j = 0; j < wallPositions[i].Count; j++)
-            {
-                if(GetArrayDiagonalPositioningString(i, j) == "AAAA")
-                {
-                    positionsToDestroy.Add(wallPositions[i][j]);
-                }
-            }
-        }
-        foreach(WallPosition position in positionsToDestroy)
-        {
-            position.UnPlace();
-        }
-    }
 
-    public void DetermineWallVariant()
-    {
-        for(int i = 0; i < wallPositions.Count; i++)
-        {
-            for(int j = 0; j < wallPositions[i].Count; j++)
-            {
-                if (wallPositions[i][j].GetIsOccupied())
-                {
-                    SetWallVariantsFromString(GetArrayPositioningString(i, j), wallPositions[i][j]);
-                }
-            }
-        }
 
-    }
-    string GetArrayDiagonalPositioningString(int i, int j)
-    {
-        string temp = "";
-        if(j+1 < CameraBoundaries.y && i+1 < CameraBoundaries.x)
-        {
-            if (wallPositions[i + 1][j + 1].GetIsOccupied()){temp+='A';}
-            else{temp+='B';}
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (i + 1 < CameraBoundaries.x && j - 1 >= 0)
-        {
-            if (wallPositions[i+1][j -1].GetIsOccupied()){temp+='A';}
-            else{temp+='B';}
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (j - 1 >= 0 && i - 1 >= 0)
-        {
-            if (wallPositions[i - 1][j - 1].GetIsOccupied()){temp+='A';}
-            else{temp+='B';}
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (i - 1 >= 0 && j+1 < CameraBoundaries.y)
-        {
-            if (wallPositions[i-1][j+1].GetIsOccupied()){temp+='A';}
-            else{temp+='B';}
-        }
-        else
-        {
-            temp+='B';
-        }
-        return temp;
-    }
-    string GetArrayPositioningString(int i, int j)
-    {
-        string temp = "";
-        if(j+1 < CameraBoundaries.y)
-        {
-            if (wallPositions[i][j + 1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (i + 1 < CameraBoundaries.x)
-        {
-            if (wallPositions[i+1][j].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (j - 1 >= 0)
-        {
-            if (wallPositions[i][j - 1].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
-        }
-        else
-        {
-            temp+='B';
-        }
-        if (i - 1 >= 0)
-        {
-            if (wallPositions[i-1][j].GetIsOccupied())
-            {
-                temp+='A';
-            }
-            else
-            {
-                temp+='B';
-            }
-        }
-        else
-        {
-            temp+='B';
-        }
-        return temp;
-    }
-    void SetWallVariantsFromString(string text, WallPosition wall)
-    {
-        switch (text)
-        {
-            case "AAAA":
-                wall.SetVariant(WallVariant.Cross);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break; //inner wall
-            case "AAAB":
-                wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(0, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
-                break;
-            case "AABA":
-                wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(90, 90, -90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
-                break;
-            case "AABB":
-                wall.SetVariant(WallVariant.Corner);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break; 
-            case "ABAA":
-                wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
-                break;
-            case "ABAB":
-                wall.SetVariant(WallVariant.Side);
-                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
-                break;
-            case "ABBA":
-                wall.SetVariant(WallVariant.Corner);
-                wall.transform.eulerAngles = new Vector3(0, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
-                break; 
-            case "ABBB": 
-                wall.SetVariant(WallVariant.End);
-                wall.transform.eulerAngles = new Vector3(0, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y);
-                break;
-            case "BAAA":
-                wall.SetVariant(WallVariant.T);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break;
-            case "BAAB":
-                wall.SetVariant(WallVariant.Corner);
-                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
-                break;
-            case "BABA":
-                wall.SetVariant(WallVariant.Side);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break;
-            case "BABB": 
-                wall.SetVariant(WallVariant.End);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break;
-            case "BBAA":
-                wall.SetVariant(WallVariant.Corner);
-                wall.transform.eulerAngles = new Vector3(90, 90, -90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
-                break;
-            case "BBAB": 
-                wall.SetVariant(WallVariant.End);
-                wall.transform.eulerAngles = new Vector3(-180, -90, 90);
-                wall.transform.position = new Vector2( wall.transform.position.x,  wall.transform.position.y - 1);
-                break;
-            case "BBBA": 
-                wall.SetVariant(WallVariant.End);
-                wall.transform.eulerAngles = new Vector3(90, 90, -90);
-                wall.transform.position = new Vector2( wall.transform.position.x - 1,  wall.transform.position.y - 1);
-                break;
-            case "BBBB": 
-                wall.SetVariant(WallVariant.Column);
-                wall.transform.eulerAngles = new Vector3(-90, -90, 90);
-                break;
-        }
-    }
-    public void InstantiateWalls(WallBlueprints blueprints, Transform wallParent) //wil be deprecated
-    {
-        for (int i = 0; i < CameraBoundaries.x; i++)
-        {
-            for (int j = 0; j < CameraBoundaries.y; j++)
-            {
-                if (wallPositions[i][j].GetIsOccupied())
-                {
-                    if (wallPositions[i][j].GetVariant() == WallVariant.None)
-                    {
-                        GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, wallParent);
-                        newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
-                    }
-                    else
-                    {
-                        try
-                        {
-                            GameObject newWall = Instantiate(blueprints.walls[(int)wallPositions[i][j].GetVariant() - 1], new Vector3(wallPositions[i][j].transform.position.x + 0.5f, wallPositions[i][j].transform.position.y + 0.5f, wallPositions[i][j].transform.position.z + 1.25f), Quaternion.identity, wallParent);
-                            newWall.transform.rotation = wallPositions[i][j].transform.rotation;
-                        }
-                        catch
-                        {
-                            GameObject newWall = Instantiate(blueprints.wallBlock, wallPositions[i][j].transform.position, Quaternion.identity, wallParent);
-                            newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor();
-                        }
-                    }
-                }
-            }
-        }
-    }
-    public void InstantiateFloor(GameObject floorTile)
-    {
-        GameObject floorParent = new GameObject("Floor");
-        floorParent.transform.SetParent(transform);
-        for (int i = 0; i < CameraBoundaries.x; i++)
-        {
-            for (int j = 0; j < CameraBoundaries.y; j++)
-            {
-                if (!wallPositions[i][j].GetIsOccupied())
-                {
-                    GameObject newWall = Instantiate(floorTile, wallPositions[i][j].transform.position, Quaternion.identity, floorParent.transform);
-                    
-                    if(DebuggingTools.spawnOnlyBasicRooms)
-                    {
-                        newWall.GetComponentInChildren<SpriteRenderer>().color = GetWallColor() * 0.6f;
-                    }
-                }
-            }
-        }
-    }
 
     protected Color GetWallColor()
     {

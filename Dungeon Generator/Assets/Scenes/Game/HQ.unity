@@ -281,6 +281,56 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &271734396
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 271734398}
+  - component: {fileID: 271734397}
+  m_Layer: 0
+  m_Name: Level Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &271734397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271734396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c824c5b78a80c574a8ae2bff4c4a57db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rooms:
+  - {fileID: 2028935314}
+  RoomPrefab: {fileID: 0}
+  levelGenerated: 0
+  wallMaterial: {fileID: 2100000, guid: 3a4e5f473957a0b47a502fd3f49f4d43, type: 2}
+  floorMaterial: {fileID: 2100000, guid: 365142a8b5befe34d805387e535b3abe, type: 2}
+  endOfLevel: {fileID: 0}
+--- !u!4 &271734398
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271734396}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.8176827, y: 8.863503, z: -1.9724505}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &353419056
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -713,7 +763,6 @@ MonoBehaviour:
   roomData:
     m_type: 0
     m_roomPosition: 0
-    m_layout: 0
     m_Indoors: 0
     stepsAwayFromMainRoom: 0
     IsBuilt: 0
@@ -725,7 +774,8 @@ MonoBehaviour:
     wallColor: {r: 0.745283, g: 0.58135235, b: 0.17225882, a: 1}
   debugFloor: {fileID: 276153233515342873, guid: 90fe3850cb043224cb6e76c7e61cb8df,
     type: 3}
-  roomEntrance: {fileID: 0}
+  roomEntrance: {fileID: 2532644794381932144, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
+    type: 3}
 --- !u!4 &2028935315
 Transform:
   m_ObjectHideFlags: 0
@@ -797,6 +847,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Game
+      objectReference: {fileID: 0}
+    - target: {fileID: 91308448228877445, guid: bfe3b47843c9e2a4f99335c023db45a3,
+        type: 3}
+      propertyPath: isStartArea
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 91308448228877446, guid: bfe3b47843c9e2a4f99335c023db45a3,
         type: 3}
