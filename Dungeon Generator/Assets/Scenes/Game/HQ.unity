@@ -755,26 +755,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c038d55069271df4cb2332bbe060afee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallPosition: {fileID: 0}
   directions:
     directions: []
   CameraBoundaries: {x: 0, y: 0}
-  wallPositionBoundaries: {x: 0, y: 0}
   roomData:
     m_type: 0
     m_roomPosition: 0
     m_Indoors: 0
     stepsAwayFromMainRoom: 0
     IsBuilt: 0
-  hasFusedWalls: 0
-  floorAndWallColor: {r: 0.2264151, g: 0.1640236, b: 0.13990745, a: 0}
   debug:
-    CheckTemplate: 0
+    CheckTemplate: 2
     floorColor: {r: 0.111739054, g: 0.16849564, b: 0.2924528, a: 1}
     wallColor: {r: 0.745283, g: 0.58135235, b: 0.17225882, a: 1}
   debugFloor: {fileID: 276153233515342873, guid: 90fe3850cb043224cb6e76c7e61cb8df,
     type: 3}
-  roomEntrance: {fileID: 2532644794381932144, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
+  roomEntrance: {fileID: 7015342253003851191, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
     type: 3}
 --- !u!4 &2028935315
 Transform:

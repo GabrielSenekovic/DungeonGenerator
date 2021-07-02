@@ -42,7 +42,7 @@ public class MeshMaker : MonoBehaviour
     {
         
     }
-    public static void CreateWall(GameObject wall, Mesh mesh, List<WallData> instructions)
+    public static void CreateWall(GameObject wall, Mesh mesh, List<WallData> instructions, bool wrap)
     {
         float jaggedness = 0.05f;
         Vector2 divisions = new Vector2(instructions[0].divisions.x, instructions[0].divisions.y);
@@ -82,7 +82,7 @@ public class MeshMaker : MonoBehaviour
 
             for(int j = 0; j < savedLengthOfWall; j++)
             {
-                Debug.Log("New Column!");
+                Debug.Log("New Column! Going this many steps: " + savedLengthOfWall);
                 string debug_info = j+ ": ";
                 //Go through each column of wall
                 for(int k = 0; k < instructions[i].height; k++)
@@ -129,7 +129,7 @@ public class MeshMaker : MonoBehaviour
                             upperJaggedness = 0;
                         }
                     
-                        if(i == instructions.Count - 1 && j == savedLengthOfWall - 1 && v_z * divisions.y + k > 0 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //L
+                        if(wrap && i == instructions.Count - 1 && j == savedLengthOfWall - 1 && v_z * divisions.y + k > 0 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //L
                         {
                             //If on the last wall
                             //Then connect to the first wall
@@ -148,7 +148,7 @@ public class MeshMaker : MonoBehaviour
                             }
                             newVertices.Add( newVertices[2 + skip_up + k * vertices_per_tile + vertices_per_quad * (int)divisions.x]);
                         }
-                        else if(i == instructions.Count - 1 && j == savedLengthOfWall - 1 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //K
+                        else if(wrap && i == instructions.Count - 1 && j == savedLengthOfWall - 1 && Mathf.Round(v_x * divisions.x) == Mathf.Round(j * divisions.x + divisions.x - 1)) //K
                         {
                             //If on the last wall
                             //Then connect to the first wall
@@ -280,8 +280,9 @@ public class MeshMaker : MonoBehaviour
                         newUV.Add(new Vector2 (v_x - j + 1.0f / divisions.x, v_z + 1.0f / divisions.y)); //1,1
                     }
                     debug_info += "_";
+                    Debug.Log("So far: " + debug_info);
                 }
-                //Debug.Log(debug_info);
+                Debug.Log(debug_info);
             }
             BoxCollider box = wall.AddComponent<BoxCollider>();
             box.size = new Vector3( instructions[i].length,1, instructions[i].height);

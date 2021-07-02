@@ -34,6 +34,7 @@ public partial class LevelGenerator : MonoBehaviour
 
         List<Room.RoomTemplate> templates = new List<Room.RoomTemplate>();
         rooms[0].Initialize(new Vector2(20,20), false, ref templates);
+        templates[0].AddEntrancesToRoom(rooms[0].directions);
         rooms[0].CreateRoom(templates[0], wallMaterial, floorMaterial);
         //Surround this one room with floors
         GameObject surroundings = new GameObject("Surroundings");
