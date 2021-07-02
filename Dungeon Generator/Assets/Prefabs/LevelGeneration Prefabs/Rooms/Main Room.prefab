@@ -142,27 +142,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c038d55069271df4cb2332bbe060afee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallPosition: {fileID: 4819780058787305975, guid: 33ca0555e6cbd6642ad75ab2afb3b827,
-    type: 3}
   directions:
     directions: []
   CameraBoundaries: {x: 0, y: 0}
-  wallPositionBoundaries: {x: 0, y: 0}
   roomData:
     m_type: 0
     m_roomPosition: 0
-    m_layout: 0
     m_Indoors: 0
     stepsAwayFromMainRoom: 0
     IsBuilt: 0
-  hasFusedWalls: 0
-  floorAndWallColor: {r: 0.5943396, g: 0.36202022, b: 0.25511748, a: 0}
   debug:
-    CheckTemplate: 0
+    CheckTemplate: 1
     floorColor: {r: 0, g: 0, b: 0, a: 0}
     wallColor: {r: 0, g: 0, b: 0, a: 0}
-  debugFloor: {fileID: 0}
-  roomEntrance: {fileID: 2532644794381932144, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
+  debugFloor: {fileID: 276153233515342873, guid: 90fe3850cb043224cb6e76c7e61cb8df,
+    type: 3}
+  roomEntrance: {fileID: 7015342253003851191, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
     type: 3}
 --- !u!1001 &580324093850981416
 PrefabInstance:

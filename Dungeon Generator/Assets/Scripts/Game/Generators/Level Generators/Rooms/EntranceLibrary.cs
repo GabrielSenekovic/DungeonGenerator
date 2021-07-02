@@ -8,19 +8,19 @@ public class EntranceLibrary : MonoBehaviour
 
     public List<Sprite> floorSprites;
 
-    public Sprite GetSprite(RoomEntrance.EntranceType type)
+    public Sprite GetSprite(Entrance.EntranceType type)
     {
         switch (type)
         {
-            case RoomEntrance.EntranceType.AmbushDoor:
+            case Entrance.EntranceType.AmbushDoor:
                 return entranceSprites[0];
-            case RoomEntrance.EntranceType.BombableWall:
+            case Entrance.EntranceType.BombableWall:
                 return entranceSprites[1];
-            case RoomEntrance.EntranceType.LockedDoor:
+            case Entrance.EntranceType.LockedDoor:
                 return entranceSprites[2];
-            case RoomEntrance.EntranceType.MultiLockedDoor:
+            case Entrance.EntranceType.MultiLockedDoor:
                 return entranceSprites[3];
-            case RoomEntrance.EntranceType.PuzzleDoor:
+            case Entrance.EntranceType.PuzzleDoor:
                 return entranceSprites[4];
             default: return null;
         }

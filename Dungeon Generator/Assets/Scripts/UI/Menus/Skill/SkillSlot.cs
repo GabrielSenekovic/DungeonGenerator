@@ -24,22 +24,64 @@ public class SkillSlot : InventorySlot, IPointerClickHandler
     public AttackIdentifier attack;
     public EquipState state = EquipState.NONE;
     public SelectState selectState = SelectState.NONE;
+
+    Image myImage;
+
+    private void Awake() 
+    {
+        myImage = GetComponent<Image>();
+    }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left && (state == EquipState.EQUIPPED || state == EquipState.SKILL))
+        if(eventData.button == PointerEventData.InputButton.Left)
         {
-            //For selecting a skill
-            selectState = SelectState.WAITING;
+            if (state == EquipState.EQUIPPED || state == EquipState.SKILL || state == EquipState.NONE)
+            {
+                //For selecting a skill
+                selectState = SelectState.WAITING;
+            }
         }
-        if (eventData.button == PointerEventData.InputButton.Right && state == EquipState.EQUIPPED)
+        if (eventData.button == PointerEventData.InputButton.Right)
         {
-            //For unequipping skills
-            state = EquipState.WAITING;
+            if(state == EquipState.EQUIPPED)
+            {
+                //For unequipping skills
+                state = EquipState.WAITING;
+            }
         }
     }
     public void UnEquip()
     {
         GetComponent<Image>().color = Color.white;
         state = EquipState.SKILL;
+    }
+
+    public void RefreshImage()
+    {
+        if(attack && attack.icon)
+        {
+            myImage.sprite = attack.icon;
+        }
+        else
+        {
+            myImage.sprite = null;
+        }
+    }
+
+    public Sprite GetIcon()
+    {
+        if(attack && attack.icon)
+        {
+            return attack.icon;
+        }
+        return null;
+    }
+    public void SetImage(Sprite sprite)
+    {
+        myImage.sprite = sprite;
+    }
+    public void SetColor(Color color)
+    {
+        myImage.color = color;
     }
 }
