@@ -37,9 +37,9 @@ public class Counter : MonoBehaviour
             }
             Update();
         }
-        public void Add(int value)
+        public void Add(int value_in)
         {
-            value += value;
+            value += value_in;
             value %= 10;
             Update();
         }
@@ -64,13 +64,6 @@ public class Counter : MonoBehaviour
             temp.transform.localScale = new Vector3(1,1,1);
         }
     }
-
-    private void Update() {
-        if(Input.GetKeyDown(KeyCode.K))
-        {
-            Increment();
-        }
-    }
     void Increment()
     {
         OnIncrement(digits.Count - 1);
@@ -84,7 +77,7 @@ public class Counter : MonoBehaviour
         }
         digits[i].Increment();
     }
-    void Add(int value_in)
+    public void Add(int value_in)
     {
         if (digits[digits.Count - 1].value + value_in > 9 && digits.Count - 1 != 0)
         {
@@ -102,9 +95,9 @@ public class Counter : MonoBehaviour
         if (digits[i].value * modifier + totalValue > limit
             &&
             i != 0)
-        {
-            OnAdd(value, modifier * 10, totalValue + digits[i].value * modifier, limit * 10 + 9, i - 1);
-        }
+            {
+                OnAdd(value, modifier * 10, totalValue + digits[i].value * modifier, limit * 10 + 9, i - 1);
+            }
         digits[i].Add((totalValue / modifier) % 10);
     }
     void Reset()

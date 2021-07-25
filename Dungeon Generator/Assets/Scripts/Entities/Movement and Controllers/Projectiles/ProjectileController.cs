@@ -74,7 +74,6 @@ public class ProjectileController : MovementModel
             OnAttackStay(hits[i].gameObject);
         }
 
-        currentSpeed = speed;
         lifeTimer++;
         if(placedProjectile)
         {

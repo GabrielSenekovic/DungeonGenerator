@@ -127,7 +127,7 @@ public partial class LevelGenerator : MonoBehaviour
         {
             if(room != currentRoom && !DebuggingTools.spawnOnlyBasicRooms)
             {
-                //room.gameObject.SetActive(false);
+                room.gameObject.SetActive(false);
             }
         }
     }

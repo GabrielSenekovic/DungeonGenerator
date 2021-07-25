@@ -15,6 +15,10 @@ public class HealthModel : MonoBehaviour
         if(currentHealth - damage <= 0)
         {
             gameObject.SetActive(false);
+            if(GetComponent<DropItems>())
+            {
+                GetComponent<DropItems>().Drop(3, Vector3.zero);
+            }
         }
         else
         {
@@ -26,6 +30,10 @@ public class HealthModel : MonoBehaviour
         if(currentHealth - damage.damage <= 0)
         {
             gameObject.SetActive(false);
+            if(GetComponent<DropItems>())
+            {
+                GetComponent<DropItems>().Drop(3, Vector3.zero);
+            }
         }
         else
         {

@@ -39,10 +39,7 @@ public class DealDamage : MonoBehaviour
             Debug.Log(gameObject.name + " hit: " + other.gameObject.name);
             Hit(other.gameObject);
         }
-        else
-        {
-            OnImpact();
-        }
+        OnImpact();
     }
     void OnCollisionEnter(Collision other) 
     {
@@ -51,10 +48,7 @@ public class DealDamage : MonoBehaviour
             Debug.Log(gameObject.name + " hit: " + other.gameObject.name);
             Hit(other.gameObject);
         }
-        else
-        {
-            OnImpact();
-        }
+        OnImpact();
     }
     protected virtual void Hit(GameObject target)
     {

@@ -3,71 +3,6 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-public class GameData : MonoBehaviour
-{
-    public static GameData Instance;
-    static PlayerController Player;
-
-    static LevelData currentLevel;
-    public static QuestData currentQuest;
-
-    public static int m_LevelConstructionSeed; //Used by the room generator to generate the room
-    public static int m_LevelDataSeed;
-    public static int m_QuestDataSeed;
-    //134523 heart
-    private void Awake()
-    {
-        if(Instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            Instance = this;
-        }
-        else if(Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        Player = GetComponentInChildren<PlayerController>();
-    }
-
-    public static void SetSeed(int constructionSeed, int levelDataSeed, int questDataSeed)
-    {
-        Debug.Log("The construction seed is: " + constructionSeed);
-        Debug.Log("The data seed is: " + levelDataSeed);
-        m_LevelConstructionSeed = constructionSeed;
-        m_LevelDataSeed = levelDataSeed;
-        m_QuestDataSeed = questDataSeed;
-    }
-    public static Vector2 GetPlayerPosition()
-    {
-        return Player.transform.position;
-    }
-    public static void SetPlayerPosition(Vector2 newPosition)
-    {
-        Player.transform.position = newPosition;
-    }
-    public static LevelData GetCurrentLevelData()
-    {
-        if(currentLevel != null)
-        {
-            return currentLevel;
-        }
-        else
-        {
-            return LevelDataGenerator.Initialize(m_LevelDataSeed);
-        }
-    }
-    public static QuestData GetCurrentQuestData()
-    {
-        if(currentQuest != null)
-        {
-            return currentQuest;
-        }
-        else
-        {
-            return QuestDataGenerator.Initialize(m_QuestDataSeed);
-        }
-    }
-}
 public enum Biome
 {
     Continental = 0,
@@ -101,7 +36,7 @@ public class LevelData
     List<AudioClip> m_melody = new List<AudioClip>();
     List<AudioClip> m_baseLine = new List<AudioClip>();
 
-    public Vector2Int m_amountOfRoomsCap = new Vector2Int(2, 5);
+    public Vector2Int m_amountOfRoomsCap = new Vector2Int(3, 5);
 
     public Mood[] m_mood = new Mood[2];
     public Biome m_biome;
@@ -391,7 +326,7 @@ public class LevelManager : MonoBehaviour
     {
         if (party.movingRoom)
         {
-            if (party.MoveCamera(new Vector3(currentRoom.transform.position.x + RoomSize.x / 2, currentRoom.transform.position.y + RoomSize.y / 2, party.cameraRotationObject.transform.position.z)))
+            if (party.MoveCamera(new Vector3(currentRoom.transform.position.x, currentRoom.transform.position.y, party.cameraRotationObject.transform.position.z)))
             {
                 CameraMovement.cameraAnchor_in =
                     new Vector2(currentRoom.transform.position.x , currentRoom.transform.position.y);

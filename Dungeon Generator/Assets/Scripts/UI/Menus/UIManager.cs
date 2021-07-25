@@ -31,18 +31,27 @@ public class UIManager : MonoBehaviour
 
     public Color openMenuColor;
 
+    public Counter moneyCounter;
+
+    public Currency currency;
+
     void Awake()
     {
         m_mainMenu = mainMenu;
         m_HUD = HUD;
         m_volume = volume;
+        instance = this;
     }
 
     private void Start() 
     {
-        instance = this;
         m_mainMenu.GetComponent<Menu>().Initialize(this, GetComponent<AudioSource>());
         if(m_mainMenu.alpha == 1){m_mainMenu.GetComponent<Menu>().SwitchMenu(0);}
+    }
+
+    public static Currency GetCurrency()
+    {
+        return instance.currency;
     }
     public void OpenOrClose(UIScreen screen)
     {

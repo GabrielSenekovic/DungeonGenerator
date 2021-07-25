@@ -34,19 +34,183 @@ public class MeshMaker : MonoBehaviour
             divisions = new Vector2Int(1,1);
         }
     }
-    public static void CreateChest(Mesh mesh)
+    public static void CreateChest(Mesh mesh, int length)
     {
-
+        //Specify how long the chest is. Length determines how long it is from left to right, if the opening side is in front
+        //Start off by creating just a cube chest
+        //Like in Minecraft
+        //Start from the back then forward. Save the points on the top where the lid will rotate around
     }
-    public static void CreateVase(Mesh mesh)
+    public static void CreateCylinder(Mesh mesh, float height)
     {
-        
+        //Create a vase from a sinewave controlling a radius
+        List<Vector3> positions = new List<Vector3>();
+        float angleIncrement = 360.0f / 10.0f;
+        float currentHeight = 0;
+        float heightIncrement = height / 10.0f;
+
+        for(int i = 0; i < 10; i++)
+        {
+            //Go through all levels upwards
+            float angle = 0;
+            float currentRadius = 0.5f;
+
+            for(int j = 0; j < 10; j++)
+            {
+                //Go around the circle
+                positions.Add(new Vector3(currentRadius * Mathf.Sin(angle * Mathf.Deg2Rad), currentRadius * Mathf.Cos(angle* Mathf.Deg2Rad), -currentHeight));
+                angle += angleIncrement;
+            }
+            currentHeight += heightIncrement;
+        }
+        Debug.Log("Amount of positions: " + positions.Count);
+
+        List<int> newTriangles = new List<int>();
+        List<Vector3> newVertices = new List<Vector3>();
+        List<Vector2> newUV = new List<Vector2>();
+
+        //Now fill up the vertices
+        for(int i = 0; i < positions.Count - 10; i++)
+        {
+            newVertices.Add(positions[0 + i]);
+            newVertices.Add(positions[(1 + i)%10 + 10 * (int)((float)i/10.0f)]);
+            newVertices.Add(positions[(11 + i)%10 + 10 * (int)((float)(i+10)/10.0f)]);
+            newVertices.Add(positions[10 + i]);
+
+            newUV.Add(new Vector2 (1, 0));                      //1,0
+            newUV.Add(new Vector2 (0, 0));                      //0,0
+            newUV.Add(new Vector2 (0, 1)); //0,1
+            newUV.Add(new Vector2 (1, 1)); //1,1
+
+            int[] indexValue = new int[]{0,1,3,1,2,3};
+            for(int index = 0; index < indexValue.Length; index++)
+            {
+                newTriangles.Add(indexValue[index] + i * 4);
+            }
+        }
+
+        mesh.Clear ();
+        mesh.vertices = newVertices.ToArray();
+        mesh.triangles = newTriangles.ToArray();
+        mesh.uv = newUV.ToArray(); 
+        mesh.Optimize();
+        mesh.RecalculateNormals();
+    }
+    public static void CreateVase(Mesh mesh, float height, AnimationCurve curve)
+    {
+        //Create a vase from a sinewave controlling a radius
+        List<Vector3> positions = new List<Vector3>();
+        float angleIncrement = 360.0f / 10.0f;
+        float currentHeight = 0;
+        float heightIncrement = height / 10.0f;
+
+        for(int j = 0; j < 10; j++)
+        {
+            //Go through all levels upwards
+            float angle = 0;
+            //0.5f radius is base radius, cuz it fills up one tile
+            float currentRadius = curve.Evaluate((float)j/10.0f);
+
+            for(int k = 0; k < 10; k++)
+            {
+                //Go around the circle
+                positions.Add(new Vector3(currentRadius * Mathf.Sin(angle * Mathf.Deg2Rad), currentRadius * Mathf.Cos(angle* Mathf.Deg2Rad), -currentHeight));
+                angle += angleIncrement;
+            }
+            currentHeight += heightIncrement;
+        }
+
+        currentHeight-=heightIncrement;
+
+        for(int j = 9; j >= 0; j--)
+        {
+            //Go through all levels downwards
+            float angle = 0;
+            float currentRadius = curve.Evaluate((float)j/10.0f);
+
+            for(int k = 9; k >= 0; k--)
+            {
+                //Go around the circle
+                positions.Add(new Vector3(currentRadius * Mathf.Sin(angle * Mathf.Deg2Rad), currentRadius * Mathf.Cos(angle* Mathf.Deg2Rad), -currentHeight));
+                angle += angleIncrement;
+            }
+            currentHeight -= heightIncrement;
+        }
+       // Debug.Log(positions.Count);
+
+        List<int> newTriangles = new List<int>();
+        List<Vector3> newVertices = new List<Vector3>();
+        List<Vector2> newUV = new List<Vector2>();
+
+        for(int j = 0; j < positions.Count -10; j++)
+        {
+            newVertices.Add(positions[0 + j]);
+            newVertices.Add(positions[(1 + j)%10 + 10 * (int)((float)j/10.0f)]);
+            newVertices.Add(positions[(11 + j)%10 + 10 * (int)((float)(j+10)/10.0f)]);
+            newVertices.Add(positions[10 + j]);
+
+            newUV.Add(new Vector2 (1, 0));                      //1,0
+            newUV.Add(new Vector2 (0, 0));                      //0,0
+            newUV.Add(new Vector2 (0, 1)); //0,1
+            newUV.Add(new Vector2 (1, 1)); //1,1
+
+            int[] indexValue = new int[]{0,1,3,1,2,3};
+
+            for(int index = 0; index < indexValue.Length; index++)
+            {
+                Debug.Log(indexValue[index] + j * 4);
+                newTriangles.Add(indexValue[index] + j * 4);
+            }
+        }
+
+        //Now fill up the vertices
+       /* for(int i = 0; i < 2; i++)
+        {
+            /*int[] indexValue = new int[]{};
+            if(i == 0){indexValue = new int[]{0,1,3,1,2,3};};
+            if(i == 1){indexValue = new int[]{3,1,0,3,2,1};};
+
+            int limit = (positions.Count * (i+1) / 2) - 10;
+            int start = positions.Count / 2 * (i + 1) - positions.Count / 2;
+            //Gives 90 if i is 0, 190 if i is 1
+            Debug.Log("Start " + start);
+            Debug.Log("Limit " + limit);
+
+            for(int j = start; j < limit; j++)
+            {
+                newVertices.Add(positions[0 + j]);
+                newVertices.Add(positions[(1 + j)%10 + 10 * (int)((float)j/10.0f)]);
+                newVertices.Add(positions[(11 + j)%10 + 10 * (int)((float)(j+10)/10.0f)]);
+                newVertices.Add(positions[10 + j]);
+
+                newUV.Add(new Vector2 (1, 0));                      //1,0
+                newUV.Add(new Vector2 (0, 0));                      //0,0
+                newUV.Add(new Vector2 (0, 1)); //0,1
+                newUV.Add(new Vector2 (1, 1)); //1,1
+
+                int[] indexValue = new int[]{0,1,3,1,2,3};
+
+                for(int index = 0; index < indexValue.Length; index++)
+                {
+                    Debug.Log(indexValue[index] + j * 4);
+                    newTriangles.Add(indexValue[index] + j * 4);
+                }
+            }
+        }*/
+
+        mesh.Clear ();
+        mesh.vertices = newVertices.ToArray();
+        mesh.triangles = newTriangles.ToArray();
+        mesh.uv = newUV.ToArray(); 
+        mesh.Optimize();
+        mesh.RecalculateNormals();
     }
     public static void CreateWall(GameObject wall, Mesh mesh, List<WallData> instructions, bool wrap)
     {
         float jaggedness = 0.05f;
-        Vector2 divisions = new Vector2(instructions[0].divisions.x, instructions[0].divisions.y);
-        if(divisions.x == 1){jaggedness = 0;}
+        Vector2 divisions = new Vector2(instructions[0].divisions.x +1, instructions[0].divisions.y+1);
+        jaggedness = 0;
+       // if(divisions.x == 1){jaggedness = 0;}
         //dim x = width, y = tilt, z = height
         //divisions = how many vertices per unit tile
         //instructions tells us how many steps to go before turning, and what direction to turn
@@ -63,7 +227,7 @@ public class MeshMaker : MonoBehaviour
         for(int i = 0; i < instructions.Count; i++)
         {
             //Go through each wall
-            float x = instructions[i].position.x + centering;
+            float x = instructions[i].position.x - centering;
             float y = instructions[i].position.y;
             float z = instructions[i].position.z;
 
@@ -82,7 +246,7 @@ public class MeshMaker : MonoBehaviour
 
             for(int j = 0; j < savedLengthOfWall; j++)
             {
-                Debug.Log("New Column! Going this many steps: " + savedLengthOfWall);
+                //Debug.Log("New Column! Going this many steps: " + savedLengthOfWall);
                 string debug_info = j+ ": ";
                 //Go through each column of wall
                 for(int k = 0; k < instructions[i].height; k++)
@@ -206,7 +370,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( newVertices[((2 + skip_up) + k * vertices_per_tile) + j * vertices_per_column]);
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -quad_val_z) - k));
-                            CreateWall_Rotate(newVertices, new List<int>{}, instructions[i].position, instructions[i].rotation);
+                            CreateWall_Rotate(newVertices, new List<int>{2}, new Vector3(x,y, z), instructions[i].rotation);
                         }
                         else if(v_z * divisions.y > 0 && v_x * divisions.x > j * divisions.x) //D
                         {
@@ -226,7 +390,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( newVertices[(2 + skip_up) + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x        , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                     , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
-                            CreateWall_Rotate(newVertices, new List<int>{}, instructions[i].position, instructions[i].rotation);
+                            CreateWall_Rotate(newVertices, new List<int>{2}, instructions[i].position, instructions[i].rotation);
                         }
                         else if(v_x * divisions.x > j * divisions.x) //B
                         {
@@ -268,7 +432,7 @@ public class MeshMaker : MonoBehaviour
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y  + UnityEngine.Random.Range(-jaggedness, 0), (z - v_z ) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) - quad_val_x         , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
                             newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness))                    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) , ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -quad_val_z) - k));
-                            CreateWall_Rotate(newVertices, new List<int>{}, instructions[i].position, instructions[i].rotation);
+                            CreateWall_Rotate(newVertices, new List<int>{0,1,2,3}, new Vector3(x,y,z), instructions[i].rotation);
                         }
                         
                         int[] indexValue = new int[]{0,1,3,1,2,3};
@@ -278,15 +442,16 @@ public class MeshMaker : MonoBehaviour
                         newUV.Add(new Vector2 (v_x - j                     , v_z));                      //0,0
                         newUV.Add(new Vector2 (v_x - j                     , v_z + 1.0f / divisions.y)); //0,1
                         newUV.Add(new Vector2 (v_x - j + 1.0f / divisions.x, v_z + 1.0f / divisions.y)); //1,1
+                        //goto end;
                     }
                     debug_info += "_";
-                    Debug.Log("So far: " + debug_info);
+                    //Debug.Log("So far: " + debug_info);
                 }
-                Debug.Log(debug_info);
+                //Debug.Log(debug_info);
             }
-            BoxCollider box = wall.AddComponent<BoxCollider>();
-            box.size = new Vector3( instructions[i].length,1, instructions[i].height);
-            box.center = new Vector3(box.size.x / 2 - 0.5f,0.5f,-box.size.z / 2);
+           // BoxCollider box = wall.AddComponent<BoxCollider>();
+           // box.size = new Vector3( instructions[i].length,1, instructions[i].height);
+            //box.center = new Vector3(box.size.x / 2 - 0.5f,0.5f,-box.size.z / 2);
         }
 
         mesh.Clear ();
@@ -301,18 +466,19 @@ public class MeshMaker : MonoBehaviour
         //Rotates the indices and vertices just made
         //Without this function, the wall would only be able to span infinitely in the direction they were first made
         //Thanks to this function, you can have corners, and also close a wall into a room
-        if(rotation % 360 == 0){return;}
+        if(Math.Mod(rotation,360) == 0){return;}
         if(indices.Count <= 0)
         {
             indices = new List<int>{0,3};
         }
         int j = vertices.Count - 4;
+       // Debug.Log("<color=magenta>Origin: " + origin + " and rotation: " + rotation + "</color>");
         for(int i = 0; i < indices.Count; i++)
         {
             Vector3 dir = vertices[j + indices[i]] - origin;
             dir = Quaternion.Euler(0,0,rotation) * dir;
+           // Debug.Log("Dir: " + dir + " and i: " + i);
             vertices[j + indices[i]] = dir + origin;
-            //Debug.Log(vertices[j + indices[i]]);
         }
     }
     static public void CreateSurface(List<Vector3Int> positions, Mesh mesh)

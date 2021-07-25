@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using UnityEngine.Rendering;
 
 [System.Serializable]public class RoomData
 {
@@ -50,11 +51,11 @@ public partial class Room: MonoBehaviour
             directions[1].positions.Add(new Vector2Int(19, 9));
             directions[1].positions.Add(new Vector2Int(19, 10));
             directions[2].SetDirectionModifier(new Vector2Int(-1, 0)); directions[2].name = "Left Entrance";
+            directions[2].positions.Add(new Vector2Int(0, 10)); 
             directions[2].positions.Add(new Vector2Int(0, 9));
-            directions[2].positions.Add(new Vector2Int(0, 10));
             directions[3].SetDirectionModifier(new Vector2Int(0, -1)); directions[3].name = "South Entrance";
-            directions[3].positions.Add(new Vector2Int(9, 19));
             directions[3].positions.Add(new Vector2Int(10, 19));
+            directions[3].positions.Add(new Vector2Int(9, 19));
             /*for(int i = 0; i < 4; i++)
             {
                 directions[i].positions.Add(new Vector2Int(10 + 9 * directions[i].DirectionModifier.x -1,10 + 9 * directions[i].DirectionModifier.y -1));
@@ -370,14 +371,131 @@ public partial class Room: MonoBehaviour
             return new Tuple<bool, Vector2Int, int>(value, direction, rotationDir);
         }
         
-        public Tuple<List<MeshMaker.WallData>, bool> ExtractWalls()
+        public List<Tuple<List<MeshMaker.WallData>, bool>> ExtractWalls(Entrances entrances)
         {
-            //Find a wall that has a floor next to it
-            Debug.Log("Extracting walls");
-            Vector2Int pos = new Vector2Int(-1,-1);
-            int currentAngle = 0; //Current angle should only be 0 if the floor found points down.
+            //Debug.Log("<color=green> NEW ROOM</color>");
+            List<Tuple<List<MeshMaker.WallData>, bool>> data = new List<Tuple<List<MeshMaker.WallData>, bool>>();
 
-            for(int x = 0; x < size.x; x++)
+            for(int i = 0; i < entrances.directions.Count; i++)
+            {
+                if(!entrances.directions[i].Open || !entrances.directions[i].Spawned){continue;}
+                //Go through each entrance, and make a wall to its left. There will only ever be as many walls as there are entrances
+                 //Find a wall that has a floor next to it
+                //Debug.Log("Extracting walls");
+                Vector2Int pos = new Vector2Int(-1,-1);
+                int currentAngle = 0; //Current angle should only be 0 if the floor found points down.
+
+                ExtractWalls_GetStartPosition(ref pos, ref currentAngle, entrances.directions[i]);
+
+                //Now we should have a piece of a wall we can start from
+                //!Now, follow the walls and create new WallData everytime it turns once
+
+                //Find direction to follow
+                Tuple<List<MeshMaker.WallData>, bool> wall = new Tuple<List<MeshMaker.WallData>, bool>(new List<MeshMaker.WallData>(), false);
+
+                Tuple<bool, Vector2Int, int> returnData = HasWallNeighbor(pos, currentAngle); //Item2 is the direction to go to
+                //Debug.Log("<color=yellow>"+currentAngle+"</color>");
+                //Debug.Log("<color=yellow>"+returnData.Item3+"</color>");
+                currentAngle += 90 * returnData.Item3;
+                currentAngle = (int)Math.Mod(currentAngle, 360);
+                //Debug.Log("<color=yellow>"+currentAngle+"</color>");
+                positions[pos.x + size.x * -pos.y].SetRead(true);
+                Vector2Int startPosition = pos;
+
+                while(returnData.Item1) //If there is a wall neighbor, proceed
+                {
+                    startPosition = pos;
+                    //Follow that direction until its empty
+                    int steps = 1;
+                   //Debug.Log("Checking index: " + (pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)));
+                    while(IsPositionWithinBounds(new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y)) && positions[pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)].identity == 1) //While the position in the next direction is a wall
+                    {
+                        steps++;
+                        pos = new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y);
+                       // Debug.Log("Checking index: " + (pos.x + size.x * -pos.y));
+                        positions[pos.x + size.x * -pos.y].SetRead(true);
+                    }
+                    
+                    int isThisWallFollowingOuterCorner = 0;
+                    if(returnData.Item3 < 0 && wall.Item1.Count > 0)
+                    {
+                        //If lastWall is less than 0, then this is the following wall after an outer corner, so it must be moved up and shortened
+                        isThisWallFollowingOuterCorner = 1;
+                    }
+                    returnData = HasWallNeighbor(pos, currentAngle);
+                    int isThisWallEndingWithOuterCorner = 0;
+                    if(returnData.Item3 < 0)
+                    {
+                        //If Item3 is less than 0, then this is an outer corner, so the wall shouldn't go the whole way
+                        isThisWallEndingWithOuterCorner = 1;
+                    }
+                    
+                    //Debug.Log("<color=green>Amount of steps: </color>" + steps + " angle: " + currentAngle);
+                    //Only set wrap to true if the last wall ends up adjacent to the first wall
+                    if(currentAngle == 0)
+                    {
+                        //Debug.Log("adding 0 degree wall");
+                        wall.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x + isThisWallFollowingOuterCorner,startPosition.y,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                    }
+                    if(currentAngle == 90)
+                    {
+                        //Debug.Log("adding 90 degree wall");
+                        wall.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x + 0.5f, startPosition.y - 0.5f - isThisWallFollowingOuterCorner,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                    }
+                    if(currentAngle == 180)
+                    {
+                        //Debug.Log("adding 180 degree wall");
+                        wall.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x - isThisWallFollowingOuterCorner,startPosition.y - 1,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
+                    }
+                    if(currentAngle == 270)
+                    {
+                        //Debug.Log("adding 270 degree wall");
+                        wall.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x - 0.5f,startPosition.y - 0.5f + isThisWallFollowingOuterCorner ,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions)); // y - 0.5f
+                    }
+                    //Sometimes it has to decrease by 90, so it has to know what direction the next wall goes in (fuck)
+                    currentAngle += 90 * returnData.Item3; //This code can only do inner corners atm, not outer corners
+                    currentAngle = (int)Math.Mod(currentAngle, 360);
+                }
+                Debug.Log("There is this amount of walls: " + wall.Item1.Count);
+                wall = new Tuple<List<MeshMaker.WallData>, bool>(wall.Item1, ExtractWalls_DoesWallWrap(wall.Item1));
+
+                data.Add(wall);
+
+            }
+            return data;
+        }
+        bool ExtractWalls_DoesWallWrap(List<MeshMaker.WallData> data)
+        {
+            return false;
+        }
+
+        void ExtractWalls_GetStartPosition(ref Vector2Int pos, ref int currentAngle, Entrance entrance)
+        {
+            //Get the position that is to the left of the given entrance
+            if(entrance.DirectionModifier == new Vector2Int(0,1)) //north
+            {
+                pos = new Vector2Int(entrance.positions[entrance.positions.Count-1].x + 1, -entrance.positions[entrance.positions.Count-1].y);
+                currentAngle = 0;
+            }
+            if(entrance.DirectionModifier == new Vector2Int(0,-1)) //south
+            {
+                pos = new Vector2Int(entrance.positions[entrance.positions.Count-1].x - 1, -entrance.positions[entrance.positions.Count-1].y);
+                currentAngle = 180;
+            }
+            if(entrance.DirectionModifier == new Vector2Int(1,0)) //right
+            {
+                pos = new Vector2Int(entrance.positions[entrance.positions.Count-1].x , -entrance.positions[entrance.positions.Count-1].y - 1);
+                currentAngle = 270;
+            }
+            if(entrance.DirectionModifier == new Vector2Int(-1,0)) //left
+            {
+                pos = new Vector2Int(entrance.positions[entrance.positions.Count-1].x , -entrance.positions[entrance.positions.Count-1].y + 1);
+                currentAngle = 90;
+            }
+
+
+
+           /*for(int x = 0; x < size.x; x++)
             {
                 for(int y = 0; y < size.y; y++)
                 {
@@ -400,79 +518,8 @@ public partial class Room: MonoBehaviour
                 {
                     break;
                 }
-            }
+            }*/
             Debug.Log("The position found to start from, that has a floor next to it: " + pos);
-
-            //Now we should have a piece of a wall we can start from
-            //!Now, follow the walls and create new WallData everytime it turns once
-
-            //Find direction to follow
-            Tuple<List<MeshMaker.WallData>, bool> data = new Tuple<List<MeshMaker.WallData>, bool>(new List<MeshMaker.WallData>(), false);
-
-            Tuple<bool, Vector2Int, int> returnData = HasWallNeighbor(pos, currentAngle); //Item2 is the direction to go to
-            currentAngle += 90 * returnData.Item3; //This code can only do inner corners atm, not outer corners
-            currentAngle = (int)Math.Mod(currentAngle, 360);
-            positions[pos.x + size.x * -pos.y].SetRead(true);
-            Vector2Int startPosition = pos;
-
-            while(returnData.Item1) //If there is a wall neighbor, proceed
-            {
-                startPosition = pos;
-                //Follow that direction until its empty
-                int steps = 1;
-                Debug.Log("Checking index: " + (pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)));
-                while(IsPositionWithinBounds(new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y)) && positions[pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)].identity == 1) //While the position in the next direction is a wall
-                {
-                    steps++;
-                    pos = new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y);
-                    Debug.Log("Checking index: " + (pos.x + size.x * -pos.y));
-                    positions[pos.x + size.x * -pos.y].SetRead(true);
-                }
-                
-                int isThisWallFollowingOuterCorner = 0;
-                if(returnData.Item3 < 0 && data.Item1.Count > 0)
-                {
-                    //If lastWall is less than 0, then this is the following wall after an outer corner, so it must be moved up and shortened
-                    isThisWallFollowingOuterCorner = 1;
-                }
-                returnData = HasWallNeighbor(pos, currentAngle);
-                int isThisWallEndingWithOuterCorner = 0;
-                if(returnData.Item3 < 0)
-                {
-                    //If Item3 is less than 0, then this is an outer corner, so the wall shouldn't go the whole way
-                    isThisWallEndingWithOuterCorner = 1;
-                }
-                
-                Debug.Log("<color=green>Amount of steps: </color>" + steps + " angle: " + currentAngle);
-                //Only set wrap to true if the last wall ends up adjacent to the first wall
-                if(currentAngle == 0)
-                {
-                    data.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x + isThisWallFollowingOuterCorner,startPosition.y,0), currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
-                }
-                if(currentAngle == 90)
-                {
-                    data.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x + 0.5f, startPosition.y - 0.5f - isThisWallFollowingOuterCorner,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
-                }
-                if(currentAngle == 180)
-                {
-                    data.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x - isThisWallFollowingOuterCorner,startPosition.y - 1,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions));
-                }
-                if(currentAngle == 270)
-                {
-                    data.Item1.Add(new MeshMaker.WallData(new Vector3(startPosition.x - 0.5f,startPosition.y - 0.5f + isThisWallFollowingOuterCorner ,0), -currentAngle, steps - isThisWallEndingWithOuterCorner - isThisWallFollowingOuterCorner, 4, 0, positions[pos.x + size.x * -pos.y].divisions)); // y - 0.5f
-                }
-                //Sometimes it has to decrease by 90, so it has to know what direction the next wall goes in (fuck)
-                currentAngle += 90 * returnData.Item3; //This code can only do inner corners atm, not outer corners
-                currentAngle = (int)Math.Mod(currentAngle, 360);
-            }
-            Debug.Log("There is this amount of walls: " + data.Item1.Count);
-            data = new Tuple<List<MeshMaker.WallData>, bool>(data.Item1, ExtractWalls_DoesWallWrap(data.Item1));
-
-            return data;
-        }
-        bool ExtractWalls_DoesWallWrap(List<MeshMaker.WallData> data)
-        {
-            return false;
         }
         public List<Vector3Int> ExtractFloor()
         {
@@ -600,23 +647,27 @@ public partial class Room: MonoBehaviour
     }
     void CreateWalls(RoomTemplate template, Material wallMaterial)
     {
-        GameObject wallObject = new GameObject("Wall");
-        wallObject.transform.parent = this.gameObject.transform;
-        wallObject.AddComponent<MeshFilter>();
+        List<Tuple<List<MeshMaker.WallData>, bool>> data = template.ExtractWalls(directions);
 
-        if(debug.CheckTemplate == RoomDebug.RoomBuildMode.NONE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
+        for(int i = 0; i < data.Count; i++)
         {
-            Tuple<List<MeshMaker.WallData>, bool> data = template.ExtractWalls();
-            MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, data.Item1, data.Item2);
+            GameObject wallObject = new GameObject("Wall");
+            wallObject.transform.parent = this.gameObject.transform;
+            wallObject.AddComponent<MeshFilter>();
 
-            wallObject.AddComponent<MeshRenderer>();
-            wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
+            if(debug.CheckTemplate == RoomDebug.RoomBuildMode.NONE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
+            {
+                MeshMaker.CreateWall(wallObject, wallObject.GetComponent<MeshFilter>().mesh, data[i].Item1, data[i].Item2);
+
+                wallObject.AddComponent<MeshRenderer>();
+                wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
+            }
+            if(debug.CheckTemplate == RoomDebug.RoomBuildMode.CHECK_TEMPLATE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
+            {
+                DEBUG_TemplateCheck(template, wallObject.transform);
+            }
+            wallObject.transform.localPosition = new Vector3(- template.size.x / 2 + 0.5f, template.size.y / 2, 0);
         }
-        if(debug.CheckTemplate == RoomDebug.RoomBuildMode.CHECK_TEMPLATE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
-        {
-            DEBUG_TemplateCheck(template, wallObject.transform);
-        }
-        wallObject.transform.localPosition = new Vector3(- template.size.x / 2 + 0.5f, template.size.y / 2, 0);
     }
     void CreateFloor(RoomTemplate template, Material floorMaterial)
     {
@@ -632,6 +683,45 @@ public partial class Room: MonoBehaviour
 
         MeshCollider mc = floorObject.AddComponent<MeshCollider>();
         mc.sharedMesh = floorObject.GetComponent<MeshFilter>().mesh;
+
+
+
+
+
+
+        GameObject vase = new GameObject("Vase");
+        vase.transform.parent = this.gameObject.transform;
+        vase.AddComponent<MeshFilter>();
+        AnimationCurve curve = new AnimationCurve();
+        curve.AddKey(0, 0.2f); //Give the vase a foot
+        curve.AddKey(0.25f, 0.5f);
+        curve.AddKey(0.75f, 0.2f);
+        curve.AddKey(1, 0.35f);
+        MeshMaker.CreateVase(vase.GetComponent<MeshFilter>().mesh, 1, curve);
+        vase.transform.localPosition = new Vector3(0, 0, 0);
+        vase.AddComponent<MeshRenderer>();
+
+        Material vaseMaterial = new Material(floorMaterial.shader);
+        vaseMaterial.CopyPropertiesFromMaterial(floorMaterial);
+        vaseMaterial.color = Color.yellow;
+
+        vase.GetComponent<MeshRenderer>().material = vaseMaterial;
+
+        SphereCollider col = vase.AddComponent<SphereCollider>();
+        col.radius = 0.5f;
+
+        HealthModel health = vase.AddComponent<HealthModel>();
+        health.maxHealth = 1; health.currentHealth = 1;
+
+        vase.AddComponent<DropItems>();
+        if(vase.GetComponent<DropItems>())
+        {
+            Debug.Log("This vase has drop items");
+            vase.GetComponent<DropItems>().Initialize(UIManager.GetCurrency());
+        }
+
+        //vase.AddComponent<Rigidbody>(); dont add it yet, because the vase has no bottom!!
+
     }
     void DEBUG_TemplateCheck(RoomTemplate template, Transform wallObject)
     {

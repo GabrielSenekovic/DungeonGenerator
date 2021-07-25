@@ -33,12 +33,14 @@ public class Party : MonoBehaviour
     {
         if(!movingRoom)
         {
-            cameraRotationObject.transform.position = m_PartyLeader.transform.position;
+            //cameraRotationObject.transform.position = m_PartyLeader.transform.position;
 
             Vector2 anchor = CameraMovement.cameraAnchor_in; //Abbreviated for readability
 
-            if(CameraMovement.cameraAnchor_in != Vector2.zero) //Do not move the cmaera object if there is an anchor
-            {cameraRotationObject.transform.position = anchor;}
+            //if(CameraMovement.cameraAnchor_in != Vector2.zero) //Do not move the cmaera object if there is an anchor
+            //{
+                cameraRotationObject.transform.position = anchor;
+                //}
         }
     }
     public bool MoveCamera(Vector3 newPosition)

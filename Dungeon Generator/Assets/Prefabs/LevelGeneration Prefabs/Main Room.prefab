@@ -153,8 +153,8 @@ MonoBehaviour:
     IsBuilt: 0
   debug:
     CheckTemplate: 0
-    floorColor: {r: 0, g: 0, b: 0, a: 0}
-    wallColor: {r: 0, g: 0, b: 0, a: 0}
+    floorColor: {r: 0.31394625, g: 0.3646107, b: 0.7830189, a: 0}
+    wallColor: {r: 1, g: 0.6474483, b: 0, a: 0}
   debugFloor: {fileID: 276153233515342873, guid: 90fe3850cb043224cb6e76c7e61cb8df,
     type: 3}
   roomEntrance: {fileID: 7015342253003851191, guid: cc53a1dac3ad3724e9be6f2e2cabb610,

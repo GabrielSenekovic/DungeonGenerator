@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
 
                 party.GetPartyLeader().GetPMM().SetMovementDirection(Quaternion.Euler(0, 0, camera.transform.rotation.eulerAngles.z) * temp);
             }
-            party.GetPartyLeader().GetPMM().currentSpeed = party.GetPartyLeader().GetPMM().speed;
             GetComponentInChildren<Animator>().SetBool("Walking", true);
         }
         else

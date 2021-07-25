@@ -24,8 +24,8 @@ public class CameraMovement : MonoBehaviour
 
     void Awake()
     {
-        transform.eulerAngles = new Vector3(-45, transform.rotation.y, transform.rotation.z);
-        transform.position = new Vector3(transform.position.x, -11, -8.2f);
+        transform.eulerAngles = new Vector3(-53, transform.rotation.y, transform.rotation.z);
+        transform.position = new Vector3(transform.position.x, -15, -10); //-11, -8.2f
     }
     void LateUpdate()
     {

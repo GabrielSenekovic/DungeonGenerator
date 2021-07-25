@@ -8,7 +8,6 @@ public class MovementModel : MonoBehaviour
 {
     Vector3 movementDirection;
     Vector2 facingDirection;
-    [System.NonSerialized]public float currentSpeed;
     public float speed;
     bool canMove = true;
 
