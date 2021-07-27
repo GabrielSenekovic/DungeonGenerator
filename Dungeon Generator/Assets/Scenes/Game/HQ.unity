@@ -765,7 +765,7 @@ MonoBehaviour:
     stepsAwayFromMainRoom: 0
     IsBuilt: 0
   debug:
-    CheckTemplate: 2
+    CheckTemplate: 0
     floorColor: {r: 0.111739054, g: 0.16849564, b: 0.2924528, a: 1}
     wallColor: {r: 0.745283, g: 0.58135235, b: 0.17225882, a: 1}
   debugFloor: {fileID: 276153233515342873, guid: 90fe3850cb043224cb6e76c7e61cb8df,
