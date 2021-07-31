@@ -17,7 +17,7 @@ public class SkillManager : MonoBehaviour
             fromList = fromList_in;
         }
     }
-    public List<PlayerAttackManager> players;
+    public List<PlayerAttackModel> players;
 
     public int currentPlayer;
 

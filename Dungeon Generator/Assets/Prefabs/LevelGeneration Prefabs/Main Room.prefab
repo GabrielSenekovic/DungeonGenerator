@@ -159,6 +159,7 @@ MonoBehaviour:
     type: 3}
   roomEntrance: {fileID: 7015342253003851191, guid: cc53a1dac3ad3724e9be6f2e2cabb610,
     type: 3}
+  grassMaterial: {fileID: 2100000, guid: a572486a140469948b90a1bcbc7ab969, type: 2}
 --- !u!1001 &580324093850981416
 PrefabInstance:
   m_ObjectHideFlags: 0

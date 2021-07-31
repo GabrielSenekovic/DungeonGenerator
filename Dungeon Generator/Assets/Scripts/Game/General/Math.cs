@@ -32,4 +32,20 @@ public class Math : MonoBehaviour
         }
         return false;
     }
+    public static int[] GetValidConstraints(int i, int range, Vector2Int grid)
+    {
+        int targY = (i / grid.x);
+        int startY = (targY - range) % grid.y; //! POS - 1 
+        int targX = i % grid.x;
+        if (startY < 0) { startY = 0; }
+        int startX = (targX - range) % grid.x; //! POS - 1
+        if (startX < 0) { startX = 0; }
+        int yLimit = targY + range + 1;
+        int xLimit = targX + range + 1;
+
+        if (xLimit > grid.x) { xLimit = grid.x; }
+        if (yLimit > grid.y) { yLimit = grid.y; }
+
+        return new int[4]{ startX, startY, xLimit, yLimit };
+    }
 }

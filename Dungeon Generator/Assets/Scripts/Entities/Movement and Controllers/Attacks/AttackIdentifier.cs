@@ -15,7 +15,7 @@ public class AttackIdentifier : MonoBehaviour
     float castTimer;
     [System.NonSerialized] public CastingState state;
 
-    public void UpdateCasting() 
+    public bool UpdateCasting() 
     {        
         if(state == CastingState.COMMENCED)
         {
@@ -25,8 +25,10 @@ public class AttackIdentifier : MonoBehaviour
                 state = CastingState.DONE;
                 castTimer = 0;
                 Initialize();
+                return true; //Yes you may cast
             }
         }
+        return false; //No you may not cast
     }
     public void Attack()
     {

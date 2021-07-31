@@ -34,41 +34,43 @@ public class ProjectileAttackIdentifier : AttackIdentifier
 
     public override void OnFixedUpdate(Vector3 direction, Vector3 source, Collider collider)
     {
-        UpdateCasting();
-        waveFrequencyTimer++;
-       // Debug.Log("Index: " + waveIndex + "Data count: " + waveData.Count);
-        if (waveFrequencyTimer >= waveFrequency_Limit && waveIndex < waveData.Count)
+        if(UpdateCasting())
         {
-            WaveData w = waveData[waveIndex];
-            waveFrequencyTimer = 0;
-            float displacement = 0;
-            float angle = (180 + 90 / 2) * Mathf.Deg2Rad; //Sets it so the first point goes forward
-            float angleIncrease = 360 / w.amountOfProjectiles * Mathf.Deg2Rad * w.curvature;
-
-            for (int i = 0; i < w.amountOfProjectiles; i++)
+            waveFrequencyTimer++;
+            Debug.Log("Index: " + waveIndex + "Data count: " + waveData.Count);
+            if (waveFrequencyTimer >= waveFrequency_Limit && waveIndex < waveData.Count)
             {
-                float c_Angle = angle - angleIncrease * w.amountOfProjectiles / 2 + angleIncrease / 2;
-                float xCurve = w.radius * (Mathf.Cos(c_Angle) - Mathf.Sin(c_Angle));
-                float yCurve = w.radius * (Mathf.Sin(c_Angle) + Mathf.Cos(c_Angle));
+                WaveData w = waveData[waveIndex];
+                waveFrequencyTimer = 0;
+                float displacement = 0;
+                float angle = (180 + 90 / 2) * Mathf.Deg2Rad; //Sets it so the first point goes forward
+                float angleIncrease = 360 / w.amountOfProjectiles * Mathf.Deg2Rad * w.curvature;
 
-                float x = xCurve + w.separation * i - w.separation * w.amountOfProjectiles / 2 + w.separation / 2 + w.position.x;
-                float y = yCurve + w.position.y;
-
-                displacement++; angle += angleIncrease;
-
-                Vector2 spread = new Vector2(w.projectileSpread * (Mathf.Cos(c_Angle) - Mathf.Sin(c_Angle)),
-                                             w.projectileSpread * (Mathf.Sin(c_Angle) + Mathf.Cos(c_Angle)));
-
-                if (w.orbitSpeed == 0)
+                for (int i = 0; i < w.amountOfProjectiles; i++)
                 {
-                    OnAttack(((Vector3)w.globalDirection + direction).normalized + (Vector3)spread, source + new Vector3(x, y, 0), collider);
+                    float c_Angle = angle - angleIncrease * w.amountOfProjectiles / 2 + angleIncrease / 2;
+                    float xCurve = w.radius * (Mathf.Cos(c_Angle) - Mathf.Sin(c_Angle));
+                    float yCurve = w.radius * (Mathf.Sin(c_Angle) + Mathf.Cos(c_Angle));
+
+                    float x = xCurve + w.separation * i - w.separation * w.amountOfProjectiles / 2 + w.separation / 2 + w.position.x;
+                    float y = yCurve + w.position.y;
+
+                    displacement++; angle += angleIncrease;
+
+                    Vector2 spread = new Vector2(w.projectileSpread * (Mathf.Cos(c_Angle) - Mathf.Sin(c_Angle)),
+                                                w.projectileSpread * (Mathf.Sin(c_Angle) + Mathf.Cos(c_Angle)));
+
+                    if (w.orbitSpeed == 0)
+                    {
+                        OnAttack(((Vector3)w.globalDirection + direction).normalized + (Vector3)spread, source + new Vector3(x, y, 0), collider);
+                    }
+                    else
+                    {
+                        OnAttack(((Vector3)w.globalDirection + direction).normalized + (Vector3)spread, source + new Vector3(x, y, 0), w.position, w.orbitSpeed, collider);
+                    }
                 }
-                else
-                {
-                    OnAttack(((Vector3)w.globalDirection + direction).normalized + (Vector3)spread, source + new Vector3(x, y, 0), w.position, w.orbitSpeed, collider);
-                }
+                waveIndex++;
             }
-            waveIndex++;
         }
     }
 

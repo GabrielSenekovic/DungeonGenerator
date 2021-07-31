@@ -100,6 +100,91 @@ public class MeshMaker : MonoBehaviour
         mesh.Optimize();
         mesh.RecalculateNormals();
     }
+    
+    public static void CreateTuft(Mesh mesh)
+    {
+        List<int> newTriangles = new List<int>();
+        List<Vector3> newVertices = new List<Vector3>();
+        List<Vector2> newUV = new List<Vector2>();
+        //Creates Grass
+        //Later also Sedges, Rushes and Reeds (Different Graminoids)
+        float angle = 0;
+        float angle_increase = (360.0f / 1.618033f) * Mathf.Deg2Rad;
+        float radius = 0.05f;
+        float maxRadius = 0.3f;
+        float amountOfStraws = 50;
+        float radius_increase = (maxRadius - radius) / amountOfStraws;
+        float grassWidth = 0.1f;
+
+        AnimationCurve curve = new AnimationCurve();
+        curve.AddKey(0, 0);
+        curve.AddKey(0.3f, 0.1f);
+        curve.AddKey(1, 0.9f);
+
+        for(int i = 0; i < amountOfStraws; i++)
+        {
+            float secondAngle = 2 * Mathf.Asin((grassWidth/2) / (radius / Mathf.Sin(Mathf.Deg2Rad * 90))); //Law of Sines of half of the isosceles triangle to figure out the inner angle
+
+            float height = 1.0f - curve.Evaluate(1.0f / amountOfStraws * i) - Random.Range(-0.5f, 0.5f);
+
+            for(int k = 0; k < 10; k++)
+            {
+                Debug.Log(-(1.0f / height * k));
+               //Go up the straw
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle), radius * Mathf.Cos(angle),          -(height / 10 * k)));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle + secondAngle), radius * Mathf.Cos(angle + secondAngle),   -(height / 10 * k)));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle + secondAngle), radius * Mathf.Cos(angle + secondAngle),   -(height / 10 * (k+1))));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle), radius * Mathf.Cos(angle),                       -(height / 10 * (k+1))));
+
+                newUV.Add(new Vector2 (1, 1.0f / 10 * k));                      //1,0
+                newUV.Add(new Vector2 (0, 1.0f / 10 * k));                      //0,0
+                newUV.Add(new Vector2 (0, 1.0f / 10 * (k+1))); //0,1
+                newUV.Add(new Vector2 (1, 1.0f / 10 * (k+1))); //1,1
+
+                int[] indexValue = new int[]{0,1,3,1,2,3};
+
+                int temp = newVertices.Count - 4;
+
+                for(int index = 0; index < indexValue.Length; index++)
+                {
+                    newTriangles.Add(indexValue[index] + temp);
+                }
+            }
+            for(int k = 9; k >= 0; k--)
+            {
+                //Go down the straw
+                
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle + secondAngle), radius * Mathf.Cos(angle + secondAngle),    -(height / 10 * k)));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle), radius * Mathf.Cos(angle),                        -(height / 10 * k)));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle), radius * Mathf.Cos(angle),                       -(height / 10 * (k+1))));
+                newVertices.Add(new Vector3(radius * Mathf.Sin(angle + secondAngle), radius * Mathf.Cos(angle + secondAngle),   -(height / 10 * (k+1)) ));
+
+                newUV.Add(new Vector2 (1, 1.0f / 10 * k));     //1,0
+                newUV.Add(new Vector2 (0, 1.0f / 10 * k));     //0,0
+                newUV.Add(new Vector2 (0, 1.0f / 10 * (k+1))); //0,1
+                newUV.Add(new Vector2 (1, 1.0f / 10 * (k+1))); //1,1
+                
+                int[] indexValue = new int[]{0,1,3,1,2,3};
+
+                int temp = newVertices.Count - 4;
+
+                for(int index = 0; index < indexValue.Length; index++)
+                {
+                    newTriangles.Add(indexValue[index] + temp);
+                }
+            }
+            //Slowly increase radius
+            radius += radius_increase;
+            angle += angle_increase;
+        }
+
+        mesh.Clear ();
+        mesh.vertices = newVertices.ToArray();
+        mesh.triangles = newTriangles.ToArray();
+        mesh.uv = newUV.ToArray(); 
+        mesh.Optimize();
+        mesh.RecalculateNormals();
+    }
     public static void CreateVase(Mesh mesh, float height, AnimationCurve curve)
     {
         //Create a vase from a sinewave controlling a radius
@@ -239,8 +324,7 @@ public class MeshMaker : MonoBehaviour
                         //TODO  CHANGE THE WAY THAT THE WALL QUADS ARE MADE SO THAT INSTEAD OF CREATING EACH QUAD FROM RIGHT TO LEFT WHEN THE WALL IS MADE FROM LEFT TO RIGHT, SO YOU DONT HAVE TO DO THE FOLLOWING BULLSHIT 
                         //TODO  JUST TO ACCOMODATE FOR THE ROTATION
 
-                        float rot_a = 0, rot_b = 0, rot_c = 0, rot_d = 0, rot_e = 0, rot_f = 0, rot_g = 0; //Controlling the X value
-                        float rot_h = 0, rot_i = 0, rot_j = 0, rot_k = 0;
+                        float rot_a = 0, rot_b = 0, rot_c = 0;
                         
                         float firstQuad_leftVal_x = 1.0f / divisions.x; //1.0f only works for the 0 angle rotated wall, not for the other ones
                         float firstQuad_leftVal_z = 1.0f / divisions.y;
@@ -248,10 +332,7 @@ public class MeshMaker : MonoBehaviour
 
                         if(Math.Mod(instructions[i].rotation, 360) == 0)
                         {
-                           // rot_a = -1.0f / divisions.x;
                             rot_b = -1.0f / divisions.x;
-                            rot_d = -1.0f/divisions.x;
-                            rot_f = -1.0f/divisions.x;
                         }
                         else if(Math.Mod(instructions[i].rotation,360) == 90)
                         {
@@ -261,13 +342,6 @@ public class MeshMaker : MonoBehaviour
                             rot_a = 1.0f / divisions.x * mult_1;
                             rot_b = -1.0f / divisions.x * mult_2;
                             rot_c = 1.0f/divisions.x * mult_1;
-                            rot_d = -1.0f/divisions.x;
-                            rot_e = -1.0f/divisions.x * mult_1;
-                            rot_f = -1.0f/divisions.x * mult_2;
-                            rot_g = -1.0f/divisions.x * mult_1;
-                            rot_i = 1.0f/divisions.x * mult_1;
-                            rot_j = 1.0f/divisions.x * mult_1;
-                            rot_k = 1.0f/divisions.x * mult_1;
                         }
                         else if(Math.Mod(instructions[i].rotation, 360) == 180)
                         {
@@ -276,10 +350,6 @@ public class MeshMaker : MonoBehaviour
 
                             rot_a = 1.0f / divisions.x * mult_1;
                             rot_b = 1.0f / divisions.x * mult_2;
-                            rot_d = -1.0f/divisions.x;
-                            rot_e = -1.0f/divisions.x * mult_1; 
-                            rot_f = 1.0f/divisions.x * mult_2; 
-                            rot_g = -1.0f/divisions.x * mult_1;
                         }
                         else if(Math.Mod(instructions[i].rotation, 360) == 270)
                         {
@@ -289,13 +359,6 @@ public class MeshMaker : MonoBehaviour
                             rot_a = 1.0f / divisions.x * mult_1;
                             rot_b = -1.0f / divisions.x * mult_2;
                             rot_c = -1.0f/divisions.x * mult_1;
-                            rot_d = -1.0f/divisions.x;
-                            rot_e = -1.0f/divisions.x * mult_1;
-                            rot_f = -1.0f/divisions.x * mult_2;
-                            rot_g = -1.0f/divisions.x * mult_1;
-                            rot_i = -1.0f/divisions.x * mult_1;
-                            rot_j = -1.0f/divisions.x * mult_1;
-                            rot_k = -1.0f/divisions.x * mult_1;
                         }
                         //TODO /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -391,7 +454,7 @@ public class MeshMaker : MonoBehaviour
                             }
                             CreateWall_Rotate(newVertices, new List<int>{3}, instructions[i].position, instructions[i].rotation);
                         }
-                        else if((v_z > 0 || k > 0) && v_x * divisions.x == j * divisions.x && i > 0) //H
+                        else if((v_z > 0 || k > 0) && v_x * divisions.x == j * divisions.x && i > 0) //J
                         {
                             debug_info += "J";
                             int jump_column = j > 0 ? (j-1) * vertices_per_column: 0;
@@ -409,16 +472,15 @@ public class MeshMaker : MonoBehaviour
                         else if(k > 0) //E
                         {
                             debug_info += "E";
-                            //Connect first quad of tile upwards to the tile downwards
                             newVertices.Add( newVertices[((3 + skip_up) + k * vertices_per_tile) + j * vertices_per_column]);
                             newVertices.Add( newVertices[((2 + skip_up) + k * vertices_per_tile) + j * vertices_per_column]);
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_f , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness)  + rot_j, ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -firstQuad_leftVal_z) - k));
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_g   , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) + rot_k , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -firstQuad_leftVal_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_b , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness)  + rot_c, ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -firstQuad_leftVal_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_a   , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, upperJaggedness) + rot_c , ((z - v_z - UnityEngine.Random.Range(-upperJaggedness, upperJaggedness)) -firstQuad_leftVal_z) - k));
                             if(instructions[i].curve != null && instructions[i].curve.keys.Length > 1)
                             { 
                                 newVertices[newVertices.Count-1] = new Vector3(newVertices[newVertices.Count-1].x, newVertices[newVertices.Count-1].y - instructions[i].curve.Evaluate(x_perc+ 1.0f/divisions.x), newVertices[newVertices.Count-1].z);
                             }
-                            CreateWall_Rotate(newVertices, new List<int>{2}, new Vector3(x,y, z), instructions[i].rotation); //I dont rotate 3 cuz im rotating AROUND 3
+                            CreateWall_Rotate(newVertices, new List<int>{2,3}, new Vector3(x,y, z), instructions[i].rotation);
                         }
                         else if(v_z * divisions.y > 0 && v_x * divisions.x > j * divisions.x) //D
                         {
@@ -440,13 +502,13 @@ public class MeshMaker : MonoBehaviour
                             //Connect quad upwards to quad downwards
                             newVertices.Add( newVertices[(3 + skip_up) + k * vertices_per_tile + j * vertices_per_column]);
                             newVertices.Add( newVertices[(2 + skip_up) + k * vertices_per_tile + j * vertices_per_column]);
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_d    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) + rot_h, ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -firstQuad_leftVal_z) - k));
-                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_e    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) + rot_i, ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -firstQuad_leftVal_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_b    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) + rot_c, ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -firstQuad_leftVal_z) - k));
+                            newVertices.Add( new Vector3 ((x + v_x + UnityEngine.Random.Range(-jaggedness, jaggedness)) + rot_a    , y + current_tilt_increment + UnityEngine.Random.Range(-jaggedness, jaggedness) + rot_c, ((z - v_z - UnityEngine.Random.Range(-jaggedness, jaggedness)) -firstQuad_leftVal_z) - k));
                             if(instructions[i].curve != null && instructions[i].curve.keys.Length > 1)
                             { 
                                 newVertices[newVertices.Count-1] = new Vector3(newVertices[newVertices.Count-1].x, newVertices[newVertices.Count-1].y - instructions[i].curve.Evaluate(x_perc+ 1.0f/divisions.x), newVertices[newVertices.Count-1].z);
                             }
-                            CreateWall_Rotate(newVertices, new List<int>{2}, instructions[i].position, instructions[i].rotation);//I dont rotate 3 cuz im rotating AROUND 3
+                            CreateWall_Rotate(newVertices, new List<int>{2,3}, new Vector3(x,y, z), instructions[i].rotation);//I dont rotate 3 cuz im rotating AROUND 3
                         }
                         else if(v_x * divisions.x > j * divisions.x) //B
                         {

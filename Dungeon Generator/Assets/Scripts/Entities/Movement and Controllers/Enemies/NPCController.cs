@@ -19,6 +19,8 @@ public class NPCController : MonoBehaviour
     MovementModel movementModel;
     StatusConditionModel statusConditionModel;
 
+    NPCAttackModel attackModel;
+
     SphereCollider visionCollider;
 
     Transform target;
@@ -27,6 +29,7 @@ public class NPCController : MonoBehaviour
     {
         movementModel = GetComponent<MovementModel>();
         statusConditionModel = GetComponent<StatusConditionModel>();
+        attackModel = GetComponent<NPCAttackModel>();
 
         visionCollider = gameObject.AddComponent<SphereCollider>();
         visionCollider.radius = 6;
