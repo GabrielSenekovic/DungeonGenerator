@@ -25,6 +25,7 @@ public class NPCController : MonoBehaviour
 
     Transform target;
 
+
     private void Awake()
     {
         movementModel = GetComponent<MovementModel>();
@@ -53,11 +54,17 @@ public class NPCController : MonoBehaviour
         else if(movementState == NPCMovementState.CHASING && target)
         {
             movementModel.SetMovementDirection((target.position - transform.position).normalized);
+            Attack();
         }
         else if(movementState == NPCMovementState.ESCAPING)
         {
             movementModel.SetMovementDirection((transform.position - target.position).normalized);
         }
+    }
+
+    void Attack()
+    {
+        attackModel.Attack(movementModel.GetFacingDirection());
     }
 
     void Wander()

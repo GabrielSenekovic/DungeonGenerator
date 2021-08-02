@@ -31,12 +31,12 @@ public enum Mood
     Plentiful = 8 //Increases rate of forage materials, thick shrubbery, more treasure rooms
 }
 
-public class LevelData
+[System.Serializable]public class LevelData
 {
     List<AudioClip> m_melody = new List<AudioClip>();
     List<AudioClip> m_baseLine = new List<AudioClip>();
 
-    public Vector2Int m_amountOfRoomsCap = new Vector2Int(3, 5);
+    public Vector2Int m_amountOfRoomsCap = new Vector2Int(50, 60);
 
     public Mood[] m_mood = new Mood[2];
     public Biome m_biome;
@@ -282,6 +282,7 @@ public class LevelManager : MonoBehaviour
     {
         party = Party.instance;
         l_data = GameData.GetCurrentLevelData();
+        l_data.dungeon = true;
         q_data = GameData.GetCurrentQuestData();
         generator = GetComponent<LevelGenerator>();
         if(DebuggingTools.checkForBrokenSeeds)
@@ -303,7 +304,7 @@ public class LevelManager : MonoBehaviour
             generator.PutDownQuestObjects(this, q_data);
         }
         currentRoom = firstRoom;
-        CameraMovement.cameraAnchor_in = new Vector2(firstRoom.transform.position.x, firstRoom.transform.position.y);
+        CameraMovement.SetCameraAnchor(new Vector2(firstRoom.transform.position.x, firstRoom.transform.position.y));
         CameraMovement.movementMode = CameraMovement.CameraMovementMode.SingleRoom;
     }
     private void Update()
@@ -319,17 +320,16 @@ public class LevelManager : MonoBehaviour
         if(CheckIfChangeRoom())
         {
             party.GetPartyLeader().GetPMM().SetCanMove(false);
-            party.movingRoom = true;
+            CameraMovement.SetMovingRoom(true);
         }
     }
     private void LateUpdate()
     {
-        if (party.movingRoom)
+        if (CameraMovement.GetMovingRoom())
         {
-            if (party.MoveCamera(new Vector3(currentRoom.transform.position.x, currentRoom.transform.position.y, party.cameraRotationObject.transform.position.z)))
+            if (CameraMovement.Instance.MoveCamera(new Vector3(currentRoom.transform.position.x, currentRoom.transform.position.y, CameraMovement.GetRotationObject().transform.position.z), previousRoom.transform.position))
             {
-                CameraMovement.cameraAnchor_in =
-                    new Vector2(currentRoom.transform.position.x , currentRoom.transform.position.y);
+                CameraMovement.SetCameraAnchor(new Vector2(currentRoom.transform.position.x , currentRoom.transform.position.y));
                 previousRoom.gameObject.SetActive(false);
             }
         }

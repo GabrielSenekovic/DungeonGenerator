@@ -20,6 +20,26 @@ public class Math : MonoBehaviour
     {
         return a - b * Mathf.Floor(a / b);
     }
+    public static Color GetRandomColor()
+    {
+        return new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), 1);
+    }
+    public static Color GetRandomSaturatedColor(float saturation)
+    {
+        float h = Random.Range(0.0f, 1.0f), s = saturation, v = 1;
+        return Color.HSVToRGB(h, s, v);
+    }
+
+    public static Vector3 Transition(Vector3 currentPosition, Vector3 destination, Vector3 origin, float speed)
+    {
+        Vector3 movementVector = (destination - origin).normalized * speed;
+        currentPosition = //Check that the distance to the walkingPosition isn't bigger than the distance to the destination
+		Mathf.Abs(((currentPosition + movementVector) - origin).x) >= Mathf.Abs((destination - origin).x) &&
+		Mathf.Abs(((currentPosition + movementVector) - origin).y) >= Mathf.Abs((destination - origin).y) ?
+		destination : currentPosition + movementVector;
+
+        return currentPosition;
+    }
     public static bool Compare(float a, float b)
     {
         if(a < 0)

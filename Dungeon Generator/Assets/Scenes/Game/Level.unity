@@ -202,6 +202,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71657449}
   m_CullTransparentMesh: 0
+--- !u!1 &125688892 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5991421245188547604, guid: bfe3b47843c9e2a4f99335c023db45a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1321475787}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &570484995
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,6 +541,21 @@ PrefabInstance:
       propertyPath: graphemeDatabase
       value: 
       objectReference: {fileID: 1321475788}
+    - target: {fileID: 67099573503718706, guid: bfe3b47843c9e2a4f99335c023db45a3,
+        type: 3}
+      propertyPath: cameraSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 67099573503718706, guid: bfe3b47843c9e2a4f99335c023db45a3,
+        type: 3}
+      propertyPath: transitionSpeed
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 67099573503718706, guid: bfe3b47843c9e2a4f99335c023db45a3,
+        type: 3}
+      propertyPath: cameraRotationObject
+      value: 
+      objectReference: {fileID: 125688892}
     - target: {fileID: 91308447563576216, guid: bfe3b47843c9e2a4f99335c023db45a3,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -935,6 +956,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4628733398976596139, guid: 2b7e27cb318af2f4191d1b0ea9b19a4b,
         type: 3}
+    - target: {fileID: 6922992177035552955, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0,
+        type: 3}
+      propertyPath: l_data.dungeon
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922992177035552955, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0,
+        type: 3}
+      propertyPath: l_data.m_amountOfRoomsCap.x
+      value: 95
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922992177035552955, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0,
+        type: 3}
+      propertyPath: l_data.m_amountOfRoomsCap.y
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0, type: 3}
 --- !u!114 &1640979197 stripped
@@ -949,6 +985,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17cbcb19823623428edb42fee9121be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1698055609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 852527674438839512, guid: bfe3b47843c9e2a4f99335c023db45a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1321475787}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1698055610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698055609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49f65a9615b23de45947c9294a803a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rendererSettings: {fileID: 11400000, guid: 0cb017a6d8649bd4b80502a675ed4d45, type: 2}
 --- !u!1 &2030964053
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,9 +5,25 @@ using UnityEngine;
 public class NPCAttackModel : AttackModel
 {
     public AttackIdentifier[] attacks;
+    public int attackTimer = 0;
+    public int attackTimerFrequency; //Also known as Agression. How often will you try to attack
+    float brutality; //Likelihood of attack
 
-    public void Attack(int index, Vector2 direction)
+    private void Start() 
     {
-        //attacks[index].Attack(direction, transform.position, GetComponent<Collider>());
+        currentAttack = attacks[0];
+    }
+
+    public void Attack(Vector2 direction)
+    {
+        if(attacks.Length == 0){return;}
+        attackTimer++;
+        if(attackTimer >= attackTimerFrequency && Random.Range(0.0f, 1.0f) < brutality)
+        {
+            attackTimer = 0;
+            int i = Random.Range(0, attacks.Length);
+            currentAttack = attacks[i];
+            attacks[i].Attack();
+        }
     }
 }

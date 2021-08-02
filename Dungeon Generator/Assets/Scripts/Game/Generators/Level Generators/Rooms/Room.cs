@@ -8,7 +8,6 @@ using UnityEngine.Rendering;
 {
     public RoomType m_type = RoomType.NormalRoom;
     public RoomPosition m_roomPosition = RoomPosition.None;
-    public bool m_Indoors = false;
     public int stepsAwayFromMainRoom = 0;
     public bool IsBuilt = false;
 }
@@ -137,11 +136,10 @@ public partial class Room: MonoBehaviour
                     positions.Add(new RoomTemplate.TileTemplate(2, divisions));
 
                     CreateRoomTemplate_Square(new Vector2(2,2), x, y); //?Basic thickness. Can't be thinner than 2
-                    //CreateRoomTemplate_Circle(roomCenter, wallThickness, x, y);
+                    if(!indoors){CreateRoomTemplate_Circle(roomCenter, wallThickness, x, y);}
                     //CreateRoomTemplate_Cross(wallThickness, x, y);
                 }
             }
-            UnscatterWalls();
         }
         void CreateRoomTemplate_Circle(Vector2 center, Vector2 wallThickness, int x, int y)
         {
@@ -250,6 +248,38 @@ public partial class Room: MonoBehaviour
                     if(amountOfFloorNeighbors > 5)
                     {
                         positions[x + (int)size.x * y].identity = 2;
+                    }
+                }
+            }
+            //Remove singular wall pieces with floor on opposite sides, because they be causing boogs
+            //Also the pesky 1 x 2 bois, who also cause boogs
+            for(int x = 0; x < size.x; x++)
+            {
+                for(int y = 0; y < size.y; y++)
+                {
+                    if(IsPositionWithinBounds(new Vector2Int(x - 1, -y)) && positions[x - 1 + size.x * y].identity == 2)
+                    {
+                        if(IsPositionWithinBounds(new Vector2Int(x + 1, -y)) && positions[x + 1 + size.x * y].identity == 2 )
+                        {
+                            positions[x + (int)size.x * y].identity = 2;
+                        }
+                        else if(IsPositionWithinBounds(new Vector2Int(x + 2, -y)) && positions[x + 2 + size.x * y].identity == 2)
+                        {
+                            positions[x + (int)size.x * y].identity = 2;
+                            positions[x + 1 + (int)size.x * y].identity = 2;
+                        }
+                    }
+                    if(IsPositionWithinBounds(new Vector2Int(x, -y - 1)) && positions[x + size.x * (y+1)].identity == 2)
+                    {
+                        if(IsPositionWithinBounds(new Vector2Int(x, -y + 1)) && positions[x + size.x * (y-1)].identity == 2)
+                        {
+                            positions[x + (int)size.x * y].identity = 2;
+                        }
+                        else if(IsPositionWithinBounds(new Vector2Int(x, -y + 2)) && positions[x + size.x * (y - 2)].identity == 2)
+                        {
+                            positions[x + (int)size.x * y].identity = 2;
+                            positions[x + (int)size.x * (y-1)].identity = 2;
+                        }
                     }
                 }
             }
@@ -367,7 +397,7 @@ public partial class Room: MonoBehaviour
                     value = false;
                 }
             }
-            Debug.Log("It has a neighbor in this direction: " + direction);
+            //Debug.Log("It has a neighbor in this direction: " + direction);
             return new Tuple<bool, Vector2Int, int>(value, direction, rotationDir);
         }
         
@@ -410,13 +440,7 @@ public partial class Room: MonoBehaviour
                         //Follow that direction until its empty
                         int steps = 1;
                     //Debug.Log("Checking index: " + (pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)));
-                        while(IsPositionWithinBounds(new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y)) && positions[pos.x + returnData.Item2.x + size.x * (-pos.y + returnData.Item2.y)].identity == 1) //While the position in the next direction is a wall
-                        {
-                            steps++;
-                            pos = new Vector2Int(pos.x + returnData.Item2.x, pos.y - returnData.Item2.y);
-                        // Debug.Log("Checking index: " + (pos.x + size.x * -pos.y));
-                            positions[pos.x + size.x * -pos.y].SetRead(true);
-                        }
+                        ExtractWalls_GetSteps(ref pos, ref steps, returnData.Item2, currentAngle);
                         
                         int isThisWallFollowingOuterCorner = 0;
                         if(returnData.Item3 < 0 && wall.Item1.Count > 0)
@@ -664,6 +688,45 @@ public partial class Room: MonoBehaviour
             }*/
             Debug.Log("The position found to start from, that has a floor next to it: " + pos);
         }
+        void ExtractWalls_GetSteps(ref Vector2Int pos, ref int steps, Vector2Int direction, int currentAngle)
+        {
+            //Check that the next direction is a wall, and also that said position has more than 1 neighbor otherwise you get weird bugs cuz walls try to be built with 0 width
+            while(
+                IsPositionWithinBounds(new Vector2Int(pos.x + direction.x, pos.y - direction.y)) && positions[pos.x + direction.x + size.x * (-pos.y + direction.y)].identity == 1 &&
+                ExtractWalls_CheckHasEnoughWallsAhead(pos, direction, currentAngle)
+                //While the position in the next direction is a wall
+                )
+            {
+                steps++;
+                pos = new Vector2Int(pos.x + direction.x, pos.y - direction.y);
+                // Debug.Log("Checking index: " + (pos.x + size.x * -pos.y));
+                positions[pos.x + size.x * -pos.y].SetRead(true);
+            }
+        }
+        bool ExtractWalls_CheckHasEnoughWallsAhead(Vector2Int pos, Vector2Int direction, int currentAngle)
+        {
+            if(IsPositionWithinBounds(new Vector2Int(pos.x + direction.x * 2, pos.y - direction.y * 2)) && positions[pos.x + direction.x * 2 + size.x * (-pos.y + direction.y * 2)].identity != 1) 
+            //Check if the next position after the next isn't a wall, cuz then the next position is the last
+            {
+                Tuple<bool, Vector2Int, int> returnData = HasWallNeighbor(pos, currentAngle); //Check if it's an outer corner, cuz only then should the next check happen
+
+                if(returnData.Item3 == -1)
+                {
+                    Vector2 temp = (Quaternion.Euler(0,0,-90) * (Vector2)direction);
+                    Vector2Int rotatedDirection = new Vector2Int(Mathf.RoundToInt(temp.x), Mathf.RoundToInt(temp.y));
+                    if(IsPositionWithinBounds(new Vector2Int(pos.x + direction.x + rotatedDirection.x *2, pos.y - direction.y - rotatedDirection.y *2)) && positions[pos.x + direction.x  + rotatedDirection.x *2 + size.x * (-pos.y + direction.y + rotatedDirection.y * 2 )].identity != 2)
+                    //Check if the next position has enough walls in that direction to go that far 
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true; //If the next position isn't the last, you can proceed
+        }
         public List<Vector3Int> ExtractFloor()
         {
             List<Vector3Int> returnData = new List<Vector3Int>();
@@ -699,6 +762,7 @@ public partial class Room: MonoBehaviour
                     }
                 }
             }
+            UnscatterWalls();
             WeedOutUnseeableWalls(); //Later only when indoors
         }
         void EnsureEntranceReachability(Entrance entrance)
@@ -765,7 +829,7 @@ public partial class Room: MonoBehaviour
     void OnInitialize(Vector2 RoomSize, bool indoors, ref List<RoomTemplate> templates)
     {
         CameraBoundaries = RoomSize;
-        //directions = new Entrances(transform, roomEntrance);
+        directions = new Entrances(transform, roomEntrance);
         //Build wall meshes all around the start area in a 30 x 30 square
         RoomTemplate template = new RoomTemplate(new Vector2Int((int)RoomSize.x, (int)RoomSize.y), new List<RoomTemplate.TileTemplate>(), indoors);
         //CreateRoom(template, wallMaterial, floorMaterial);
@@ -809,11 +873,11 @@ public partial class Room: MonoBehaviour
                 wallObject.AddComponent<MeshRenderer>();
                 wallObject.GetComponent<MeshRenderer>().material = wallMaterial;
             }
-            if(debug.CheckTemplate == RoomDebug.RoomBuildMode.CHECK_TEMPLATE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
-            {
-                DEBUG_TemplateCheck(template, wallObject.transform);
-            }
             wallObject.transform.localPosition = new Vector3(- template.size.x / 2 + 0.5f, template.size.y / 2, 0);
+        }
+        if(debug.CheckTemplate == RoomDebug.RoomBuildMode.CHECK_TEMPLATE || debug.CheckTemplate == RoomDebug.RoomBuildMode.BOTH)
+        {
+            DEBUG_TemplateCheck(template);
         }
     }
     void CreateFloor(RoomTemplate template, Material floorMaterial)
@@ -831,53 +895,31 @@ public partial class Room: MonoBehaviour
         MeshCollider mc = floorObject.AddComponent<MeshCollider>();
         mc.sharedMesh = floorObject.GetComponent<MeshFilter>().mesh;
 
-
-        /*GameObject vase = new GameObject("Vase");
-        vase.transform.parent = this.gameObject.transform;
-        vase.AddComponent<MeshFilter>();
-        AnimationCurve curve = new AnimationCurve();
-        curve.AddKey(0, 0.2f); //Give the vase a foot
-        curve.AddKey(0.25f, 0.5f);
-        curve.AddKey(0.75f, 0.2f);
-        curve.AddKey(1, 0.35f);
-        MeshMaker.CreateVase(vase.GetComponent<MeshFilter>().mesh, 1, curve);
-        vase.transform.localPosition = new Vector3(0, 0, 0);
-        vase.AddComponent<MeshRenderer>();
-
-        Material vaseMaterial = new Material(floorMaterial.shader);
-        vaseMaterial.CopyPropertiesFromMaterial(floorMaterial);
-        vaseMaterial.color = Color.yellow;
-
-        vase.GetComponent<MeshRenderer>().material = vaseMaterial;
-
-        SphereCollider col = vase.AddComponent<SphereCollider>();
-        col.radius = 0.5f;
-
-        HealthModel health = vase.AddComponent<HealthModel>();
-        health.maxHealth = 1; health.currentHealth = 1;
-
-        vase.AddComponent<DropItems>();
-        if(vase.GetComponent<DropItems>())
+        /*for(int i = 0; i < 17; i++)
         {
-            Debug.Log("This vase has drop items");
-            vase.GetComponent<DropItems>().Initialize(UIManager.GetCurrency());
-        }
+            GameObject vase = MeshMaker.CreateVase(floorMaterial);
+            vase.transform.parent = this.gameObject.transform;
+            vase.transform.localPosition = new Vector3(-i + 8, -1, 0);
+        }*/
 
         //vase.AddComponent<Rigidbody>(); dont add it yet, because the vase has no bottom!!*/
 
     }
-    void DEBUG_TemplateCheck(RoomTemplate template, Transform wallObject)
+    void DEBUG_TemplateCheck(RoomTemplate template)
     {
+        GameObject debugObject = new GameObject("DEBUG");
+        debugObject.transform.parent = transform;
         for(int x = 0; x < template.size.x; x++)
         {
             for(int y = 0; y < template.size.y; y++)
             {
-                GameObject temp = Instantiate(debugFloor, new Vector3(x,-y - 0.5f,-1), Quaternion.identity, wallObject);
+                GameObject temp = Instantiate(debugFloor, new Vector3(x,-y - 0.5f,-1), Quaternion.identity, debugObject.transform);
                 temp.GetComponent<MeshRenderer>().material.color = template.positions[x + template.size.x * y].identity == 2 ? debug.floorColor : template.positions[x + template.size.x * y].identity == 0 ? Color.black:
                 template.positions[x + template.size.x * y].identity == 3 ? Color.red: 
                 template.positions[x + template.size.x * y].read ? debug.wallColor: Color.white;
             }
         }
+        debugObject.transform.localPosition = new Vector3(- template.size.x / 2 + 0.5f, template.size.y / 2, 0);
     }
 
     public Vector2 GetCameraBoundaries()

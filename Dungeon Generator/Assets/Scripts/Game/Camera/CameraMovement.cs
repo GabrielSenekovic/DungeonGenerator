@@ -14,22 +14,53 @@ public class CameraMovement : MonoBehaviour
         SingleRoom = 0,
         Free = 1
     }
+
+    static CameraMovement instance;
+    public static CameraMovement Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
     public static float rotationSideways = 0;
     public int rotationSpeed;
     [SerializeField]Party party;
     public CameraMode mode = CameraMode.Side;
     public static CameraMovementMode movementMode = CameraMovementMode.Free;
-    public static Vector2 cameraAnchor_in;
     public Vector2 cameraAnchor;
+
+    bool movingRoom = false;
+    public GameObject cameraRotationObject;
+    public float transitionSpeed;
 
     void Awake()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         transform.eulerAngles = new Vector3(-53, transform.rotation.y, transform.rotation.z);
         transform.position = new Vector3(transform.position.x, -15, -10); //-11, -8.2f
     }
+    private void Update() 
+    {
+        if(!movingRoom)
+        {
+            //cameraRotationObject.transform.position = m_PartyLeader.transform.position;
+
+            //if(CameraMovement.cameraAnchor_in != Vector2.zero) //Do not move the cmaera object if there is an anchor
+            //{
+                cameraRotationObject.transform.position = cameraAnchor;
+                //}
+        }
+    }
     void LateUpdate()
     {
-        cameraAnchor = cameraAnchor_in;
         if(Input.GetKey(KeyCode.LeftArrow))
         {
             Rotate(rotationSpeed);
@@ -47,7 +78,7 @@ public class CameraMovement : MonoBehaviour
     }
     void Rotate(float speed)
     {
-        transform.RotateAround(new Vector3(party.cameraRotationObject.transform.position.x, party.cameraRotationObject.transform.position.y, 0), Vector3.forward, speed);
+        transform.RotateAround(new Vector3(cameraRotationObject.transform.position.x, cameraRotationObject.transform.position.y, 0), Vector3.forward, speed);
         VisualsRotator.RotateAll(speed);
     }
     void ToggleCameraMode()
@@ -69,5 +100,33 @@ public class CameraMovement : MonoBehaviour
     void ZoomInOut(float value)
     {
         //transform.position = new Vector3(transform.position.x + rotatedPosition.x, transform.position.y + rotatedPosition.y, transform.position.z + value);
+    }
+    public bool MoveCamera(Vector3 newPosition, Vector3 currentPosition)
+    {
+        cameraRotationObject.transform.position = Math.Transition(cameraRotationObject.transform.position, newPosition, currentPosition, transitionSpeed);
+
+        if(cameraRotationObject.transform.position == newPosition)
+        {
+            Party.instance.GetPartyLeader().GetPMM().SetCanMove(true);
+            movingRoom = false;
+            return true;
+        }
+        return false;
+    }
+    public static void SetCameraAnchor(Vector2 anchor_in)
+    {
+        instance.cameraAnchor = anchor_in;
+    }
+    public static void SetMovingRoom(bool value)
+    {
+        instance.movingRoom = value;
+    }
+    public static bool GetMovingRoom()
+    {
+        return instance.movingRoom;
+    }
+    public static GameObject GetRotationObject()
+    {
+        return instance.cameraRotationObject;
     }
 }

@@ -185,20 +185,96 @@ public class MeshMaker : MonoBehaviour
         mesh.Optimize();
         mesh.RecalculateNormals();
     }
-    public static void CreateVase(Mesh mesh, float height, AnimationCurve curve)
+    
+    public static GameObject CreateVase(Material material)
+    {
+        GameObject vase = new GameObject("Vase");
+        vase.AddComponent<MeshFilter>();
+        AnimationCurve curve = CreateVase_GetCurve();
+        
+        MeshMaker.OnCreateVase(vase.GetComponent<MeshFilter>().mesh, Random.Range(0.8f, 2.0f), curve);
+        vase.AddComponent<MeshRenderer>();
+
+        Material vaseMaterial = new Material(material.shader);
+        vaseMaterial.CopyPropertiesFromMaterial(material);
+        vaseMaterial.color = Math.GetRandomSaturatedColor(0.8f);
+
+        vase.GetComponent<MeshRenderer>().material = vaseMaterial;
+
+        SphereCollider col = vase.AddComponent<SphereCollider>();
+        col.radius = 0.5f;
+
+        HealthModel health = vase.AddComponent<HealthModel>();
+        health.maxHealth = 1; health.currentHealth = 1;
+
+        vase.AddComponent<DropItems>();
+        if(vase.GetComponent<DropItems>())
+        {
+            Debug.Log("This vase has drop items");
+            vase.GetComponent<DropItems>().Initialize(UIManager.GetCurrency());
+        }
+        vase.AddComponent<AnimationCurveTest>();
+        vase.GetComponent<AnimationCurveTest>().curve = curve;
+
+        return vase;
+    }
+    public static AnimationCurve CreateVase_GetCurve()
+    {
+
+        AnimationCurve curve = new AnimationCurve();
+        Keyframe temp = new Keyframe();
+        //! POINT NUMBER 1
+        temp.time = 0;
+        temp.value = Random.Range(0.2f, 0.4f);
+        curve.AddKey(temp);
+
+        //! POINT NUMBER 2
+        temp.time = Random.Range(0.25f, 0.75f); //Upper end makes a meiping ish shape, lower end makes a fat pot shape
+        temp.value = Random.Range(0.3f, 0.5f); //The fatest part of the vase, the radius. It determines how much space the vase takes up
+        
+        if(Random.Range(0,1) == 1) //Carinate
+        {
+            temp.outTangent = -1.5f;
+        }
+        curve.AddKey(temp);
+
+        curve.SmoothTangents(0, 0);
+
+        //! POINT NUMBER 3
+        float upperRange = 1.0f - curve.keys[curve.keys.Length-1].time - 0.1f; //-0.1f because it's not allowed to be 1. It can at most be 0.9f
+        temp.time = curve.keys[curve.keys.Length-1].time + Random.Range(0.1f, upperRange);
+        temp.value = 0.2f;
+        curve.AddKey(temp);
+
+        temp.time = 1;
+        temp.value = Random.Range(0.05f, 0.35f);
+        curve.AddKey(temp);
+
+        //! POINT NUMBER 4
+        
+        if(Random.Range(0,1)==1) //Set straight neck
+        {
+            curve.SmoothTangents(2, 0);
+        }
+        curve.SmoothTangents(3, 0); 
+
+        return curve;
+    }
+    public static void OnCreateVase(Mesh mesh, float height, AnimationCurve curve)
     {
         //Create a vase from a sinewave controlling a radius
         List<Vector3> positions = new List<Vector3>();
+        int amountOfQuadsVertical = 15;
         float angleIncrement = 360.0f / 10.0f;
         float currentHeight = 0;
-        float heightIncrement = height / 10.0f;
+        float heightIncrement = height / (float)amountOfQuadsVertical;
 
-        for(int j = 0; j < 10; j++)
+        for(int j = 0; j < amountOfQuadsVertical; j++)
         {
             //Go through all levels upwards
             float angle = 0;
             //0.5f radius is base radius, cuz it fills up one tile
-            float currentRadius = curve.Evaluate((float)j/10.0f);
+            float currentRadius = curve.Evaluate((float)j/(float)amountOfQuadsVertical);
 
             for(int k = 0; k < 10; k++)
             {
@@ -211,11 +287,11 @@ public class MeshMaker : MonoBehaviour
 
         currentHeight-=heightIncrement;
 
-        for(int j = 9; j >= 0; j--)
+        for(int j = amountOfQuadsVertical -1; j >= 0; j--)
         {
             //Go through all levels downwards
             float angle = 0;
-            float currentRadius = curve.Evaluate((float)j/10.0f);
+            float currentRadius = curve.Evaluate((float)j/(float)amountOfQuadsVertical);
 
             for(int k = 9; k >= 0; k--)
             {
@@ -263,7 +339,10 @@ public class MeshMaker : MonoBehaviour
     {
         float jaggedness = 0.05f;
         Vector2 divisions = new Vector2(instructions[0].divisions.x +1, instructions[0].divisions.y+1);
-        jaggedness = 0;
+        if(instructions[0].divisions.x == 1)
+        {
+            jaggedness = 0;
+        }
        // if(divisions.x == 1){jaggedness = 0;}
         //dim x = width, y = tilt, z = height
         //divisions = how many vertices per unit tile

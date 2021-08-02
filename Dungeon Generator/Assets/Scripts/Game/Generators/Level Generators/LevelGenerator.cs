@@ -127,7 +127,7 @@ public partial class LevelGenerator : MonoBehaviour
         {
             if(room != currentRoom && !DebuggingTools.spawnOnlyBasicRooms)
             {
-                room.gameObject.SetActive(false);
+                //room.gameObject.SetActive(false);
             }
         }
     }
@@ -155,8 +155,10 @@ public partial class LevelGenerator : MonoBehaviour
             }
             rooms.Add(Instantiate(ChooseLayout(data), transform));
             rooms[i].name = "Room #" + (numberOfRooms+1); numberOfRooms++;
+
+            bool indoors = data.dungeon ? UnityEngine.Random.Range(0, 100) < 80 : false;
             
-            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize, true, ref templates);
+            rooms[i].Initialize(GetNewRoomCoordinates(originRoom.Item1.transform.position, originRoom.Item2, RoomSize), RoomSize, indoors, ref templates);
             rooms[i].roomData.stepsAwayFromMainRoom = originRoom.Item1.roomData.stepsAwayFromMainRoom + 1;
             if(rooms[i].roomData.stepsAwayFromMainRoom > furthestDistanceFromSpawn)
             {
