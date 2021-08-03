@@ -964,12 +964,12 @@ PrefabInstance:
     - target: {fileID: 6922992177035552955, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0,
         type: 3}
       propertyPath: l_data.m_amountOfRoomsCap.x
-      value: 95
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6922992177035552955, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0,
         type: 3}
       propertyPath: l_data.m_amountOfRoomsCap.y
-      value: 100
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3c7fc75d7d43ac4fa95a1cbdbbc4ef0, type: 3}

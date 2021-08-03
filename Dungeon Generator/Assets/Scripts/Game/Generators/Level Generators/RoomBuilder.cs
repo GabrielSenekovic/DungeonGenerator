@@ -18,14 +18,6 @@ public class RoomBuilder : MonoBehaviour
             if (!rooms[i].roomData.IsBuilt)
             {
                 rooms[i].DisplayDistance();
-
-                foreach (Transform child in rooms[i].transform)
-                {
-                    if (child.GetComponent<WallPosition>())
-                    {
-                        Destroy(child.gameObject);
-                    }
-                }
                 rooms[i].roomData.IsBuilt = true;
             }
         }
