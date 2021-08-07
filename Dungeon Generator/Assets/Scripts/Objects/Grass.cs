@@ -30,8 +30,8 @@ public class Grass : MonoBehaviour
     public Vector2Int area;
     public int grassPerTile;
 
-    [SerializeField]float burningSpeed;
-    [SerializeField]Color fireColor;
+    public float burningSpeed;
+    public Color fireColor;
 
     public Vector3 grassRotation;
     public LayerMask layerMask;
@@ -65,6 +65,9 @@ public class Grass : MonoBehaviour
     }
     void Start()
     {
+    }
+    public void PlantFlora(Room.RoomTemplate template)
+    {
         int batchIndexNum = 0;
         List<ObjectData> currentBatch = new List<ObjectData>();
         for(int i = 0; i < area.x * area.y; i++) //Go through every tile of the area
@@ -72,6 +75,8 @@ public class Grass : MonoBehaviour
             tiles.Add(new GrassTile()); //Create new grass tile
             int x = (int)(i % (float)area.x) + (int)transform.position.x;
             int y = (int)(i / (float)area.y) + (int)transform.position.y;
+
+            if(template.positions[i].identity == 0){continue;}
 
             for(int j = 0; j < grassPerTile; j++) //Make a set amount of grass for this one tile
             {
@@ -115,8 +120,12 @@ public class Grass : MonoBehaviour
 
     private void Update() 
     {
-        RenderBatches();
+       // RenderBatches();
         UpdateFire();
+    }
+    private void OnRenderObject() 
+    {
+        RenderBatches();
     }
 
     private void FixedUpdate() 

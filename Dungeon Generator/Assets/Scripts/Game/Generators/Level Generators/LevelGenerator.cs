@@ -182,6 +182,32 @@ public partial class LevelGenerator : MonoBehaviour
             templates[i].AddEntrancesToRoom(rooms[i].directions);
             rooms[i].CreateRoom(templates[i], wallMaterial, floorMaterial);
         }
+        PlantFlora(ref templates);
+    }
+     public void PlantFlora(ref List<Room.RoomTemplate> templates)
+    {
+        for(int i = 0; i < rooms.Count; i++)
+        {
+            if(!templates[i].indoors)
+            {
+                GameObject lawn = new GameObject("Lawn");
+                lawn.transform.parent = rooms[i].transform;
+
+                Grass grass = lawn.AddComponent<Grass>();
+                grass.grassMaterial = Resources.Load<Material>("Materials/Grass");
+                grass.area = templates[i].size;
+                grass.grassPerTile = 3;
+                grass.burningSpeed = 0.001f;
+                grass.fireColor = Color.red;
+                grass.grassRotation = new Vector3(-90, 90, -90);
+                grass.layerMask = ~0;
+                grass.VFX_Burning = Resources.Load<UnityEngine.VFX.VisualEffectAsset>("VFX/Burning");
+
+                lawn.transform.localPosition = new Vector3(-10, -10, -0.5f);
+
+                grass.PlantFlora(templates[i]);
+            }
+        }
     }
 
     void SetEntrances(Vector2 A_pos, Vector2 B_pos, List<Entrance> A_entrances, List<Entrance> B_entrances)
@@ -484,34 +510,6 @@ public partial class LevelGenerator : MonoBehaviour
         //! this will only happen if no rooms have open doors
         return roomsWithOpenDoors[UnityEngine.Random.Range(0, roomsWithOpenDoors.Count - 1)];
     }
-    Room GetRandomRoomInListNorthOrRight()
-    {
-        if (rooms.Count != 0)
-        {
-            List<Room> roomWithOpenDoors = new List<Room> { };
-            foreach (Room room in rooms)
-            {
-                if(room.GetDirections().directions[2] == null || room.CameraBoundaries == Vector2.zero || fusedRooms.Contains(room))
-                {
-                    continue;
-                }
-                if (room.GetDirections().directions[2].Open && room.GetDirections().directions[2].Spawned)
-                {
-                    roomWithOpenDoors.Add(room);
-                }
-                else if (room.GetDirections().directions[0].Open && room.GetDirections().directions[0].Spawned)
-                {
-                    roomWithOpenDoors.Add(room);
-                }
-            }
-            if(roomWithOpenDoors.Count == 0)
-            {
-                return null;
-            }
-            return roomWithOpenDoors[UnityEngine.Random.Range(0, roomWithOpenDoors.Count - 1)];
-        }
-        return rooms[0];
-    }
     Room FindAdjacentRoom(Room origin)
     {
         Entrance openEntrance = null;
@@ -550,23 +548,6 @@ public partial class LevelGenerator : MonoBehaviour
     public Room FindAdjacentRoom(Room origin, Vector2 direction)
     {
         return FindRoomOfPosition((Vector2)origin.transform.position + direction * 20);
-    }
-    Room FindAdjacentRoomNorthOrRight(Room origin)
-    {
-        Entrance openEntrance = null;
-        if (origin.GetDirections().directions[0].Open && origin.GetDirections().directions[0].Spawned)
-        {
-            openEntrance = origin.GetDirections().directions[0];
-        }
-        else if (origin.GetDirections().directions[1].Open && origin.GetDirections().directions[1].Spawned)
-        {
-            openEntrance = origin.GetDirections().directions[1];
-        }
-        if (openEntrance != null)
-        {
-            return FindRoomOfPosition((Vector2)origin.transform.position + openEntrance.DirectionModifier * 20);
-        }
-        return null;
     }
     Room FindRoomOfPosition(Vector2 position)
     {

@@ -758,7 +758,7 @@ public partial class Room: MonoBehaviour
             {
                 for(int y = 0; y < size.y; y++)
                 {
-                    if(positions[x + size.x * y].identity == 0)
+                    if(positions[x + size.x * y].identity == 0) //!Is supposed to add floor on corners. Thats not how its gonna work later
                     {
                         for(int i = -1; i < 2; i++)
                         {
@@ -769,7 +769,7 @@ public partial class Room: MonoBehaviour
                                 {
                                     if(positions[x + i + (int)size.x * (y + -j)].identity == 1) //If the position is a wall
                                     {
-                                        returnData.Add(new Vector3Int(x,-y -1, 0));
+                                        //returnData.Add(new Vector3Int(x,-y -1, 0));
                                     }
                                 }
                             }
@@ -884,13 +884,17 @@ public partial class Room: MonoBehaviour
         Color color = new Color32((byte)UnityEngine.Random.Range(125, 220),(byte)UnityEngine.Random.Range(125, 220),(byte)UnityEngine.Random.Range(125, 220), 255);
         Material wallMaterial = new Material(wallMaterial_in.shader);
         wallMaterial.CopyPropertiesFromMaterial(wallMaterial_in);
+        Material floorMaterial = new Material(floorMaterial_in.shader);
+        floorMaterial.CopyPropertiesFromMaterial(floorMaterial_in);
         if(template.indoors)
         {
             wallMaterial.mainTexture = floorMaterial_in.mainTexture;
             wallMaterial.color = color + Color.white / 10;
         }
-        Material floorMaterial = new Material(floorMaterial_in.shader);
-        floorMaterial.CopyPropertiesFromMaterial(floorMaterial_in);
+        else
+        {
+            floorMaterial.SetTexture("_BaseMap", Resources.Load<Texture>("Art/Earth"));
+        }
         floorMaterial.color = color;
         CreateWalls(template, wallMaterial);
         CreateFloor(template, floorMaterial);
